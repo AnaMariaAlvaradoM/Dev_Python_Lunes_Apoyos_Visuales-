@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 1 · Clase 2 — Endpoints REST y Manejo de Datos · Dev Senior Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --acc:#6018F0;
+  --acc-2:#5418CC;
+  --acc-deep:#3C1884;
+  --bg:#0c0a14;
+  --bg-2:#13101f;
+  --panel:#171327;
+  --panel-2:#1d1830;
+  --line:#2a2440;
+  --txt:#e9e6f5;
+  --txt-dim:#a59ec5;
+  --txt-faint:#766f96;
+  --ok:#3ddc97;
+  --warn:#ffb454;
+  --danger:#ff6b81;
+  --code-bg:#0f0d1a;
+  --sidebar-w:280px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--acc);color:#fff}
+
+/* ---------- progress top bar ---------- */
+#progress{
+  position:fixed;top:0;left:0;height:3px;width:0;
+  background:linear-gradient(90deg,var(--acc-2),var(--acc),#9a6bff);
+  z-index:120;transition:width .25s ease;
+}
+
+/* ---------- sidebar ---------- */
+#sidebar{
+  position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;
+  background:linear-gradient(180deg,var(--bg-2),#0d0a17);
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;z-index:100;
+  transition:transform .3s ease;
+}
+.brand{
+  padding:22px 22px 16px;border-bottom:1px solid var(--line);
+}
+.brand .logo{
+  font-weight:800;font-size:1.05rem;letter-spacing:-.02em;display:flex;align-items:center;gap:9px;
+}
+.brand .logo .mark{
+  width:28px;height:28px;border-radius:8px;flex:0 0 auto;
+  background:linear-gradient(135deg,var(--acc),var(--acc-deep));
+  display:grid;place-items:center;font-size:.95rem;
+}
+.brand .sub{
+  margin-top:6px;font-size:.72rem;color:var(--txt-faint);
+  text-transform:uppercase;letter-spacing:.14em;font-weight:600;
+}
+.nav{
+  flex:1;overflow-y:auto;padding:14px 12px;
+}
+.nav::-webkit-scrollbar{width:7px}
+.nav::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+.nav a{
+  display:flex;align-items:center;gap:11px;
+  padding:9px 12px;margin-bottom:3px;border-radius:9px;
+  color:var(--txt-dim);text-decoration:none;font-size:.86rem;font-weight:500;
+  transition:background .15s,color .15s;cursor:pointer;
+}
+.nav a .ico{
+  width:22px;height:22px;flex:0 0 auto;display:grid;place-items:center;
+  font-size:.95rem;opacity:.9;
+}
+.nav a .num{
+  margin-left:auto;font-size:.68rem;color:var(--txt-faint);
+  font-family:'JetBrains Mono',monospace;
+}
+.nav a:hover{background:var(--panel);color:var(--txt)}
+.nav a.active{
+  background:linear-gradient(90deg,rgba(96,24,240,.22),rgba(96,24,240,.05));
+  color:#fff;
+}
+.nav a.active .ico{opacity:1}
+.nav a.seen .num::after{content:" ✓";color:var(--ok)}
+.side-foot{
+  padding:12px 16px;border-top:1px solid var(--line);
+}
+.pres-btn{
+  width:100%;border:1px solid var(--acc-2);background:rgba(96,24,240,.12);
+  color:#cbb6ff;font-weight:600;font-size:.8rem;
+  padding:10px;border-radius:9px;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;gap:8px;transition:background .15s;
+  font-family:inherit;
+}
+.pres-btn:hover{background:rgba(96,24,240,.24)}
+.pres-hint{
+  margin-top:8px;font-size:.68rem;color:var(--txt-faint);text-align:center;
+}
+.pres-hint kbd{
+  background:var(--panel-2);border:1px solid var(--line);border-radius:4px;
+  padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--txt-dim);
+}
+
+/* ---------- main ---------- */
+main{
+  margin-left:var(--sidebar-w);padding:0;min-height:100vh;
+}
+.topbar{
+  position:sticky;top:0;z-index:90;
+  background:rgba(12,10,20,.82);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+  padding:13px 40px;display:flex;align-items:center;gap:14px;
+}
+.topbar .course{font-size:.8rem;color:var(--txt-faint);font-weight:500}
+.topbar .course b{color:var(--txt-dim);font-weight:700}
+.menu-toggle{
+  display:none;background:none;border:1px solid var(--line);color:var(--txt);
+  border-radius:8px;padding:6px 10px;cursor:pointer;font-size:1.1rem;
+}
+.wrap{max-width:920px;margin:0 auto;padding:38px 40px 90px}
+
+/* ---------- sections ---------- */
+.section{display:none;animation:fade .4s ease}
+.section.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.13em;
+  color:var(--acc);background:rgba(96,24,240,.1);
+  border:1px solid rgba(96,24,240,.3);padding:5px 12px;border-radius:30px;margin-bottom:16px;
+}
+h1{font-size:2rem;font-weight:800;letter-spacing:-.025em;line-height:1.2;margin-bottom:14px}
+h2{font-size:1.32rem;font-weight:700;margin:30px 0 12px;letter-spacing:-.01em}
+h3{font-size:1.05rem;font-weight:600;margin:22px 0 9px;color:#d6cdf5}
+p{margin-bottom:13px;color:var(--txt-dim)}
+p strong,li strong{color:var(--txt);font-weight:600}
+.lead{font-size:1.06rem;color:var(--txt-dim)}
+ul,ol{margin:0 0 14px 4px;padding-left:22px}
+li{margin-bottom:7px;color:var(--txt-dim)}
+code:not(pre code){
+  font-family:'JetBrains Mono',monospace;font-size:.84em;
+  background:var(--panel-2);border:1px solid var(--line);
+  padding:1px 6px;border-radius:5px;color:#d3b8ff;
+}
+a.inline{color:#a981ff}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:20px 22px;margin:16px 0;
+}
+.card.def{border-left:3px solid var(--acc)}
+.def-label{
+  font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--acc);margin-bottom:7px;
+}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+@media(max-width:680px){.grid-2{grid-template-columns:1fr}}
+.mini{
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+}
+.mini .h{display:flex;align-items:center;gap:9px;font-weight:700;margin-bottom:7px;font-size:.95rem}
+.mini .h .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.mini p{font-size:.88rem;margin:0}
+
+/* ---------- tip / warn banners ---------- */
+.banner{
+  display:flex;gap:13px;border-radius:12px;padding:15px 18px;margin:16px 0;font-size:.9rem;
+}
+.banner .bico{font-size:1.2rem;flex:0 0 auto;line-height:1.4}
+.banner.tip{background:rgba(96,24,240,.09);border:1px solid rgba(96,24,240,.28)}
+.banner.tip .bico{color:var(--acc)}
+.banner.warn{background:rgba(255,180,84,.08);border:1px solid rgba(255,180,84,.28)}
+.banner.warn .bico{color:var(--warn)}
+.banner.real{background:rgba(61,220,151,.07);border:1px solid rgba(61,220,151,.25)}
+.banner.real .bico{color:var(--ok)}
+.banner p{margin:0;color:var(--txt-dim)}
+.banner b{color:var(--txt)}
+
+/* ---------- code ---------- */
+.codewrap{position:relative;margin:14px 0}
+.codewrap .lang{
+  position:absolute;top:10px;left:14px;font-size:.66rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--txt-faint);
+  font-family:'JetBrains Mono',monospace;
+}
+.copy{
+  position:absolute;top:8px;right:8px;background:var(--panel-2);
+  border:1px solid var(--line);color:var(--txt-dim);border-radius:7px;
+  padding:4px 10px;font-size:.7rem;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;gap:5px;transition:all .15s;z-index:2;
+}
+.copy:hover{background:var(--acc-2);color:#fff;border-color:var(--acc-2)}
+pre{
+  background:var(--code-bg);border:1px solid var(--line);border-radius:11px;
+  padding:32px 16px 16px;overflow-x:auto;
+}
+pre code{
+  font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.7;color:#d7d2ea;
+}
+pre::-webkit-scrollbar{height:8px}
+pre::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+.fileloc{
+  font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--warn);
+  background:rgba(255,180,84,.08);border:1px solid rgba(255,180,84,.2);
+  border-radius:7px;padding:6px 11px;display:inline-flex;align-items:center;gap:7px;margin-bottom:2px;
+}
+/* token colors */
+.tok-kw{color:#c98bff}
+.tok-fn{color:#7fd1ff}
+.tok-str{color:#9ff0a8}
+.tok-num{color:#ffb454}
+.tok-com{color:#6a6388;font-style:italic}
+.tok-dec{color:#ffa3c0}
+.tok-self{color:#ff9e64}
+
+/* ---------- socratic ---------- */
+.soc{
+  border:1px solid var(--acc-2);border-radius:13px;margin:18px 0;overflow:hidden;
+  background:linear-gradient(180deg,rgba(96,24,240,.08),transparent);
+}
+.soc .q{
+  padding:16px 20px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;
+  font-weight:600;color:#e7deff;font-size:.98rem;user-select:none;
+}
+.soc .q .qico{
+  flex:0 0 auto;width:26px;height:26px;border-radius:8px;
+  background:linear-gradient(135deg,var(--acc),var(--acc-deep));
+  display:grid;place-items:center;font-size:.9rem;color:#fff;margin-top:1px;
+}
+.soc .q .chev{margin-left:auto;color:var(--txt-faint);transition:transform .25s;flex:0 0 auto}
+.soc.open .q .chev{transform:rotate(180deg)}
+.soc .ans{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.soc.open .ans{max-height:900px}
+.soc .ans-in{padding:0 20px 18px 58px}
+.ans-block{border-radius:10px;padding:12px 15px;margin-top:10px;font-size:.9rem}
+.ans-block .lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.ans-block.exp{background:rgba(255,180,84,.08);border:1px solid rgba(255,180,84,.25)}
+.ans-block.exp .lbl{color:var(--warn)}
+.ans-block.cor{background:rgba(61,220,151,.08);border:1px solid rgba(61,220,151,.25)}
+.ans-block.cor .lbl{color:var(--ok)}
+.ans-block p{margin:0;color:var(--txt-dim)}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:.86rem;min-width:420px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line)}
+th{color:var(--txt);font-weight:700;background:var(--panel-2);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+td{color:var(--txt-dim)}
+td code{white-space:nowrap}
+tr:last-child td{border-bottom:none}
+
+/* ---------- svg infographic frame ---------- */
+.info{
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:20px;margin:18px 0;text-align:center;
+}
+.info svg{max-width:100%;height:auto}
+.info .cap{font-size:.78rem;color:var(--txt-faint);margin-top:12px}
+
+/* ---------- footer ---------- */
+.foot{
+  margin-left:var(--sidebar-w);border-top:1px solid var(--line);
+  padding:22px 40px;font-size:.76rem;color:var(--txt-faint);text-align:center;
+}
+.foot a{color:var(--txt-dim);text-decoration:none}
+
+/* section nav buttons */
+.secnav{display:flex;justify-content:space-between;margin-top:40px;gap:12px}
+.secnav button{
+  background:var(--panel);border:1px solid var(--line);color:var(--txt-dim);
+  border-radius:10px;padding:11px 18px;cursor:pointer;font-family:inherit;
+  font-size:.85rem;font-weight:600;transition:all .15s;
+}
+.secnav button:hover:not(:disabled){background:var(--acc-2);color:#fff;border-color:var(--acc-2)}
+.secnav button:disabled{opacity:.3;cursor:not-allowed}
+
+/* ---------- presentation mode ---------- */
+body.present #sidebar{transform:translateX(-100%)}
+body.present main{margin-left:0}
+body.present .topbar{display:none}
+body.present .foot{margin-left:0;display:none}
+body.present .secnav{display:none}
+body.present .wrap{max-width:1100px;padding:48px 60px;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
+body.present .section.active{animation:fade .35s ease}
+body.present h1{font-size:2.6rem}
+body.present p,body.present li{font-size:1.12rem}
+body.present .lead{font-size:1.25rem}
+#presbar{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:130;
+  background:rgba(12,10,20,.9);backdrop-filter:blur(10px);border-top:1px solid var(--line);
+  padding:11px 22px;align-items:center;justify-content:space-between;
+}
+body.present #presbar{display:flex}
+#presbar .pinfo{font-size:.8rem;color:var(--txt-dim);font-weight:600}
+#presbar .pdots{display:flex;gap:6px;flex-wrap:wrap;max-width:60%}
+#presbar .pdot{width:9px;height:9px;border-radius:50%;background:var(--line);cursor:pointer;transition:background .2s}
+#presbar .pdot.on{background:var(--acc)}
+#presbar .pexit{background:none;border:1px solid var(--line);color:var(--txt-dim);border-radius:7px;padding:5px 12px;cursor:pointer;font-family:inherit;font-size:.75rem}
+
+/* mobile */
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99}
+@media(max-width:900px){
+  #sidebar{transform:translateX(-100%)}
+  body.nav-open #sidebar{transform:none}
+  body.nav-open #overlay{display:block}
+  main{margin-left:0}
+  .foot{margin-left:0}
+  .menu-toggle{display:block}
+  .wrap{padding:28px 20px 80px}
+  .topbar{padding:12px 18px}
+  h1{font-size:1.6rem}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- ===================== SIDEBAR ===================== -->
+<aside id="sidebar">
+  <div class="brand">
+    <div class="logo"><span class="mark">d</span> Dev Senior Code</div>
+    <div class="sub">Python Backend · M1 · Clase 2</div>
+  </div>
+  <nav class="nav" id="nav"></nav>
+  <div class="side-foot">
+    <button class="pres-btn" id="presToggle">▶ Modo presentación</button>
+    <div class="pres-hint">
+      <kbd>P</kbd> entrar/salir · <kbd>←</kbd><kbd>→</kbd> navegar · <kbd>Esc</kbd> salir
+    </div>
+  </div>
+</aside>
+<div id="overlay"></div>
+
+<!-- ===================== MAIN ===================== -->
+<main>
+  <div class="topbar">
+    <button class="menu-toggle" id="menuToggle">☰</button>
+    <span class="course"><b>Endpoints REST y Manejo de Datos</b> — completa el CRUD de tu API en memoria</span>
+  </div>
+
+  <div class="wrap" id="wrap">
+
+    <!-- ===== 0 INICIO ===== -->
+    <section class="section" id="s0">
+      <span class="sec-tag">🎯 Punto de partida</span>
+      <h1>De "crear y listar" al ciclo de vida completo de un dato</h1>
+      <p class="lead">Hoy tu API aprende a pedir un producto específico, filtrarlos, actualizarlos y borrarlos. Vamos a completar el <strong>CRUD</strong>.</p>
+
+      <div class="banner real">
+        <span class="bico">📞</span>
+        <p><b>Imagina que tu API ya está en producción y un cliente llama molesto:</b><br>
+        <em>"Compré un producto, pero subió de precio y necesito que lo corrijan. Y ese otro que ya no venden, ¿por qué sigue apareciendo en la app?"</em></p>
+      </div>
+
+      <p>Abres tu código de la clase pasada y notas algo incómodo: <strong>solo sabes crear productos y listarlos todos</strong>. No tienes forma de:</p>
+      <ul>
+        <li>Pedir <strong>un</strong> producto específico (el que el cliente compró)</li>
+        <li><strong>Cambiarle</strong> el precio a ese producto</li>
+        <li><strong>Borrar</strong> el que ya no se vende</li>
+      </ul>
+
+      <div class="card def">
+        <div class="def-label">La pregunta de hoy</div>
+        <p style="margin:0;color:var(--txt)">¿Cómo le digo al servidor <em>"de todos los productos, quiero trabajar con ESTE en particular"</em>, y luego <em>"actualízalo"</em> o <em>"bórralo"</em>?</p>
+      </div>
+
+      <p>Vamos a completar el <strong>ciclo de vida</strong> de un dato: nace, se consulta, se modifica y se elimina.</p>
+
+      <div class="banner tip">
+        <span class="bico">📁</span>
+        <p><b>Un solo archivo todo el día:</b> trabajamos sobre <code>app/main.py</code>, el mismo de la clase pasada. No creamos archivos nuevos: hacemos <b>crecer</b> el que ya tienes. Cada bloque de código te dirá exactamente dónde va.</p>
+      </div>
+    </section>
+
+    <!-- ===== 1 REPASO + IDENTIDAD ===== -->
+    <section class="section" id="s1">
+      <span class="sec-tag">🔁 Repaso activo</span>
+      <h1>¿Dónde quedamos? + el concepto de identidad</h1>
+      <p class="lead">Esta es una clase de <strong>acumulación</strong>: cada cosa nueva se apoya en algo que ya sabes.</p>
+
+      <h2>Lo que tu API ya sabe hacer</h2>
+      <p>La clase pasada lograste tres cosas, y todas reaparecen hoy:</p>
+      <div class="grid-2">
+        <div class="mini">
+          <div class="h"><span class="dot" style="background:var(--acc)"></span>Crear</div>
+          <p><code>POST /productos</code> validado por Pydantic (<code>ProductoCreate</code>). → Hoy lo reusamos en el PUT.</p>
+        </div>
+        <div class="mini">
+          <div class="h"><span class="dot" style="background:var(--ok)"></span>Guardar</div>
+          <p>Lista en memoria <code>productos_db</code>. → Hoy es la protagonista: la recorremos, modificamos y le quitamos elementos.</p>
+        </div>
+        <div class="mini">
+          <div class="h"><span class="dot" style="background:var(--warn)"></span>Listar</div>
+          <p><code>GET /productos</code>. → Hoy evolucionará para aceptar filtros.</p>
+        </div>
+      </div>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Si te dijera "tráeme el segundo producto que creaste", ¿cómo se lo pedirías al servidor? ¿Tus productos tenían forma de identificarse de manera única?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"Por el nombre" o "no sé, no tenía número".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>No tenía forma. Guardábamos nombre, precio y stock, pero <strong>ningún identificador único</strong>. Si dos productos se llaman "Mouse", no los distingues. Pedir "por nombre" es frágil: los nombres se repiten y cambian. Hoy resolvemos esto <strong>primero</strong>, porque todo lo demás depende de ello.</p></div>
+        </div></div>
+      </div>
+
+      <h2>El concepto que nos faltaba: la identidad</h2>
+      <p>Tú tienes un <strong>número de cédula</strong>. Puede haber muchas personas llamadas "Ana", pero solo una tiene tu número. Ese número no se repite y no cambia aunque cambies de casa, de trabajo o de apellido.</p>
+
+      <div class="card def">
+        <div class="def-label">Definición técnica</div>
+        <p style="margin:0">Un <strong>identificador único</strong> (ID) es un valor que distingue sin ambigüedad a un registro de todos los demás dentro de una colección. Por convención suele ser un número entero que crece (1, 2, 3...).</p>
+      </div>
+
+      <div class="banner real">
+        <span class="bico">🪪</span>
+        <p><b>En la vida real = tu cédula.</b> En APIs y bases de datos pasa igual: cada registro necesita un ID que nunca se repita. Así, cuando alguien dice "el producto 5", no hay ninguna duda de cuál es.</p>
+      </div>
+    </section>
+
+    <!-- ===== 2 DARLE ID ===== -->
+    <section class="section" id="s2">
+      <span class="sec-tag">🆔 Identidad</span>
+      <h1>Darle ID a los productos</h1>
+      <p class="lead">Antes que cualquier verbo nuevo, cada producto necesita su número único. De ahí en adelante, todo se vuelve posible.</p>
+
+      <h2>Cómo guardábamos antes</h2>
+      <p>La clase pasada, dentro del POST, guardábamos el producto así:</p>
+      <div class="codewrap">
+        <span class="lang">python</span><button class="copy">⧉ Copiar</button>
+<pre><code>productos_db.append(producto)</code></pre>
+      </div>
+      <p>Ese <code>producto</code> era el <strong>objeto Pydantic</strong> crudo. Funcionaba, pero hoy nos topamos con dos límites: <strong>no tiene ID</strong> y <strong>es difícil de modificar</strong> (algo que el PUT necesitará).</p>
+
+      <div class="banner tip">
+        <span class="bico">🔄</span>
+        <p><b>Evolución natural, no corrección:</b> ahora guardaremos un <b>diccionario</b> que incluye su propio <code>id</code>. El objeto Pydantic sigue siendo el rey para <b>validar la entrada</b>; el diccionario es mejor para <b>almacenar y modificar</b>. Cada herramienta en su rol.</p>
+      </div>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Si voy creando productos uno tras otro y quiero que sean 1, 2, 3... ¿qué necesito mantener "vivo" fuera de los endpoints para saber qué número me toca asignar?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"Un contador" o "una variable que sume".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>Exacto: un <strong>contador</strong> que viva <strong>fuera</strong> de las funciones y recuerde el último ID entregado. Como vive fuera, su valor <strong>sobrevive</strong> entre una petición y la siguiente, así que nunca repite número.</p></div>
+        </div></div>
+      </div>
+
+      <h2>Paso 1 · Agregar el contador</h2>
+      <div class="fileloc">📍 app/main.py — justo debajo de <code style="background:none;border:none;color:inherit;padding:0">productos_db = []</code>, antes de los endpoints</div>
+      <div class="codewrap">
+        <span class="lang">python</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-com"># Contador que recuerda cuál es el próximo ID a asignar.</span>
+<span class="tok-com"># Vive fuera de los endpoints para "recordar" entre una petición y otra.</span>
+contador_id <span class="tok-kw">=</span> <span class="tok-num">1</span></code></pre>
+      </div>
+      <p><code>contador_id</code> vive en el <strong>nivel del módulo</strong> (sin indentación, fuera de toda función), como <code>productos_db</code>. Las variables dentro de una función nacen y mueren con cada llamada; las del nivel del módulo <strong>persisten</strong> mientras el servidor esté encendido. Empieza en <code>1</code> porque queremos que el primer producto sea el número 1.</p>
+
+      <h2>Paso 2 · Agregar la categoría al schema</h2>
+      <p>Hoy también filtraremos productos. Pero para filtrar por una característica, esa característica <strong>debe existir</strong> en los datos. Por eso sembramos la <strong>categoría</strong> hoy: la cosecharemos en los filtros.</p>
+      <div class="fileloc">📍 app/main.py — en tu schema <code style="background:none;border:none;color:inherit;padding:0">ProductoCreate</code></div>
+      <div class="codewrap">
+        <span class="lang">python</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-kw">class</span> <span class="tok-fn">ProductoCreate</span>(BaseModel):
+    nombre: <span class="tok-fn">str</span>
+    precio: <span class="tok-fn">float</span>
+    stock: <span class="tok-fn">int</span>
+    categoria: <span class="tok-fn">str</span>   <span class="tok-com"># ← línea nueva</span></code></pre>
+      </div>
+      <p>Con esa única línea, Pydantic ahora <strong>exige</strong> que todo producto traiga su categoría. Sin <code>if</code>, sin chequeo manual: declaras el campo y Pydantic se encarga. <strong>Declaras qué quieres, no cómo validarlo.</strong></p>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Si un compañero prueba el POST con el JSON viejo (solo nombre, precio y stock), ¿qué pasará ahora que <code>categoria</code> es obligatorio?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"Funcionará igual" o "dará error".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>Dará un <strong>error 422</strong>, el mismo de validación de la clase pasada. Como falta <code>categoria</code>, Pydantic rechaza la petición y señala el campo faltante. No es un problema: es la prueba de que el schema manda.</p></div>
+        </div></div>
+      </div>
+
+      <h2>Paso 3 · Reescribir el POST para asignar ID</h2>
+      <div class="fileloc">📍 app/main.py — reemplaza tu <code style="background:none;border:none;color:inherit;padding:0">@app.post("/productos")</code> completo</div>
+      <div class="codewrap">
+        <span class="lang">python</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-dec">@app.post</span>(<span class="tok-str">"/productos"</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">crear_producto</span>(producto: ProductoCreate):
+    <span class="tok-kw">global</span> contador_id
+    nuevo <span class="tok-kw">=</span> {
+        <span class="tok-str">"id"</span>: contador_id,
+        <span class="tok-str">"nombre"</span>: producto.nombre,
+        <span class="tok-str">"precio"</span>: producto.precio,
+        <span class="tok-str">"stock"</span>: producto.stock,
+        <span class="tok-str">"categoria"</span>: producto.categoria
+    }
+    productos_db.append(nuevo)
+    contador_id <span class="tok-kw">+=</span> <span class="tok-num">1</span>
+    <span class="tok-kw">return</span> {<span class="tok-str">"mensaje"</span>: <span class="tok-str">"Producto creado exitosamente"</span>, <span class="tok-str">"producto"</span>: nuevo}</code></pre>
+      </div>
+
+      <h3>¿Qué hace cada parte?</h3>
+      <ul>
+        <li><code>global contador_id</code> → le dice a Python: "el contador que modifico aquí es el de <strong>afuera</strong>, no uno local nuevo". Sin esto, al hacer <code>+= 1</code> Python crearía un contador local fantasma y todos los productos tendrían id 1.</li>
+        <li>El <strong>diccionario</strong> <code>nuevo</code> → guarda el <code>id</code> actual del contador y copia los campos del objeto validado (<code>producto.nombre</code>, etc.). Traducimos del objeto Pydantic a un diccionario almacenable, agregándole identidad.</li>
+        <li><code>productos_db.append(nuevo)</code> → mismo <code>.append()</code> de siempre; ahora guarda un diccionario con id.</li>
+        <li><code>contador_id += 1</code> → sube el contador para que el próximo producto reciba el siguiente número. Sin esto, todos colisionarían en id 1.</li>
+        <li>El <code>return</code> devuelve el producto <strong>ya con su id</strong>, para que el cliente sepa con qué número quedó.</li>
+      </ul>
+
+      <h2>Paso 4 · El GET de la lista ya muestra el id</h2>
+      <div class="fileloc">📍 app/main.py — ya existe; por ahora déjalo igual</div>
+      <div class="codewrap">
+        <span class="lang">python</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-dec">@app.get</span>(<span class="tok-str">"/productos"</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">listar_productos</span>():
+    <span class="tok-kw">return</span> {<span class="tok-str">"total"</span>: <span class="tok-fn">len</span>(productos_db), <span class="tok-str">"productos"</span>: productos_db}</code></pre>
+      </div>
+      <p>Como la lista ahora contiene diccionarios con id, este GET <strong>ya los muestra automáticamente</strong>. En la sección de filtros lo ampliaremos.</p>
+
+      <h3>Resultado al crear 3 productos y listar</h3>
+      <div class="codewrap">
+        <span class="lang">json · respuesta</span><button class="copy">⧉ Copiar</button>
+<pre><code>{
+  <span class="tok-str">"total"</span>: <span class="tok-num">3</span>,
+  <span class="tok-str">"productos"</span>: [
+    { <span class="tok-str">"id"</span>: <span class="tok-num">1</span>, <span class="tok-str">"nombre"</span>: <span class="tok-str">"Laptop Dell"</span>, <span class="tok-str">"precio"</span>: <span class="tok-num">1299.99</span>, <span class="tok-str">"stock"</span>: <span class="tok-num">15</span>, <span class="tok-str">"categoria"</span>: <span class="tok-str">"tecnologia"</span> },
+    { <span class="tok-str">"id"</span>: <span class="tok-num">2</span>, <span class="tok-str">"nombre"</span>: <span class="tok-str">"Mouse"</span>, <span class="tok-str">"precio"</span>: <span class="tok-num">25.0</span>, <span class="tok-str">"stock"</span>: <span class="tok-num">100</span>, <span class="tok-str">"categoria"</span>: <span class="tok-str">"tecnologia"</span> },
+    { <span class="tok-str">"id"</span>: <span class="tok-num">3</span>, <span class="tok-str">"nombre"</span>: <span class="tok-str">"Cuaderno"</span>, <span class="tok-str">"precio"</span>: <span class="tok-num">5.5</span>, <span class="tok-str">"stock"</span>: <span class="tok-num">200</span>, <span class="tok-str">"categoria"</span>: <span class="tok-str">"papeleria"</span> }
+  ]
+}</code></pre>
+      </div>
+      <p>El contador funcionando: 1, 2, 3. Cada producto nació con su identidad.</p>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Si reinicias el servidor y creas otro producto, ¿qué id tendrá: el 4, o vuelve a empezar en 1?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"El 4, sigue contando".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>Vuelve a <strong>1</strong>. Tanto <code>productos_db</code> como <code>contador_id</code> viven en la <strong>memoria RAM</strong> del proceso. Al reiniciar, ese proceso muere y nace uno nuevo con las variables en su valor inicial. Es el límite de la memoria. El <strong>Módulo 2</strong> lo resuelve: con PostgreSQL, el id lo manejará la base de datos y <strong>persistirá de verdad</strong>.</p></div>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- ===== 3 PARAMETROS DE RUTA ===== -->
+    <section class="section" id="s3">
+      <span class="sec-tag">📍 Parámetros de ruta</span>
+      <h1>Pedir UN producto específico</h1>
+      <p class="lead">Ya cada producto tiene identidad. Ahora usémosla para pedir uno solo.</p>
+
+      <div class="card def">
+        <div class="def-label">Definición técnica</div>
+        <p style="margin:0">Un <strong>parámetro de ruta</strong> (<em>path parameter</em>) es una porción variable de la URL que identifica un recurso concreto dentro de una colección. Es <strong>obligatorio</strong> y forma parte de la dirección misma.</p>
+      </div>
+
+      <div class="codewrap">
+        <span class="lang">rutas</span><button class="copy">⧉ Copiar</button>
+<pre><code>/productos        <span class="tok-com">→ todos los productos</span>
+/productos/<span class="tok-num">5</span>      <span class="tok-com">→ el producto específico con id 5</span></code></pre>
+      </div>
+
+      <div class="banner real">
+        <span class="bico">📚</span>
+        <p><b>En la vida real:</b> <code>/productos</code> es pedirle al bibliotecario "el catálogo completo". <code>/productos/5</code> es "tráeme exactamente el libro del estante 5". El número es <b>parte de la dirección</b>: cambias el número, cambias el libro.</p>
+      </div>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Si <code>/productos</code> ya da la lista completa, ¿para qué pedir un endpoint aparte que me dé uno solo?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"Para no traer todo" o "es más directo".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>Por <strong>eficiencia y claridad</strong>. Con 50.000 productos, traerlos todos para usar uno es absurdo: gasta datos, memoria y tiempo. Pedir <code>/productos/5</code> es quirúrgico. Y además <strong>expresa la intención con precisión</strong>: la URL misma dice "quiero el producto 5". Esa es la filosofía REST.</p></div>
+        </div></div>
+      </div>
+
+      <h2>Antes de escribir: ¿qué es <code>raise</code>?</h2>
+      <div class="card def">
+        <div class="def-label">Definición técnica</div>
+        <p style="margin:0"><code>raise</code> es una palabra clave de Python que <strong>lanza (provoca) una excepción a propósito</strong>. Normalmente las excepciones saltan solas cuando algo falla; con <code>raise</code> eres <strong>tú</strong> quien decide provocarla, porque detectaste una situación que no debe seguir.</p>
+      </div>
+
+      <div class="banner real">
+        <span class="bico">💂</span>
+        <p><b>El guardia de la lista:</b> revisa nombre por nombre. Si te encuentra, te deja pasar (<code>return</code>). Si llega al final y no estás, <b>levanta la mano y anuncia en voz alta "¡no está en la lista!"</b> — eso es <code>raise</code>: una interrupción deliberada para que el sistema reaccione.</p>
+      </div>
+
+      <div class="info">
+        <svg viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="return frente a raise">
+          <defs>
+            <linearGradient id="gok" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2fad78"/><stop offset="1" stop-color="#3ddc97"/></linearGradient>
+            <linearGradient id="gerr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d6485c"/><stop offset="1" stop-color="#ff6b81"/></linearGradient>
+          </defs>
+          <rect x="20" y="55" width="120" height="42" rx="10" fill="#171327" stroke="#2a2440"/>
+          <text x="80" y="81" text-anchor="middle" fill="#d7d2ea" font-family="JetBrains Mono, monospace" font-size="14">¿lo encontré?</text>
+          <!-- return path -->
+          <path d="M140 70 H 250" stroke="url(#gok)" stroke-width="2.5" fill="none" marker-end="url(#ah1)"/>
+          <text x="195" y="60" text-anchor="middle" fill="#3ddc97" font-family="Inter" font-size="12" font-weight="700">sí</text>
+          <rect x="252" y="49" width="130" height="42" rx="10" fill="rgba(61,220,151,.1)" stroke="#3ddc97"/>
+          <text x="317" y="70" text-anchor="middle" fill="#3ddc97" font-family="JetBrains Mono, monospace" font-size="13">return p</text>
+          <text x="317" y="86" text-anchor="middle" fill="#7fd1ab" font-family="Inter" font-size="10">salida feliz</text>
+          <!-- raise path -->
+          <path d="M80 97 V 125 H 250" stroke="url(#gerr)" stroke-width="2.5" fill="none" marker-end="url(#ah2)"/>
+          <text x="150" y="120" text-anchor="middle" fill="#ff6b81" font-family="Inter" font-size="12" font-weight="700">no (recorrió todo)</text>
+          <rect x="252" y="105" width="290" height="40" rx="10" fill="rgba(255,107,129,.1)" stroke="#ff6b81"/>
+          <text x="397" y="130" text-anchor="middle" fill="#ff6b81" font-family="JetBrains Mono, monospace" font-size="12">raise HTTPException(404)</text>
+          <defs>
+            <marker id="ah1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#3ddc97"/></marker>
+            <marker id="ah2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#ff6b81"/></marker>
+          </defs>
+        </svg>
+        <div class="cap"><code>return</code> = "todo bien, aquí está". <code>raise</code> = "detente, este es el problema". Solo uno se ejecuta por llamada.</div>
+      </div>
+
+      <h2>Paso 1 · Importar HTTPException</h2>
+      <div class="fileloc">📍 app/main.py — primera línea, la del import de FastAPI</div>
+      <div class="codewrap">
+        <span class="lang">python</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-kw">from</span> fastapi <span class="tok-kw">import</span> FastAPI, HTTPException</code></pre>
+      </div>
+      <p>La misma línea de siempre, ahora trae <strong>dos cosas</strong> separadas por coma. <code>HTTPException</code> es "una excepción con forma de respuesta HTTP": cuando la lanzas con <code>raise</code>, FastAPI la convierte en un error limpio con su código y mensaje, en vez de que el servidor se caiga feo.</p>
+
+      <h2>Paso 2 · El endpoint GET por ID</h2>
+      <div class="fileloc">📍 app/main.py — endpoint nuevo, después del GET de la lista</div>
+      <div class="codewrap">
+        <span class="lang">python</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-dec">@app.get</span>(<span class="tok-str">"/productos/{producto_id}"</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">obtener_producto</span>(producto_id: <span class="tok-fn">int</span>):
+    <span class="tok-kw">for</span> p <span class="tok-kw">in</span> productos_db:
+        <span class="tok-kw">if</span> p[<span class="tok-str">"id"</span>] <span class="tok-kw">==</span> producto_id:
+            <span class="tok-kw">return</span> p
+    <span class="tok-kw">raise</span> HTTPException(status_code=<span class="tok-num">404</span>, detail=<span class="tok-str">"Producto no encontrado"</span>)</code></pre>
+      </div>
+
+      <h3>Línea por línea</h3>
+      <ul>
+        <li><code>"/productos/{producto_id}"</code> → las <strong>llaves</strong> marcan la parte variable. Lo que el cliente escriba ahí, FastAPI lo captura y lo pasa a la función.</li>
+        <li><code>producto_id: int</code> → el <em>type hint</em> hace que FastAPI convierta y valide que sea entero. Si alguien escribe <code>/productos/abc</code>, responde <strong>422</strong> automáticamente.</li>
+        <li><code>for p in productos_db</code> → recorremos la lista producto por producto.</li>
+        <li><code>if p["id"] == producto_id: return p</code> → si el id coincide, lo devolvemos. Ese <code>return</code> <strong>corta el bucle</strong>: no buscamos algo ya encontrado.</li>
+        <li><code>raise HTTPException(...)</code> → fíjate en la indentación: está alineado con el <code>for</code>, así que solo corre si el bucle terminó <strong>sin</strong> encontrar nada. Lanza el 404 con su mensaje.</li>
+      </ul>
+
+      <h2>Los códigos de estado HTTP</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Código</th><th>Significa</th><th>Cuándo aparece</th></tr></thead>
+          <tbody>
+            <tr><td><b style="color:var(--ok)">200</b></td><td>OK</td><td>Todo bien, aquí está lo pedido</td></tr>
+            <tr><td><b style="color:var(--danger)">404</b></td><td>Not Found</td><td>Pediste un recurso que no existe</td></tr>
+            <tr><td><b style="color:var(--warn)">422</b></td><td>Unprocessable Entity</td><td>Datos mal formados (tipo incorrecto, falta un campo)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="banner real">
+        <span class="bico">🍽️</span>
+        <p><b>Como un mesero:</b> <b>200</b> = "aquí está su plato". <b>404</b> = "ese plato no existe en el menú". <b>422</b> = "su orden está incompleta". Cada respuesta dice no solo qué pasó, sino de qué tipo fue.</p>
+      </div>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Si pides <code>/productos/999</code> y no existe, ¿qué es mejor: devolver una lista vacía, o decir claramente "no encontrado" con un 404?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"Que diga no encontrado".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>El <strong>404</strong>. Devolver vacío sería <strong>mentir sutilmente</strong>: diría "la búsqueda funcionó pero no hay nada", cuando la verdad es "no existe". Con un 404 honesto, el frontend muestra "Producto no disponible" en vez de una pantalla en blanco confusa. Decir la verdad con el código correcto separa una API amateur de una profesional.</p></div>
+        </div></div>
+      </div>
+
+      <h3>Las pruebas en Swagger</h3>
+      <div class="codewrap">
+        <span class="lang">json · respuestas</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-com"># GET /productos/1  → 200</span>
+{ <span class="tok-str">"id"</span>: <span class="tok-num">1</span>, <span class="tok-str">"nombre"</span>: <span class="tok-str">"Laptop Dell"</span>, <span class="tok-str">"precio"</span>: <span class="tok-num">1299.99</span>, <span class="tok-str">"stock"</span>: <span class="tok-num">15</span>, <span class="tok-str">"categoria"</span>: <span class="tok-str">"tecnologia"</span> }
+
+<span class="tok-com"># GET /productos/999  → 404 (provócalo a propósito)</span>
+{ <span class="tok-str">"detail"</span>: <span class="tok-str">"Producto no encontrado"</span> }</code></pre>
+      </div>
+    </section>
+
+    <!-- ===== 4 QUERY ===== -->
+    <section class="section" id="s4">
+      <span class="sec-tag">🔎 Parámetros de query</span>
+      <h1>Filtrar la colección</h1>
+      <p class="lead">No un producto, ni todos: un <strong>subconjunto que cumple condiciones</strong>. "Todos los de tecnología", "los que cuestan menos de 50 mil".</p>
+
+      <div class="codewrap">
+        <span class="lang">rutas</span><button class="copy">⧉ Copiar</button>
+<pre><code>/productos?categoria=tecnologia
+/productos?precio_max=<span class="tok-num">50</span>
+/productos?categoria=tecnologia<span class="tok-kw">&amp;</span>precio_max=<span class="tok-num">50</span></code></pre>
+      </div>
+      <ul>
+        <li>El <code>?</code> marca dónde <strong>empiezan</strong> los filtros.</li>
+        <li>Cada filtro es un par <code>nombre=valor</code>.</li>
+        <li>El <code>&amp;</code> <strong>une</strong> varios filtros.</li>
+      </ul>
+
+      <div class="grid-2">
+        <div class="mini">
+          <div class="h"><span class="dot" style="background:var(--acc)"></span>Ruta · <code>/productos/5</code></div>
+          <p>Identifica <strong>CUÁL</strong> recurso. Obligatorio. Parte de la dirección. Apunta a <strong>uno</strong>.</p>
+        </div>
+        <div class="mini">
+          <div class="h"><span class="dot" style="background:var(--ok)"></span>Query · <code>?categoria=x</code></div>
+          <p><strong>Filtra</strong> una colección. Opcional. Va tras el <code>?</code>. Puede devolver muchos, pocos o ninguno.</p>
+        </div>
+      </div>
+
+      <div class="banner real">
+        <span class="bico">🚕</span>
+        <p><b>El taxi:</b> la <b>ruta</b> es darle la dirección exacta de una casa ("Calle 5 #23") → un lugar único. El <b>query</b> es decir "llévame a un restaurante italiano y económico" → condiciones que filtran entre muchas opciones. Una dirección apunta; un filtro tamiza.</p>
+      </div>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>¿Por qué la categoría va como <code>?categoria=tecnologia</code> (query) y no como <code>/productos/tecnologia</code> (ruta), si ambos viajan en la URL?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"No sé, se ven parecidos".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>Significan cosas distintas. <code>/productos/5</code> apunta a <strong>un recurso único</strong> (no hay otro con id 5). <code>?categoria=tecnologia</code> <strong>filtra la colección</strong>: puede devolver 2, 10 o 0. La ruta responde a "¿cuál?", el query a "¿con qué condiciones?". REST le da a cada uno un trabajo claro, y por eso las APIs REST son predecibles.</p></div>
+        </div></div>
+      </div>
+
+      <h2>El concepto: parámetro opcional</h2>
+      <p>Si pido <code>/productos</code> a secas quiero <strong>todos</strong>. Si agrego <code>?categoria=tecnologia</code> quiero <strong>solo esos</strong>. El mismo endpoint atiende ambos casos. ¿Cómo se dice "puede venir o no" en Python?</p>
+      <div class="codewrap">
+        <span class="lang">python</span><button class="copy">⧉ Copiar</button>
+<pre><code>categoria: <span class="tok-fn">str</span> <span class="tok-kw">|</span> <span class="tok-kw">None</span> <span class="tok-kw">=</span> <span class="tok-kw">None</span></code></pre>
+      </div>
+      <ul>
+        <li><code>categoria</code> → el nombre del parámetro.</li>
+        <li><code>: str | None</code> → la barra <code>|</code> se lee "o": es texto <strong>o</strong> nada (<code>None</code> = ausencia de valor).</li>
+        <li><code>= None</code> → su valor por defecto. Esto es lo que lo hace opcional: si no lo mandan, vale <code>None</code>.</li>
+      </ul>
+
+      <h2>Ampliar el GET de la lista con filtros</h2>
+      <div class="fileloc">📍 app/main.py — reemplaza tu <code style="background:none;border:none;color:inherit;padding:0">GET /productos</code> completo</div>
+      <div class="codewrap">
+        <span class="lang">python</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-dec">@app.get</span>(<span class="tok-str">"/productos"</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">listar_productos</span>(categoria: <span class="tok-fn">str</span> <span class="tok-kw">|</span> <span class="tok-kw">None</span> = <span class="tok-kw">None</span>, precio_max: <span class="tok-fn">float</span> <span class="tok-kw">|</span> <span class="tok-kw">None</span> = <span class="tok-kw">None</span>):
+    resultado <span class="tok-kw">=</span> productos_db
+    <span class="tok-kw">if</span> categoria <span class="tok-kw">is not</span> <span class="tok-kw">None</span>:
+        resultado <span class="tok-kw">=</span> [p <span class="tok-kw">for</span> p <span class="tok-kw">in</span> resultado <span class="tok-kw">if</span> p[<span class="tok-str">"categoria"</span>].lower() <span class="tok-kw">==</span> categoria.lower()]
+    <span class="tok-kw">if</span> precio_max <span class="tok-kw">is not</span> <span class="tok-kw">None</span>:
+        resultado <span class="tok-kw">=</span> [p <span class="tok-kw">for</span> p <span class="tok-kw">in</span> resultado <span class="tok-kw">if</span> p[<span class="tok-str">"precio"</span>] <span class="tok-kw">&lt;=</span> precio_max]
+    <span class="tok-kw">return</span> {<span class="tok-str">"total"</span>: <span class="tok-fn">len</span>(resultado), <span class="tok-str">"productos"</span>: resultado}</code></pre>
+      </div>
+
+      <h3>Línea por línea</h3>
+      <ul>
+        <li>Los dos parámetros <strong>no van entre llaves en la ruta</strong>, así que FastAPI deduce solo que son <strong>query</strong>. Lo de las llaves es <em>path</em>; lo que aparece solo en la función es <em>query</em>.</li>
+        <li><code>resultado = productos_db</code> → arrancamos con todos. Iremos recortando.</li>
+        <li><code>if categoria is not None</code> → solo si llegó categoría. El <em>list comprehension</em> se lee: "de cada <code>p</code>, quédate con los que su categoría coincide". El <code>.lower()</code> en ambos lados trata "Tecnologia" y "tecnologia" como iguales: amable con el usuario.</li>
+        <li>El segundo <code>if</code> filtra sobre <code>resultado</code>, que <strong>ya puede venir filtrado</strong> por categoría. Por eso los filtros se combinan de forma natural.</li>
+      </ul>
+
+      <div class="info">
+        <svg viewBox="0 0 560 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="dos filtros en serie como coladores">
+          <rect x="15" y="68" width="95" height="38" rx="9" fill="#171327" stroke="#2a2440"/>
+          <text x="62" y="86" text-anchor="middle" fill="#d7d2ea" font-family="Inter" font-size="12">3 productos</text>
+          <text x="62" y="100" text-anchor="middle" fill="#766f96" font-family="Inter" font-size="10">todos</text>
+
+          <path d="M110 87 H 165" stroke="#6018F0" stroke-width="2.5" marker-end="url(#a3)"/>
+          <rect x="167" y="58" width="120" height="58" rx="11" fill="rgba(96,24,240,.1)" stroke="#6018F0"/>
+          <text x="227" y="82" text-anchor="middle" fill="#cbb6ff" font-family="Inter" font-size="12" font-weight="700">Filtro 1</text>
+          <text x="227" y="99" text-anchor="middle" fill="#a59ec5" font-family="JetBrains Mono, monospace" font-size="10">categoria</text>
+
+          <path d="M287 87 H 342" stroke="#6018F0" stroke-width="2.5" marker-end="url(#a3)"/>
+          <text x="314" y="80" text-anchor="middle" fill="#a59ec5" font-family="Inter" font-size="10">2 quedan</text>
+          <rect x="344" y="58" width="120" height="58" rx="11" fill="rgba(96,24,240,.1)" stroke="#6018F0"/>
+          <text x="404" y="82" text-anchor="middle" fill="#cbb6ff" font-family="Inter" font-size="12" font-weight="700">Filtro 2</text>
+          <text x="404" y="99" text-anchor="middle" fill="#a59ec5" font-family="JetBrains Mono, monospace" font-size="10">precio_max</text>
+
+          <path d="M464 87 H 510" stroke="#3ddc97" stroke-width="2.5" marker-end="url(#a3b)"/>
+          <rect x="478" y="120" width="70" height="34" rx="9" fill="rgba(61,220,151,.1)" stroke="#3ddc97"/>
+          <text x="513" y="141" text-anchor="middle" fill="#3ddc97" font-family="Inter" font-size="12" font-weight="700">1 final</text>
+          <defs>
+            <marker id="a3" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#6018F0"/></marker>
+            <marker id="a3b" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 z" fill="#3ddc97"/></marker>
+          </defs>
+        </svg>
+        <div class="cap">Dos coladores en fila: lo que sale del primero entra al segundo. Solo lo que pasa por ambos llega al final.</div>
+      </div>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Si alguien manda los DOS filtros a la vez, ¿se aplican ambos, o solo el último gana?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"Solo el último" o "no estoy seguro".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>Se aplican <strong>ambos</strong>. El segundo <code>if</code> no filtra sobre la lista original: filtra sobre <code>resultado</code>, que <strong>ya viene recortado</strong>. Como dos coladores en fila, las condiciones se <strong>acumulan</strong>. Pides tecnología Y precio &lt; 30, y obtienes lo que cumple las dos cosas.</p></div>
+        </div></div>
+      </div>
+
+      <h3>Las 4 combinaciones en Swagger</h3>
+      <div class="codewrap">
+        <span class="lang">json · respuestas</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-com"># 1 · sin filtros → los 3</span>
+{ <span class="tok-str">"total"</span>: <span class="tok-num">3</span>, <span class="tok-str">"productos"</span>: [ Laptop, Mouse, Cuaderno ] }
+
+<span class="tok-com"># 2 · ?categoria=tecnologia → 2 (sin el Cuaderno)</span>
+{ <span class="tok-str">"total"</span>: <span class="tok-num">2</span>, <span class="tok-str">"productos"</span>: [ Laptop, Mouse ] }
+
+<span class="tok-com"># 3 · ?precio_max=30 → 2 (sin la Laptop)</span>
+{ <span class="tok-str">"total"</span>: <span class="tok-num">2</span>, <span class="tok-str">"productos"</span>: [ Mouse, Cuaderno ] }
+
+<span class="tok-com"># 4 · ?categoria=tecnologia&amp;precio_max=30 → solo el Mouse</span>
+{ <span class="tok-str">"total"</span>: <span class="tok-num">1</span>, <span class="tok-str">"productos"</span>: [ Mouse ] }</code></pre>
+      </div>
+      <div class="banner tip">
+        <span class="bico">🔗</span>
+        <p><b>Mira la URL que arma Swagger</b> (campo "Request URL") en la prueba 4: aparece literalmente <code>?categoria=tecnologia&amp;precio_max=30</code>. Ahí está, en vivo: el <code>?</code> que abre y el <code>&amp;</code> que une. La teoría hecha URL real.</p>
+      </div>
+    </section>
+
+    <!-- ===== 5 PUT ===== -->
+    <section class="section" id="s5">
+      <span class="sec-tag">✏️ PUT</span>
+      <h1>Actualizar un producto</h1>
+      <p class="lead">Volvemos al cliente molesto: <em>"súbanme el precio que está mal"</em>. Eso es tomar algo que <strong>ya existe</strong> y cambiarle los datos.</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Verbo</th><th>Hace</th></tr></thead>
+          <tbody>
+            <tr><td><code>GET</code></td><td>Lee (no cambia nada)</td></tr>
+            <tr><td><code>POST</code></td><td>Crea algo nuevo</td></tr>
+            <tr><td><b style="color:var(--acc)">PUT</b></td><td><b>Actualiza algo que ya existe</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card def">
+        <div class="def-label">Definición técnica</div>
+        <p style="margin:0">PUT reemplaza el estado de un recurso existente. Por convención, envía el recurso <strong>completo</strong>: todos sus campos, no solo el que cambia.</p>
+      </div>
+
+      <div class="banner real">
+        <span class="bico">📋</span>
+        <p><b>POST vs PUT:</b> POST es llenar una ficha en blanco para un empleado que acaba de entrar. PUT es tomar la ficha que <b>ya existe</b> y corregirle el cargo o el salario. La identidad se mantiene; cambian los datos.</p>
+      </div>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Para actualizar el producto 5 necesito dos cosas: CUÁL cambiar (el 5) y los datos nuevos. ¿Por dónde viaja cada una: URL o body?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"El número en la URL, los datos en el body".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>¡Exacto! Y lo bonito: <strong>ya conoces las dos piezas</strong>. El "cuál" es un <strong>parámetro de ruta</strong> (lo viste en el GET por id). Los datos nuevos van en el <strong>body</strong> validado por Pydantic (como en el POST). PUT no es nuevo desde cero: es <strong>combinar dos cosas que ya dominas</strong>.</p></div>
+        </div></div>
+      </div>
+
+      <h2>El endpoint PUT</h2>
+      <div class="fileloc">📍 app/main.py — endpoint nuevo, después del GET por id</div>
+      <div class="codewrap">
+        <span class="lang">python</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-dec">@app.put</span>(<span class="tok-str">"/productos/{producto_id}"</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">actualizar_producto</span>(producto_id: <span class="tok-fn">int</span>, datos: ProductoCreate):
+    <span class="tok-kw">for</span> p <span class="tok-kw">in</span> productos_db:
+        <span class="tok-kw">if</span> p[<span class="tok-str">"id"</span>] <span class="tok-kw">==</span> producto_id:
+            p[<span class="tok-str">"nombre"</span>] <span class="tok-kw">=</span> datos.nombre
+            p[<span class="tok-str">"precio"</span>] <span class="tok-kw">=</span> datos.precio
+            p[<span class="tok-str">"stock"</span>] <span class="tok-kw">=</span> datos.stock
+            p[<span class="tok-str">"categoria"</span>] <span class="tok-kw">=</span> datos.categoria
+            <span class="tok-kw">return</span> {<span class="tok-str">"mensaje"</span>: <span class="tok-str">"Producto actualizado"</span>, <span class="tok-str">"producto"</span>: p}
+    <span class="tok-kw">raise</span> HTTPException(status_code=<span class="tok-num">404</span>, detail=<span class="tok-str">"Producto no encontrado"</span>)</code></pre>
+      </div>
+
+      <h3>Línea por línea</h3>
+      <ul>
+        <li><code>@app.put</code> → el verbo de actualizar. La ruta lleva <code>{producto_id}</code>, igual que el GET por id.</li>
+        <li>La función recibe <strong>las dos piezas a la vez</strong>: <code>producto_id</code> (de la ruta) y <code>datos: ProductoCreate</code> (del body). <strong>Reutilizamos el mismo schema</strong>: los campos editables son los mismos que los de crear.</li>
+        <li>Buscamos el producto igual que en el GET por id. Ya es tu viejo conocido.</li>
+        <li>Sobrescribimos campo por campo (<code>p["nombre"] = datos.nombre</code>...). Como <code>p</code> es una referencia al diccionario dentro de la lista, el cambio queda hecho en su sitio: no hay que volver a guardar.</li>
+        <li><strong>El <code>id</code> NO aparece</strong>: no lo tocamos a propósito. La identidad se conserva.</li>
+        <li>Mismo patrón de 404 si no se encuentra. Reusarlo en cada endpoint hace tu API <strong>consistente</strong>.</li>
+      </ul>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Cambiamos nombre, precio, stock y categoría, pero NO el <code>id</code>. ¿Por qué sería grave permitir que una actualización cambiara el id?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"Se confundiría" o "se perdería".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>El <code>id</code> es la <strong>identidad permanente</strong>, como tu cédula. Si actualizar el precio pudiera cambiar el id, perderías todas las referencias: imagina que la venta #200 apuntaba al producto 5 y de pronto pasó a ser el 8. Esa venta quedaría huérfana. La regla profesional: <strong>los datos cambian, la identidad nunca</strong>.</p></div>
+        </div></div>
+      </div>
+
+      <h3>Prueba en Swagger</h3>
+      <div class="codewrap">
+        <span class="lang">json · PUT /productos/2</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-com"># body enviado</span>
+{ <span class="tok-str">"nombre"</span>: <span class="tok-str">"Mouse Gamer"</span>, <span class="tok-str">"precio"</span>: <span class="tok-num">45.0</span>, <span class="tok-str">"stock"</span>: <span class="tok-num">80</span>, <span class="tok-str">"categoria"</span>: <span class="tok-str">"tecnologia"</span> }
+
+<span class="tok-com"># respuesta → conserva el id 2</span>
+{
+  <span class="tok-str">"mensaje"</span>: <span class="tok-str">"Producto actualizado"</span>,
+  <span class="tok-str">"producto"</span>: { <span class="tok-str">"id"</span>: <span class="tok-num">2</span>, <span class="tok-str">"nombre"</span>: <span class="tok-str">"Mouse Gamer"</span>, <span class="tok-str">"precio"</span>: <span class="tok-num">45.0</span>, <span class="tok-str">"stock"</span>: <span class="tok-num">80</span>, <span class="tok-str">"categoria"</span>: <span class="tok-str">"tecnologia"</span> }
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- ===== 6 DELETE ===== -->
+    <section class="section" id="s6">
+      <span class="sec-tag">🗑️ DELETE</span>
+      <h1>Borrar un producto</h1>
+      <p class="lead">Última queja del cliente: <em>"ese producto que ya no venden, quítenlo de la app"</em>. Eso es eliminar un recurso para siempre.</p>
+
+      <div class="card def">
+        <div class="def-label">Definición técnica</div>
+        <p style="margin:0">DELETE elimina un recurso identificado por su URL. <strong>No necesita body</strong>: para borrar basta con saber <strong>cuál</strong> recurso eliminar.</p>
+      </div>
+
+      <div class="banner real">
+        <span class="bico">🗂️</span>
+        <p><b>En la vida real:</b> es sacar definitivamente la ficha de un empleado que ya no trabaja. No la editas (PUT), no la consultas (GET): la <b>retiras</b>.</p>
+      </div>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Para borrar el producto 5, ¿qué necesito que mande el cliente: solo el id, o también todos los datos como en el PUT?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"Solo el id" o "también los datos".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p><strong>Solo el id</strong>. ¿Para qué te diría el cliente el nombre y precio de algo que vamos a destruir? Por eso DELETE, igual que el GET por id, usa solo el <strong>parámetro de ruta</strong> y <strong>no lleva body</strong>. Cada operación pide exactamente lo que necesita, ni más ni menos.</p></div>
+        </div></div>
+      </div>
+
+      <h2>El endpoint DELETE</h2>
+      <div class="fileloc">📍 app/main.py — último endpoint nuevo, después del PUT</div>
+      <div class="codewrap">
+        <span class="lang">python</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-dec">@app.delete</span>(<span class="tok-str">"/productos/{producto_id}"</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">eliminar_producto</span>(producto_id: <span class="tok-fn">int</span>):
+    <span class="tok-kw">for</span> p <span class="tok-kw">in</span> productos_db:
+        <span class="tok-kw">if</span> p[<span class="tok-str">"id"</span>] <span class="tok-kw">==</span> producto_id:
+            productos_db.remove(p)
+            <span class="tok-kw">return</span> {<span class="tok-str">"mensaje"</span>: <span class="tok-fn">f</span><span class="tok-str">"Producto {producto_id} eliminado correctamente"</span>}
+    <span class="tok-kw">raise</span> HTTPException(status_code=<span class="tok-num">404</span>, detail=<span class="tok-str">"Producto no encontrado"</span>)</code></pre>
+      </div>
+
+      <h3>Línea por línea</h3>
+      <ul>
+        <li><code>@app.delete</code> y la función recibe <strong>solo</strong> el <code>producto_id</code>. Sin body: borrar no necesita datos. Es la firma más simple del día.</li>
+        <li>Buscamos por id con el mismo patrón recorrer-y-comparar que ya usamos tres veces. A estas alturas se siente automático.</li>
+        <li><code>productos_db.remove(p)</code> → la operación <strong>inversa</strong> a <code>.append()</code>: <code>append</code> mete al final, <code>remove</code> quita el elemento indicado. Ese producto deja de existir en memoria.</li>
+        <li>La <code>f</code> antes de las comillas hace un <em>f-string</em>: inserta el valor de <code>{producto_id}</code> dentro del texto. Si borras el 3, el mensaje dice "Producto 3 eliminado...". Sin la <code>f</code>, saldrían las llaves literales.</li>
+        <li>Mismo patrón de 404. Cuarto endpoint que termina así, y esa repetición es <strong>buena</strong>: tu API es predecible.</li>
+      </ul>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Borras el producto 3 y responde "eliminado". Acto seguido vuelves a hacer <code>DELETE /productos/3</code>. ¿Qué pasa en el segundo intento?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"Lo borra otra vez" o "da error".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>Responde <strong>404</strong>. La primera vez lo eliminó; en la segunda, el <code>for</code> recorre la lista y <strong>ya no hay</strong> ningún id 3, así que cae en el <code>raise</code>. Es correcto y deseable: la API dice la verdad sobre su estado <strong>actual</strong>. No puedes borrar dos veces lo mismo.</p></div>
+        </div></div>
+      </div>
+
+      <h3>Prueba en Swagger</h3>
+      <div class="codewrap">
+        <span class="lang">json · respuestas</span><button class="copy">⧉ Copiar</button>
+<pre><code><span class="tok-com"># DELETE /productos/3 → 200 (el f-string mete el 3)</span>
+{ <span class="tok-str">"mensaje"</span>: <span class="tok-str">"Producto 3 eliminado correctamente"</span> }
+
+<span class="tok-com"># DELETE /productos/3 otra vez → 404</span>
+{ <span class="tok-str">"detail"</span>: <span class="tok-str">"Producto no encontrado"</span> }</code></pre>
+      </div>
+    </section>
+
+    <!-- ===== 7 CRUD ===== -->
+    <section class="section" id="s7">
+      <span class="sec-tag">🧩 Síntesis</span>
+      <h1>El CRUD completo</h1>
+      <p class="lead">Tu API pasó de "crear y listar" a manejar el <strong>ciclo de vida entero</strong> de un dato. Pongámosle nombre.</p>
+
+      <div class="card def">
+        <div class="def-label">Definición técnica</div>
+        <p style="margin:0"><strong>CRUD</strong> reúne las cuatro operaciones básicas sobre cualquier dato persistente. Casi todo sistema de información —un banco, una red social, una tienda— se construye, en su base, sobre operaciones CRUD.</p>
+      </div>
+
+      <div class="info">
+        <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ciclo CRUD">
+          <circle cx="260" cy="100" r="62" fill="none" stroke="#2a2440" stroke-width="2" stroke-dasharray="4 6"/>
+          <!-- C -->
+          <g>
+            <rect x="210" y="6" width="100" height="44" rx="11" fill="rgba(96,24,240,.12)" stroke="#6018F0"/>
+            <text x="260" y="28" text-anchor="middle" fill="#cbb6ff" font-family="Inter" font-size="13" font-weight="700">C · Create</text>
+            <text x="260" y="43" text-anchor="middle" fill="#a59ec5" font-family="JetBrains Mono, monospace" font-size="11">POST</text>
+          </g>
+          <!-- R -->
+          <g>
+            <rect x="396" y="78" width="110" height="44" rx="11" fill="rgba(61,220,151,.1)" stroke="#3ddc97"/>
+            <text x="451" y="100" text-anchor="middle" fill="#3ddc97" font-family="Inter" font-size="13" font-weight="700">R · Read</text>
+            <text x="451" y="115" text-anchor="middle" fill="#7fd1ab" font-family="JetBrains Mono, monospace" font-size="11">GET</text>
+          </g>
+          <!-- U -->
+          <g>
+            <rect x="210" y="150" width="100" height="44" rx="11" fill="rgba(255,180,84,.1)" stroke="#ffb454"/>
+            <text x="260" y="172" text-anchor="middle" fill="#ffb454" font-family="Inter" font-size="13" font-weight="700">U · Update</text>
+            <text x="260" y="187" text-anchor="middle" fill="#d6b07f" font-family="JetBrains Mono, monospace" font-size="11">PUT</text>
+          </g>
+          <!-- D -->
+          <g>
+            <rect x="14" y="78" width="110" height="44" rx="11" fill="rgba(255,107,129,.1)" stroke="#ff6b81"/>
+            <text x="69" y="100" text-anchor="middle" fill="#ff6b81" font-family="Inter" font-size="13" font-weight="700">D · Delete</text>
+            <text x="69" y="115" text-anchor="middle" fill="#e0879a" font-family="JetBrains Mono, monospace" font-size="11">DELETE</text>
+          </g>
+        </svg>
+        <div class="cap">Cada letra = una operación = un verbo HTTP.</div>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Letra</th><th>Operación</th><th>Verbo</th><th>Tu endpoint</th></tr></thead>
+          <tbody>
+            <tr><td><b>C</b></td><td>Create</td><td><code>POST</code></td><td><code>POST /productos</code></td></tr>
+            <tr><td><b>R</b></td><td>Read</td><td><code>GET</code></td><td><code>GET /productos</code> y <code>GET /productos/{id}</code></td></tr>
+            <tr><td><b>U</b></td><td>Update</td><td><code>PUT</code></td><td><code>PUT /productos/{id}</code></td></tr>
+            <tr><td><b>D</b></td><td>Delete</td><td><code>DELETE</code></td><td><code>DELETE /productos/{id}</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="banner real">
+        <span class="bico">📱</span>
+        <p><b>Es lo que hace cualquier app que usas:</b> publicar una foto = <b>Create</b>, verla = <b>Read</b>, editar el texto = <b>Update</b>, borrarla = <b>Delete</b>. Construiste a pequeña escala el motor que mueve las apps de todos los días.</p>
+      </div>
+
+      <div class="soc">
+        <div class="q"><span class="qico">?</span><span>Tres endpoints comparten casi la misma URL <code>/productos/{id}</code>: GET, PUT y DELETE. ¿Cómo sabe FastAPI cuál ejecutar?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block exp"><div class="lbl">💭 Lo que solemos pensar</div><p>"Por el verbo" o "por el método".</p></div>
+          <div class="ans-block cor"><div class="lbl">✓ La respuesta</div><p>Por el <strong>método HTTP</strong>, como vimos en REST. La misma dirección <code>/productos/5</code> dispara acciones distintas según el verbo: GET la lee, PUT la actualiza, DELETE la borra. El recurso es el mismo; la acción la define el verbo. Pocas rutas, muchas acciones, todo predecible: eso hace que una API sea profesional.</p></div>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- ===== 8 RECAP ===== -->
+    <section class="section" id="s8">
+      <span class="sec-tag">✅ Cierre</span>
+      <h1>Recapitulación y lo que viene</h1>
+      <p class="lead">Las tres quejas del cliente molesto quedaron resueltas. No construiste endpoints sueltos: construiste la solución completa a un problema de negocio real.</p>
+
+      <h2>Lo que le agregamos hoy a la API</h2>
+      <div class="grid-2">
+        <div class="mini"><div class="h"><span class="dot" style="background:var(--acc)"></span>Identidad (ID)</div><p>Cada producto con identificador único vía contador. Sin esto, nada más era posible.</p></div>
+        <div class="mini"><div class="h"><span class="dot" style="background:var(--ok)"></span>Parámetros de ruta</div><p><code>GET /productos/{id}</code>: pedir UN producto. <em>Resolvió: traer el que el cliente compró.</em></p></div>
+        <div class="mini"><div class="h"><span class="dot" style="background:var(--warn)"></span>Parámetros de query</div><p>Filtros combinables por categoría y precio.</p></div>
+        <div class="mini"><div class="h"><span class="dot" style="background:var(--acc)"></span>PUT</div><p>Actualizar conservando el id. <em>Resolvió: corregir el precio.</em></p></div>
+        <div class="mini"><div class="h"><span class="dot" style="background:var(--danger)"></span>DELETE</div><p>Borrar un producto. <em>Resolvió: quitar el descontinuado.</em></p></div>
+        <div class="mini"><div class="h"><span class="dot" style="background:var(--ok)"></span>HTTPException 404</div><p>Responder con la verdad y el código correcto cuando algo no existe.</p></div>
+      </div>
+
+      <div class="banner tip">
+        <span class="bico">➡️</span>
+        <p><b>Próxima clase — Arquitectura por capas:</b> tu <code>main.py</code> tiene schemas, "base de datos" y seis endpoints amontonados en un archivo. Funciona... pero imagínalo con 50 endpoints. En la Clase 3 separamos en <b>routers</b> y <b>services</b>, llenando por fin esas carpetas que creamos vacías el primer día. ¡Por eso las dejamos preparadas!</p>
+      </div>
+
+      <div class="banner real">
+        <span class="bico">🗄️</span>
+        <p><b>Y más adelante (Módulo 2):</b> estos datos por fin <b>persistirán de verdad</b> en PostgreSQL, sobreviviendo a los reinicios que hoy nos borran todo.</p>
+      </div>
+
+      <div class="soc">
+        <div class="q"><span class="qico">★</span><span>Pregunta de cierre: ¿qué le agregamos hoy a la API que la clase pasada no tenía, pensando en todo lo que el cliente molesto ahora sí podemos resolver?</span><span class="chev">▾</span></div>
+        <div class="ans"><div class="ans-in">
+          <div class="ans-block cor"><div class="lbl">✓ Resumen</div><p>IDs (identidad) · GET por ruta (pedir uno) · filtros por query · PUT (actualizar) · DELETE (borrar) · 404 honesto · y todo junto = <strong>CRUD completo</strong>, el ciclo de vida entero de un dato, cada operación con su verbo HTTP.</p></div>
+        </div></div>
+      </div>
+    </section>
+
+    <div class="secnav">
+      <button id="prevBtn">← Anterior</button>
+      <button id="nextBtn">Siguiente →</button>
+    </div>
+  </div>
+</main>
+
+<footer class="foot">
+  © 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · <a href="https://linkedin.com/in/ana-alvarado-instructora-full-stack" target="_blank" rel="noopener">linkedin.com/in/ana-alvarado-instructora-full-stack</a>
+</footer>
+
+<!-- presentation bar -->
+<div id="presbar">
+  <span class="pinfo" id="presInfo"></span>
+  <div class="pdots" id="presDots"></div>
+  <button class="pexit" id="presExit">✕ Salir (Esc)</button>
+</div>
+
+<script>
+const sections = [
+  {id:'s0', ico:'🎯', title:'Punto de partida'},
+  {id:'s1', ico:'🔁', title:'Repaso + identidad'},
+  {id:'s2', ico:'🆔', title:'Darle ID'},
+  {id:'s3', ico:'📍', title:'Parámetros de ruta'},
+  {id:'s4', ico:'🔎', title:'Parámetros de query'},
+  {id:'s5', ico:'✏️', title:'PUT · Actualizar'},
+  {id:'s6', ico:'🗑️', title:'DELETE · Borrar'},
+  {id:'s7', ico:'🧩', title:'CRUD completo'},
+  {id:'s8', ico:'✅', title:'Recap + lo que viene'},
+];
+let current = 0;
+const seen = new Set();
+
+// build nav
+const nav = document.getElementById('nav');
+sections.forEach((s,i)=>{
+  const a = document.createElement('a');
+  a.dataset.i = i;
+  a.innerHTML = `<span class="ico">${s.ico}</span><span>${s.title}</span><span class="num">${String(i).padStart(2,'0')}</span>`;
+  a.addEventListener('click',()=>go(i));
+  nav.appendChild(a);
+});
+const navLinks = [...nav.querySelectorAll('a')];
+
+// build presentation dots
+const presDots = document.getElementById('presDots');
+sections.forEach((s,i)=>{
+  const d = document.createElement('div');
+  d.className='pdot'; d.title=s.title;
+  d.addEventListener('click',()=>go(i));
+  presDots.appendChild(d);
+});
+const dots = [...presDots.querySelectorAll('.pdot')];
+
+function go(i){
+  if(i<0||i>=sections.length) return;
+  document.getElementById(sections[current].id).classList.remove('active');
+  current = i;
+  const sec = document.getElementById(sections[current].id);
+  sec.classList.add('active');
+  seen.add(i);
+  navLinks.forEach((a,idx)=>{
+    a.classList.toggle('active', idx===current);
+    if(seen.has(idx)) a.classList.add('seen');
+  });
+  dots.forEach((d,idx)=>d.classList.toggle('on', idx===current));
+  // progress = sections seen
+  document.getElementById('progress').style.width = (seen.size/sections.length*100)+'%';
+  document.getElementById('presInfo').textContent = `${String(current).padStart(2,'0')} · ${sections[current].title}  (${current+1}/${sections.length})`;
+  document.getElementById('prevBtn').disabled = current===0;
+  document.getElementById('nextBtn').disabled = current===sections.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(document.body.classList.contains('nav-open')) toggleNav(false);
+}
+
+document.getElementById('prevBtn').addEventListener('click',()=>go(current-1));
+document.getElementById('nextBtn').addEventListener('click',()=>go(current+1));
+
+// socratic toggles
+document.querySelectorAll('.soc .q').forEach(q=>{
+  q.addEventListener('click',()=>q.parentElement.classList.toggle('open'));
+});
+
+// copy buttons
+document.querySelectorAll('.copy').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const code = btn.parentElement.querySelector('pre code');
+    const text = code.innerText;
+    navigator.clipboard.writeText(text).then(()=>{
+      const old = btn.innerHTML;
+      btn.innerHTML='✓ Copiado';
+      setTimeout(()=>btn.innerHTML=old,1400);
+    });
+  });
+});
+
+// presentation mode
+function togglePresent(on){
+  document.body.classList.toggle('present', on);
+  if(on){
+    if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{});
+  }else{
+    if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+  }
+}
+document.getElementById('presToggle').addEventListener('click',()=>togglePresent(!document.body.classList.contains('present')));
+document.getElementById('presExit').addEventListener('click',()=>togglePresent(false));
+
+// keyboard
+document.addEventListener('keydown',e=>{
+  const tag = (e.target.tagName||'').toLowerCase();
+  if(tag==='input'||tag==='textarea') return;
+  if(e.key==='p'||e.key==='P'){ e.preventDefault(); togglePresent(!document.body.classList.contains('present')); }
+  else if(e.key==='Escape'){ if(document.body.classList.contains('present')) togglePresent(false); }
+  else if(e.key==='ArrowRight'||e.key==='PageDown'){ e.preventDefault(); go(current+1); }
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); go(current-1); }
+});
+
+// exit present if user leaves fullscreen via browser
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement && document.body.classList.contains('present')){
+    document.body.classList.remove('present');
+  }
+});
+
+// mobile nav
+function toggleNav(on){ document.body.classList.toggle('nav-open', on); }
+document.getElementById('menuToggle').addEventListener('click',()=>toggleNav(!document.body.classList.contains('nav-open')));
+document.getElementById('overlay').addEventListener('click',()=>toggleNav(false));
+
+// init
+go(0);
+</script>
+</body>
+</html>

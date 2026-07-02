@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 1 · Clase 1 — Introducción a FastAPI · Dev Senior Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --acc:#6018F0;        /* vibrante */
+  --acc-2:#5418CC;      /* principal */
+  --acc-deep:#3C1884;   /* oscuro */
+  --bg:#0c0a14;
+  --bg-2:#13101f;
+  --panel:#171327;
+  --panel-2:#1d1830;
+  --line:#2a2440;
+  --txt:#e9e6f5;
+  --txt-dim:#a59ec5;
+  --txt-faint:#766f96;
+  --ok:#3ddc97;
+  --warn:#ffb454;
+  --code-bg:#0f0d1a;
+  --sidebar-w:268px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--acc);color:#fff}
+
+/* ---------- progress top bar ---------- */
+#progress{
+  position:fixed;top:0;left:0;height:3px;width:0;
+  background:linear-gradient(90deg,var(--acc-2),var(--acc),#9a6bff);
+  z-index:120;transition:width .25s ease;
+}
+
+/* ---------- sidebar ---------- */
+#sidebar{
+  position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;
+  background:linear-gradient(180deg,var(--bg-2),#0d0a17);
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;z-index:100;
+  transition:transform .3s ease;
+}
+.brand{
+  padding:22px 22px 16px;border-bottom:1px solid var(--line);
+}
+.brand .logo{
+  font-weight:800;font-size:1.05rem;letter-spacing:-.02em;display:flex;align-items:center;gap:9px;
+}
+.brand .logo .mark{
+  width:26px;height:26px;border-radius:7px;flex:0 0 auto;
+  background:linear-gradient(135deg,var(--acc),var(--acc-deep));
+  display:grid;place-items:center;font-size:.85rem;color:#fff;
+  box-shadow:0 0 14px rgba(96,24,240,.55);
+}
+.brand .sub{font-size:.72rem;color:var(--txt-faint);margin-top:7px;letter-spacing:.04em;text-transform:uppercase}
+.nav{flex:1;overflow-y:auto;padding:12px 12px 20px}
+.nav::-webkit-scrollbar{width:7px}
+.nav::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+.nav a{
+  display:flex;align-items:center;gap:11px;
+  padding:9px 12px;border-radius:9px;margin-bottom:2px;
+  color:var(--txt-dim);text-decoration:none;font-size:.86rem;font-weight:500;
+  border:1px solid transparent;transition:.16s;
+}
+.nav a .ic{width:20px;text-align:center;font-size:.95rem;flex:0 0 auto}
+.nav a .lbl{flex:1;line-height:1.25}
+.nav a:hover{background:var(--panel);color:var(--txt)}
+.nav a.active{
+  background:linear-gradient(135deg,rgba(96,24,240,.22),rgba(60,24,132,.14));
+  color:#fff;border-color:rgba(96,24,240,.4);
+}
+.nav a.active .ic{color:#b69bff}
+.nav .secnum{
+  font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--txt-faint);
+  width:18px;flex:0 0 auto;text-align:right;
+}
+.side-foot{padding:14px 18px;border-top:1px solid var(--line);font-size:.7rem;color:var(--txt-faint)}
+.side-foot kbd{
+  font-family:'JetBrains Mono',monospace;background:var(--panel-2);
+  border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--txt-dim);font-size:.7rem;
+}
+
+/* ---------- mobile toggle ---------- */
+#menuBtn{
+  position:fixed;top:14px;left:14px;z-index:110;display:none;
+  background:var(--panel);border:1px solid var(--line);color:var(--txt);
+  width:42px;height:42px;border-radius:10px;font-size:1.2rem;cursor:pointer;
+}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99;display:none}
+
+/* ---------- main ---------- */
+#main{margin-left:var(--sidebar-w);max-width:none}
+.wrap{max-width:880px;margin:0 auto;padding:0 28px}
+
+/* hero */
+.hero{
+  padding:80px 0 56px;border-bottom:1px solid var(--line);position:relative;overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;top:-120px;right:-80px;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle,rgba(96,24,240,.28),transparent 65%);pointer-events:none;
+}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;
+  color:#b69bff;margin-bottom:18px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:"";width:28px;height:1px;background:#b69bff;display:inline-block}
+.hero h1{
+  font-size:clamp(2rem,5vw,3.1rem);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-bottom:18px;
+}
+.hero h1 .grad{
+  background:linear-gradient(120deg,#a983ff,var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p.lead{font-size:1.06rem;color:var(--txt-dim);max-width:620px}
+.meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.chip{
+  font-size:.78rem;background:var(--panel);border:1px solid var(--line);
+  padding:7px 13px;border-radius:20px;color:var(--txt-dim);display:flex;align-items:center;gap:7px;
+}
+.chip b{color:var(--txt);font-weight:600}
+
+/* sections */
+section.topic{padding:62px 0;border-bottom:1px solid var(--line)}
+.sec-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:8px}
+.sec-head .num{
+  font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--txt-faint);
+  border:1px solid var(--line);border-radius:8px;padding:5px 9px;flex:0 0 auto;margin-top:6px;
+}
+.sec-head h2{font-size:1.7rem;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.sec-head .emoji{font-size:1.5rem}
+.sec-sub{color:var(--txt-dim);margin:6px 0 26px;font-size:1rem}
+
+h3{font-size:1.12rem;font-weight:650;margin:30px 0 12px;letter-spacing:-.01em;color:#f3f1fb}
+p{margin:12px 0;color:var(--txt-dim)}
+p strong,li strong{color:var(--txt);font-weight:600}
+ul,ol{margin:12px 0 12px 4px;padding-left:22px;color:var(--txt-dim)}
+li{margin:6px 0}
+a.inline{color:#b69bff;text-decoration:none;border-bottom:1px solid rgba(182,155,255,.3)}
+a.inline:hover{border-color:#b69bff}
+
+/* cards */
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:20px 0;
+}
+.card.tech{border-left:3px solid var(--acc)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.def-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+.def-card .tag{
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;
+  padding:3px 9px;border-radius:6px;display:inline-block;margin-bottom:10px;
+}
+.tag.tec{background:rgba(96,24,240,.18);color:#b69bff;border:1px solid rgba(96,24,240,.35)}
+.tag.vida{background:rgba(61,220,151,.14);color:var(--ok);border:1px solid rgba(61,220,151,.3)}
+.def-card h4{font-size:.98rem;margin-bottom:4px;color:#f3f1fb}
+
+/* tip / honest banners */
+.banner{
+  border-radius:12px;padding:15px 18px 15px 16px;margin:20px 0;display:flex;gap:13px;font-size:.93rem;
+  border:1px solid var(--line);background:var(--panel-2);
+}
+.banner .bic{font-size:1.15rem;flex:0 0 auto;margin-top:1px}
+.banner.tip{border-color:rgba(96,24,240,.4);background:linear-gradient(120deg,rgba(96,24,240,.13),rgba(60,24,132,.07))}
+.banner.tip .bic{color:#b69bff}
+.banner.honest{border-color:rgba(255,180,84,.35);background:rgba(255,180,84,.07)}
+.banner.honest .bic{color:var(--warn)}
+.banner b{color:var(--txt)}
+.banner code{font-family:'JetBrains Mono',monospace;background:var(--code-bg);padding:1px 6px;border-radius:5px;color:#d7caff;font-size:.86em}
+
+/* code blocks */
+.code{position:relative;margin:18px 0;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--code-bg)}
+.code .bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;background:#161226;border-bottom:1px solid var(--line);
+}
+.code .bar .fname{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--txt-faint);display:flex;align-items:center;gap:8px}
+.code .bar .dot{width:9px;height:9px;border-radius:50%;background:#3a3356}
+.code .copy{
+  background:var(--panel-2);border:1px solid var(--line);color:var(--txt-dim);
+  font-size:.72rem;padding:4px 11px;border-radius:7px;cursor:pointer;font-family:'Inter';transition:.15s;
+}
+.code .copy:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
+.code .copy.done{background:var(--ok);color:#06281b;border-color:var(--ok)}
+pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.83rem;line-height:1.6}
+pre::-webkit-scrollbar{height:8px}
+pre::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+code.tok{font-family:'JetBrains Mono',monospace}
+.k{color:#c98bff}    /* keyword */
+.s{color:#8fe3a8}    /* string */
+.c{color:#5d5780;font-style:italic} /* comment */
+.f{color:#7cc4ff}    /* func/name */
+.n{color:#ffb454}    /* number */
+.d{color:#ff8bbd}    /* decorator */
+.p2{color:#9a93bd}   /* punctuation dim */
+
+/* socratic */
+.socratic{
+  border:1px solid rgba(96,24,240,.4);border-radius:14px;margin:24px 0;overflow:hidden;
+  background:linear-gradient(160deg,rgba(96,24,240,.08),rgba(12,10,20,0));
+}
+.socratic .q{
+  padding:17px 20px;display:flex;gap:13px;align-items:flex-start;
+}
+.socratic .q .qic{
+  flex:0 0 auto;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--acc),var(--acc-deep));color:#fff;font-weight:700;font-size:.9rem;
+  box-shadow:0 0 12px rgba(96,24,240,.5);
+}
+.socratic .q .qtxt{font-style:italic;color:#efe9ff;font-size:1rem;font-weight:500}
+.socratic .answers{border-top:1px solid rgba(96,24,240,.25)}
+.reveal{border-bottom:1px solid var(--line)}
+.reveal:last-child{border-bottom:none}
+.reveal summary{
+  list-style:none;cursor:pointer;padding:13px 20px;display:flex;align-items:center;gap:11px;
+  font-size:.88rem;font-weight:600;color:var(--txt-dim);user-select:none;transition:.15s;
+}
+.reveal summary::-webkit-details-marker{display:none}
+.reveal summary:hover{background:rgba(96,24,240,.06);color:var(--txt)}
+.reveal summary .chev{margin-left:auto;transition:.2s;color:var(--txt-faint)}
+.reveal[open] summary .chev{transform:rotate(90deg)}
+.reveal .body{padding:0 20px 16px 54px;font-size:.93rem;color:var(--txt-dim)}
+.reveal .body code{font-family:'JetBrains Mono',monospace;background:var(--code-bg);padding:1px 6px;border-radius:5px;color:#d7caff;font-size:.88em}
+.dot-esp{width:9px;height:9px;border-radius:50%;background:var(--warn);flex:0 0 auto}
+.dot-cor{width:9px;height:9px;border-radius:50%;background:var(--ok);flex:0 0 auto}
+
+/* svg infographic frame */
+.figure{margin:26px 0;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:22px;overflow:hidden}
+.figure .cap{font-size:.78rem;color:var(--txt-faint);text-align:center;margin-top:14px;font-family:'JetBrains Mono',monospace}
+.figure svg{display:block;width:100%;height:auto}
+
+/* http verb table */
+.verbs{display:grid;gap:10px;margin:18px 0}
+.verb{display:grid;grid-template-columns:90px 1fr;gap:14px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:12px 16px}
+.verb .vtag{font-family:'JetBrains Mono',monospace;font-weight:700;text-align:center;padding:6px 0;border-radius:8px;font-size:.85rem}
+.v-get{background:rgba(61,220,151,.16);color:var(--ok)}
+.v-post{background:rgba(96,24,240,.2);color:#b69bff}
+.v-put{background:rgba(255,180,84,.16);color:var(--warn)}
+.v-del{background:rgba(255,107,129,.16);color:#ff6b81}
+.verb .vd{font-size:.9rem}
+.verb .vd b{color:var(--txt)}
+.verb .vd span{color:var(--txt-faint);font-size:.84rem}
+
+/* footer */
+footer{padding:40px 0 70px;text-align:center;color:var(--txt-faint);font-size:.8rem}
+footer .ln{color:#b69bff;text-decoration:none}
+
+/* recap list */
+.recap{display:grid;gap:10px;margin:18px 0}
+.recap .item{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 16px}
+.recap .item .ck{color:var(--ok);font-weight:700;flex:0 0 auto}
+.recap .item b{color:var(--txt)}
+
+/* ---------- PRESENTATION MODE ---------- */
+body.present #sidebar,body.present #menuBtn,body.present #progress{display:none}
+body.present #main{margin-left:0}
+body.present section.topic,body.present .hero{display:none;border:none}
+body.present section.topic.slide-on,body.present .hero.slide-on{
+  display:block;min-height:100vh;
+  padding:6vh 0;
+  animation:slidein .4s ease;
+}
+@keyframes slidein{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+body.present .wrap{max-width:1000px;display:flex;flex-direction:column;justify-content:center;min-height:88vh}
+body.present .sec-head h2{font-size:2.4rem}
+body.present .hero h1{font-size:clamp(2.4rem,6vw,4rem)}
+body.present p,body.present li{font-size:1.05rem}
+#presBar{
+  display:none;position:fixed;bottom:0;left:0;right:0;height:54px;z-index:130;
+  background:rgba(15,13,26,.92);backdrop-filter:blur(8px);border-top:1px solid var(--line);
+  align-items:center;justify-content:center;gap:22px;
+}
+body.present #presBar{display:flex}
+#presBar .pp{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--txt-dim)}
+#presBar button{
+  background:var(--panel-2);border:1px solid var(--line);color:var(--txt);
+  width:38px;height:34px;border-radius:8px;cursor:pointer;font-size:1rem;
+}
+#presBar button:hover{background:var(--acc);border-color:var(--acc);color:#fff}
+#presBar .pdot{width:7px;height:7px;border-radius:50%;background:var(--line)}
+#presBar .pdot.on{background:var(--acc);box-shadow:0 0 8px var(--acc)}
+.pres-hint{
+  position:fixed;bottom:16px;right:18px;z-index:90;font-size:.74rem;color:var(--txt-faint);
+  background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:7px 14px;
+  display:flex;align-items:center;gap:8px;
+}
+.pres-hint kbd{font-family:'JetBrains Mono',monospace;background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:1px 7px;color:var(--txt-dim)}
+
+@media(max-width:920px){
+  :root{--sidebar-w:0px}
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #menuBtn{display:block}
+  #sidebar.open ~ #overlay{display:block}
+  #main{margin-left:0}
+  .wrap{padding:0 18px}
+  .hero{padding:78px 0 46px}
+  .grid2{grid-template-columns:1fr}
+  .pres-hint{display:none}
+}
+@media print{#sidebar,#menuBtn,#progress,.pres-hint{display:none}#main{margin:0}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<button id="menuBtn" aria-label="Abrir menú">☰</button>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="brand">
+    <div class="logo"><span class="mark">d</span> Dev Senior Code</div>
+    <div class="sub">Python Backend · M1 · Clase 1</div>
+  </div>
+  <nav class="nav" id="nav"></nav>
+  <div class="side-foot">
+    Presiona <kbd>P</kbd> para modo presentación · <kbd>←</kbd> <kbd>→</kbd> para navegar
+  </div>
+</aside>
+<div id="overlay"></div>
+
+<!-- MAIN -->
+<main id="main">
+
+<!-- HERO -->
+<header class="hero" id="sec-inicio" data-nav="Inicio" data-emoji="🚀">
+  <div class="wrap">
+    <div class="eyebrow">Módulo 1 · Clase 1</div>
+    <h1>Introducción a <span class="grad">FastAPI</span><br>y estructura profesional de proyectos</h1>
+    <p class="lead">Construye tu primera API backend desde cero: entiende cómo se comunican las aplicaciones, levanta un servidor real y crea endpoints que reciben, validan y guardan datos.</p>
+    <div class="meta-row">
+      <span class="chip">⏱️ <b>3 horas</b></span>
+      <span class="chip">📈 Nivel <b>Intermedio</b></span>
+      <span class="chip">🛠️ <b>FastAPI · Uvicorn · VS Code</b></span>
+      <span class="chip">🐍 <b>Python 3.10+</b></span>
+    </div>
+  </div>
+</header>
+
+<!-- 1 · API -->
+<section class="topic" id="sec-api" data-nav="¿Qué es una API?" data-emoji="🔌">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">01</span>
+      <span class="emoji">🔌</span>
+      <h2>Conceptos fundamentales: la API</h2>
+    </div>
+    <p class="sec-sub">El "intermediario" que permite que una app móvil, una web y otros dispositivos hablen con un mismo servidor.</p>
+
+    <div class="banner tip">
+      <span class="bic">💼</span>
+      <div><b>Pregunta de negocio para abrir.</b> Trabajas en una empresa de tecnología y deben construir una aplicación accesible desde una app móvil, un navegador web y otros dispositivos. ¿Cómo obtiene la app móvil los datos del servidor? La respuesta es: a través de una <b>API</b>. Por eso existe FastAPI.</div>
+    </div>
+
+    <h3>¿Qué es una API?</h3>
+    <p><strong>API</strong> significa <em>Application Programming Interface</em> (Interfaz de Programación de Aplicaciones). Es un <strong>intermediario</strong>: recibe peticiones, las procesa y devuelve respuestas.</p>
+
+    <div class="grid2">
+      <div class="def-card">
+        <span class="tag vida">Ejemplo · vida real</span>
+        <h4>Tienda física</h4>
+        <p>Entras → hablas con el vendedor → el vendedor busca el producto → te lo devuelve. El vendedor es el intermediario.</p>
+      </div>
+      <div class="def-card">
+        <span class="tag tec">Equivalente · técnico</span>
+        <h4>Tienda online (con API)</h4>
+        <p>La app envía una solicitud → la API busca en la base de datos → la API devuelve una respuesta en JSON.</p>
+      </div>
+    </div>
+
+    <div class="figure">
+      <svg viewBox="0 0 760 230" role="img" aria-label="Diagrama: el cliente envía una petición a la API, que consulta la base de datos y devuelve JSON">
+        <defs>
+          <linearGradient id="gApi" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#6018F0"/><stop offset="1" stop-color="#3C1884"/>
+          </linearGradient>
+          <marker id="arr" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L7,3 L0,6 Z" fill="#b69bff"/>
+          </marker>
+        </defs>
+        <!-- client -->
+        <rect x="20" y="80" width="150" height="70" rx="12" fill="#171327" stroke="#2a2440"/>
+        <text x="95" y="110" text-anchor="middle" fill="#e9e6f5" font-family="Inter" font-size="15" font-weight="700">📱 Cliente</text>
+        <text x="95" y="130" text-anchor="middle" fill="#a59ec5" font-family="Inter" font-size="11">App / Web</text>
+        <!-- api -->
+        <rect x="305" y="70" width="150" height="90" rx="12" fill="url(#gApi)" stroke="#6018F0"/>
+        <text x="380" y="105" text-anchor="middle" fill="#fff" font-family="Inter" font-size="16" font-weight="800">⚙️ API</text>
+        <text x="380" y="128" text-anchor="middle" fill="#e7ddff" font-family="Inter" font-size="10.5">recibe · procesa · responde</text>
+        <!-- db -->
+        <rect x="590" y="80" width="150" height="70" rx="12" fill="#171327" stroke="#2a2440"/>
+        <text x="665" y="110" text-anchor="middle" fill="#e9e6f5" font-family="Inter" font-size="15" font-weight="700">🗄️ Base de datos</text>
+        <text x="665" y="130" text-anchor="middle" fill="#a59ec5" font-family="Inter" font-size="11">almacenamiento</text>
+        <!-- arrows -->
+        <line x1="172" y1="105" x2="300" y2="105" stroke="#b69bff" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="236" y="96" text-anchor="middle" fill="#8fe3a8" font-family="JetBrains Mono" font-size="10.5">petición</text>
+        <line x1="457" y1="95" x2="585" y2="95" stroke="#b69bff" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="585" y1="135" x2="457" y2="135" stroke="#766f96" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="300" y1="138" x2="172" y2="138" stroke="#766f96" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="236" y="158" text-anchor="middle" fill="#ffb454" font-family="JetBrains Mono" font-size="10.5">respuesta JSON</text>
+      </svg>
+      <div class="cap">Una petición entra, la API la procesa contra los datos, y una respuesta JSON regresa.</div>
+    </div>
+
+    <div class="socratic">
+      <div class="q">
+        <span class="qic">?</span>
+        <span class="qtxt">Si trabajas en equipo y escribes una API con 100 endpoints, ¿cómo hace tu compañero para entender qué hace cada endpoint SIN leerte el código línea por línea?</span>
+      </div>
+      <div class="answers">
+        <details class="reveal"><summary><span class="dot-esp"></span> Respuesta esperada <span class="chev">›</span></summary>
+          <div class="body">"Usando nombres claros y algún patrón."</div></details>
+        <details class="reveal"><summary><span class="dot-cor"></span> Respuesta correcta <span class="chev">›</span></summary>
+          <div class="body">Exacto. REST proporciona ese patrón. Si ves <code>DELETE /usuarios/5</code>, automáticamente entiendes: "borra el usuario con ID 5". No hay sorpresas ni nombres raros. Es previsible.</div></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · HTTP, REST, JSON -->
+<section class="topic" id="sec-http" data-nav="HTTP · REST · JSON" data-emoji="🌐">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">02</span>
+      <span class="emoji">🌐</span>
+      <h2>HTTP, REST y JSON</h2>
+    </div>
+    <p class="sec-sub">El idioma de internet, las reglas que lo ordenan y el formato en que viajan los datos.</p>
+
+    <h3>HTTP: el idioma de internet</h3>
+    <p>Cuando abres <code>google.com</code> en el navegador, este habla <strong>HTTP</strong> con el servidor de Google. Una app móvil también habla HTTP. Ese idioma define <strong>verbos</strong> que indican qué quieres hacer:</p>
+
+    <div class="verbs">
+      <div class="verb"><div class="vtag v-get">GET</div><div class="vd"><b>Obtener información</b> · <span>"Dame la lista de productos"</span></div></div>
+      <div class="verb"><div class="vtag v-post">POST</div><div class="vd"><b>Crear algo nuevo</b> · <span>"Crea un nuevo producto"</span></div></div>
+      <div class="verb"><div class="vtag v-put">PUT</div><div class="vd"><b>Actualizar lo existente</b> · <span>"Cambia el precio de este producto"</span></div></div>
+      <div class="verb"><div class="vtag v-del">DELETE</div><div class="vd"><b>Borrar algo</b> · <span>"Borra este producto"</span></div></div>
+    </div>
+
+    <h3>REST: las reglas que lo ordenan</h3>
+    <p><strong>REST</strong> (Representational State Transfer) es una forma <strong>organizada</strong> de construir APIs sobre HTTP, para que sean predecibles.</p>
+    <div class="card tech">
+      <p style="margin-top:0"><strong>Regla 1 — Cada recurso tiene una URL única.</strong></p>
+      <div class="code"><pre><code class="tok"><span class="p2">/productos</span>        <span class="c"># lista de todos los productos</span>
+<span class="p2">/productos/5</span>      <span class="c"># el producto con ID 5</span>
+<span class="p2">/usuarios/10</span>      <span class="c"># el usuario con ID 10</span></code></pre></div>
+      <p><strong>Regla 2 — Usas verbos HTTP para indicar la acción.</strong></p>
+      <div class="code"><pre><code class="tok"><span class="f">GET</span>    /productos      <span class="c"># dame la lista</span>
+<span class="f">POST</span>   /productos      <span class="c"># crea uno nuevo</span>
+<span class="f">DELETE</span> /productos/5    <span class="c"># borra el producto 5</span></code></pre></div>
+    </div>
+
+    <h3>JSON: el formato de los datos</h3>
+    <p><strong>JSON</strong> (JavaScript Object Notation) es texto estructurado con <strong>llaves <code>{}</code></strong> y pares clave-valor. Es como viajan los datos al enviar y recibir en una API.</p>
+    <div class="code">
+      <div class="bar"><span class="fname"><span class="dot"></span> ejemplo.json</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok"><span class="p2">{</span>
+  <span class="s">"nombre"</span>: <span class="s">"Laptop Dell"</span>,
+  <span class="s">"precio"</span>: <span class="n">1299.99</span>,
+  <span class="s">"stock"</span>: <span class="n">10</span>
+<span class="p2">}</span></code></pre>
+    </div>
+
+    <h3>Y un endpoint, ¿qué es?</h3>
+    <p>Un <strong>endpoint</strong> es una URL específica de tu API que hace algo. <code>http://miapi.com/productos</code> es un endpoint; <code>http://miapi.com/usuarios/5</code> es otro. Cada uno espera un método HTTP y devuelve datos o crea cambios.</p>
+  </div>
+</section>
+
+<!-- 3 · POR QUÉ FASTAPI -->
+<section class="topic" id="sec-porque" data-nav="¿Por qué FastAPI?" data-emoji="⚡">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">03</span>
+      <span class="emoji">⚡</span>
+      <h2>¿Por qué FastAPI?</h2>
+    </div>
+    <p class="sec-sub">Comparado con Django y Flask, y los tres superpoderes que lo hacen destacar.</p>
+
+    <div class="grid2">
+      <div class="def-card">
+        <span class="tag" style="background:#1d1830;color:#a59ec5;border:1px solid #2a2440">Django</span>
+        <h4>Maduro pero pesado</h4>
+        <p>Existe desde 2005, con muchas librerías. Pero fue pensado para webs completas (HTML, formularios). Para solo una API es como comprar un auto entero cuando necesitas las ruedas. Más lento.</p>
+      </div>
+      <div class="def-card">
+        <span class="tag" style="background:#1d1830;color:#a59ec5;border:1px solid #2a2440">Flask</span>
+        <h4>Ligero pero manual</h4>
+        <p>Flexible y liviano, pero exige escribir mucho código a mano y no valida datos automáticamente. También más lento que FastAPI.</p>
+      </div>
+    </div>
+    <div class="card tech">
+      <span class="tag tec">FastAPI · lo que usaremos</span>
+      <h4 style="margin:8px 0 6px">Moderno, rápido y automático</h4>
+      <ul style="margin-bottom:0">
+        <li>Moderno (2018 en adelante) y de los frameworks <strong>más rápidos del mundo</strong>.</li>
+        <li><strong>Valida datos automáticamente</strong> — sin validación manual.</li>
+        <li><strong>Genera documentación automática</strong> (Swagger).</li>
+        <li>Usa características modernas de Python.</li>
+      </ul>
+    </div>
+
+    <div class="socratic">
+      <div class="q"><span class="qic">?</span>
+        <span class="qtxt">Si fueras director técnico y eligieras entre un framework que genera documentación automática vs. uno donde documentas todo a mano, ¿cuál elegirías y por qué?</span></div>
+      <div class="answers">
+        <details class="reveal"><summary><span class="dot-esp"></span> Respuesta esperada <span class="chev">›</span></summary>
+          <div class="body">"El que genera documentación automática, porque ahorra tiempo."</div></details>
+        <details class="reveal"><summary><span class="dot-cor"></span> Respuesta correcta <span class="chev">›</span></summary>
+          <div class="body">Exacto. Es un multiplicador de productividad: con documentación automática, el equipo frontend puede trabajar mientras el backend está en desarrollo. Sin eso, aparecen cuellos de botella.</div></details>
+      </div>
+    </div>
+
+    <h3>Los 3 superpoderes</h3>
+    <div class="figure">
+      <svg viewBox="0 0 760 150" role="img" aria-label="Tres superpoderes de FastAPI: validación automática, documentación automática y velocidad">
+        <g font-family="Inter">
+          <rect x="15" y="20" width="230" height="110" rx="13" fill="#171327" stroke="#6018F0"/>
+          <text x="130" y="58" text-anchor="middle" font-size="30">🛡️</text>
+          <text x="130" y="90" text-anchor="middle" fill="#f3f1fb" font-size="14" font-weight="700">Validación auto</text>
+          <text x="130" y="110" text-anchor="middle" fill="#a59ec5" font-size="11">rechaza datos mal formados</text>
+
+          <rect x="265" y="20" width="230" height="110" rx="13" fill="#171327" stroke="#6018F0"/>
+          <text x="380" y="58" text-anchor="middle" font-size="30">📖</text>
+          <text x="380" y="90" text-anchor="middle" fill="#f3f1fb" font-size="14" font-weight="700">Docs automáticas</text>
+          <text x="380" y="110" text-anchor="middle" fill="#a59ec5" font-size="11">Swagger interactivo en /docs</text>
+
+          <rect x="515" y="20" width="230" height="110" rx="13" fill="#171327" stroke="#6018F0"/>
+          <text x="630" y="58" text-anchor="middle" font-size="30">🚀</text>
+          <text x="630" y="90" text-anchor="middle" fill="#f3f1fb" font-size="14" font-weight="700">Velocidad (ASGI)</text>
+          <text x="630" y="110" text-anchor="middle" fill="#a59ec5" font-size="11">miles de conexiones a la vez</text>
+        </g>
+      </svg>
+    </div>
+    <div class="banner tip"><span class="bic">🍽️</span><div><b>Analogía de velocidad.</b> Si Django es un mesero que atiende un cliente a la vez, FastAPI es un mesero que atiende a 1.000 clientes sin perder el ritmo. Eso lo logra gracias a <b>ASGI</b> (en lugar del WSGI de Django/Flask).</div></div>
+  </div>
+</section>
+
+<!-- 4 · INSTALACIÓN -->
+<section class="topic" id="sec-install" data-nav="Instalación paso a paso" data-emoji="⚙️">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">04</span>
+      <span class="emoji">⚙️</span>
+      <h2>Instalación y configuración</h2>
+    </div>
+    <p class="sec-sub">Del Python instalado al servidor listo, paso a paso y sin asumir nada.</p>
+
+    <h3>1 · Verifica que Python está instalado</h3>
+    <p>Abre la terminal (PowerShell en Windows, Terminal en Mac) y escribe:</p>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> terminal</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok">python --version</code></pre></div>
+    <p>Debería mostrar algo como <code>Python 3.12.3</code> (3.10 o superior). Si dice <code>python is not recognized</code>, instálalo desde <a class="inline" href="https://www.python.org/downloads/" target="_blank" rel="noopener">python.org</a> marcando <strong>"Add Python to PATH"</strong>.</p>
+
+    <h3>2 · Crea la carpeta del proyecto y entra</h3>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> terminal</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok">mkdir tienda_dev_senior
+cd tienda_dev_senior</code></pre></div>
+    <p><code>mkdir</code> = <em>make directory</em> (crear). <code>cd</code> = <em>change directory</em> (entrar). Sabrás que estás dentro porque el nombre de la carpeta aparece en el prompt.</p>
+
+    <h3>3 · Entorno virtual (venv): por qué</h3>
+    <div class="banner tip"><span class="bic">🧰</span><div>Si el Proyecto A necesita FastAPI 0.138 y el B necesita 0.100, instalar global genera conflicto. Un <b>venv</b> es una caja de herramientas aislada por proyecto.</div></div>
+
+    <h3>4 · Crea y activa el venv</h3>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> crear (Windows y Mac)</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok">python -m venv venv</code></pre></div>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> activar · Windows (PowerShell)</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok">.\venv\Scripts\Activate.ps1</code></pre></div>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> activar · Mac (Terminal)</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok">source venv/bin/activate</code></pre></div>
+    <p>Si funcionó, el prompt cambia y aparece <code>(venv)</code> al inicio. Ese prefijo indica que el entorno está activo.</p>
+    <div class="banner honest"><span class="bic">⚠️</span><div>En Windows, si ves <b>"cannot be loaded because running scripts is disabled"</b>, ejecuta esto una sola vez y vuelve a activar:
+      <div class="code" style="margin:10px 0 0"><pre><code class="tok">Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</code></pre></div></div></div>
+
+    <h3>5 · Instala FastAPI y Uvicorn</h3>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> terminal · con (venv) activo</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok">pip install fastapi uvicorn</code></pre></div>
+    <p><code>pip</code> es el instalador de paquetes de Python. <code>fastapi</code> es el framework; <code>uvicorn</code> es el servidor que lo ejecuta. Verifica con <code>pip list</code> que ambos aparezcan en la lista.</p>
+  </div>
+</section>
+
+<!-- 5 · ESTRUCTURA -->
+<section class="topic" id="sec-estructura" data-nav="Estructura profesional" data-emoji="📂">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">05</span>
+      <span class="emoji">📂</span>
+      <h2>Estructura profesional del proyecto</h2>
+    </div>
+    <p class="sec-sub">Carpetas con propósito, listas para crecer. Cada una es un piso del edificio.</p>
+
+    <div class="socratic">
+      <div class="q"><span class="qic">?</span>
+        <span class="qtxt">Imagina una API con 100 endpoints, todos en un main.py de 5.000 líneas. Llega alguien nuevo y pregunta: "¿dónde cambio la validación de emails?". ¿Cuánto tarda en encontrarlo?</span></div>
+      <div class="answers">
+        <details class="reveal"><summary><span class="dot-esp"></span> Respuesta esperada <span class="chev">›</span></summary>
+          <div class="body">"Mucho tiempo, se perdería."</div></details>
+        <details class="reveal"><summary><span class="dot-cor"></span> Respuesta correcta <span class="chev">›</span></summary>
+          <div class="body">Exacto. Una estructura profesional separa responsabilidades. Es como un edificio: cada piso tiene un propósito. No metes la cocina en la habitación.</div></details>
+      </div>
+    </div>
+
+    <h3>Las carpetas y qué guarda cada una</h3>
+    <div class="figure">
+      <svg viewBox="0 0 760 300" role="img" aria-label="Estructura de carpetas del proyecto tienda_dev_senior">
+        <g font-family="JetBrains Mono" font-size="13">
+          <text x="20" y="30" fill="#f3f1fb" font-weight="700">📁 tienda_dev_senior/</text>
+          <text x="48" y="60" fill="#b69bff">📁 app/</text>
+          <line x1="60" y1="68" x2="60" y2="270" stroke="#2a2440"/>
+          <g fill="#e9e6f5">
+            <text x="80" y="90">📁 routers/   <tspan fill="#766f96" font-size="11">→ endpoints por funcionalidad</tspan></text>
+            <text x="80" y="118">📁 services/  <tspan fill="#766f96" font-size="11">→ lógica de negocio</tspan></text>
+            <text x="80" y="146">📁 models/    <tspan fill="#766f96" font-size="11">→ modelos de base de datos</tspan></text>
+            <text x="80" y="174">📁 schemas/   <tspan fill="#766f96" font-size="11">→ validación (Pydantic)</tspan></text>
+            <text x="80" y="202">📁 config/    <tspan fill="#766f96" font-size="11">→ configuración</tspan></text>
+            <text x="80" y="230" fill="#8fe3a8">📄 main.py    <tspan fill="#766f96" font-size="11">→ punto de entrada</tspan></text>
+          </g>
+          <text x="48" y="262" fill="#ffb454">📄 requirements.txt  <tspan fill="#766f96" font-size="11">→ versiones de librerías</tspan></text>
+        </g>
+      </svg>
+      <div class="cap">Hoy creamos toda la estructura; algunas carpetas se llenan en clases siguientes.</div>
+    </div>
+    <p>Las carpetas <code>routers/</code> y <code>services/</code> se llenan en la <strong>Clase 3</strong>; <code>models/</code> en el <strong>Módulo 2</strong> (base de datos); <code>schemas/</code> lo estrenamos <strong>hoy</strong> con el endpoint POST.</p>
+
+    <h3>¿Cómo se pronuncia "schemas"?</h3>
+    <div class="banner tip"><span class="bic">🗣️</span><div>Se lee aproximadamente <b>"skímas"</b> (la "sch" suena como "sk", no como "sh"). En singular, "schema" → <b>"skíma"</b>. Significa "esquema": define qué datos espera recibir o devolver cada endpoint, y valida que lleguen correctos.</div></div>
+
+    <h3>Los archivos <code>__init__.py</code></h3>
+    <p>En cada carpeta con código creamos un archivo <code>__init__.py</code> (puede ir vacío):</p>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> Windows (PowerShell)</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok">ni app\__init__.py
+ni app\routers\__init__.py
+ni app\services\__init__.py
+ni app\models\__init__.py
+ni app\schemas\__init__.py
+ni app\config\__init__.py</code></pre></div>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> Mac (Terminal)</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok">touch app/__init__.py
+touch app/routers/__init__.py
+touch app/services/__init__.py
+touch app/models/__init__.py
+touch app/schemas/__init__.py
+touch app/config/__init__.py</code></pre></div>
+
+    <div class="banner tip"><span class="bic">🏢</span><div><b>¿Para qué un archivo vacío?</b> Cuando una carpeta tiene <code>__init__.py</code>, Python la trata como un <b>paquete</b>: un lugar válido del que se puede <b>importar</b> código. Es como el <b>letrero en la puerta de una oficina</b>: la oficina puede estar vacía, pero el letrero avisa "este espacio es oficial, puedes entrar y buscar cosas aquí". Sin el letrero, Python pasa de largo.</div></div>
+    <div class="banner honest"><span class="bic">🔎</span><div><b>Recuerda este síntoma:</b> si más adelante ves <code>ModuleNotFoundError: No module named 'app'</code>, casi siempre falta un <code>__init__.py</code>. Ya sabes dónde mirar.</div></div>
+  </div>
+</section>
+
+<!-- 6 · PRIMER PROYECTO -->
+<section class="topic" id="sec-main" data-nav="Tu primer main.py" data-emoji="🐍">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">06</span>
+      <span class="emoji">🐍</span>
+      <h2>Tu primer <code style="font-size:1.2rem">main.py</code></h2>
+    </div>
+    <p class="sec-sub">Tres endpoints GET, el servidor corriendo y JSON en el navegador.</p>
+
+    <p>En VS Code, crea el archivo <code>app/main.py</code> y escribe:</p>
+    <div class="code">
+      <div class="bar"><span class="fname"><span class="dot"></span> app/main.py</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok"><span class="k">from</span> fastapi <span class="k">import</span> FastAPI
+
+<span class="c"># Crear la aplicación FastAPI</span>
+<span class="c"># Los parámetros son metadata para la documentación automática</span>
+app <span class="p2">=</span> <span class="f">FastAPI</span>(
+    title<span class="p2">=</span><span class="s">"Tienda Dev Senior"</span>,
+    description<span class="p2">=</span><span class="s">"API Backend profesional - Dev Senior Code"</span>,
+    version<span class="p2">=</span><span class="s">"1.0.0"</span>
+)
+
+<span class="d">@app.get</span>(<span class="s">"/saludo"</span>)
+<span class="k">def</span> <span class="f">obtener_saludo</span>():
+    <span class="k">return</span> {
+        <span class="s">"mensaje"</span>: <span class="s">"¡Hola desde FastAPI!"</span>,
+        <span class="s">"estado"</span>: <span class="s">"activo"</span>
+    }
+
+<span class="d">@app.get</span>(<span class="s">"/"</span>)
+<span class="k">def</span> <span class="f">raiz</span>():
+    <span class="k">return</span> {
+        <span class="s">"mensaje"</span>: <span class="s">"Bienvenido a Tienda Dev Senior"</span>,
+        <span class="s">"version"</span>: <span class="s">"1.0.0"</span>
+    }
+
+<span class="d">@app.get</span>(<span class="s">"/health"</span>)
+<span class="k">def</span> <span class="f">health_check</span>():
+    <span class="k">return</span> {
+        <span class="s">"status"</span>: <span class="s">"ok"</span>,
+        <span class="s">"aplicacion"</span>: <span class="s">"Tienda Dev Senior"</span>
+    }</code></pre>
+    </div>
+
+    <h3>Leyéndolo línea por línea</h3>
+    <ul>
+      <li><code>from fastapi import FastAPI</code> — <strong>importar</strong> es traer algo de una librería externa. <code>FastAPI</code> es una clase (un "molde") que representa una aplicación web.</li>
+      <li><code>app = FastAPI(...)</code> — crear una <strong>instancia</strong>: un objeto basado en el molde. <code>app</code> es tu aplicación. <code>title</code>, <code>description</code> y <code>version</code> alimentan la documentación automática.</li>
+      <li><code>@app.get("/saludo")</code> — un <strong>decorador</strong>: "cuando alguien haga GET a <code>/saludo</code>, ejecuta la función de abajo".</li>
+      <li><code>return {...}</code> — devuelves un <strong>diccionario</strong>; FastAPI lo convierte solo a JSON.</li>
+    </ul>
+
+    <div class="banner honest"><span class="bic">💡</span><div><b>Nota honesta.</b> Estos tres endpoints siempre devuelven lo mismo, y está bien: el trabajo de un <i>health check</i> es solo confirmar que la API está viva. Más adelante haremos uno que devuelve datos <b>reales</b>, creados por el usuario.</div></div>
+
+    <h3>Ejecuta el servidor</h3>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> terminal · con (venv) activo</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok">uvicorn app.main:app --reload</code></pre></div>
+    <ul>
+      <li><code>app.main:app</code> — "ve a la carpeta <code>app</code>, al archivo <code>main.py</code>, y busca la variable <code>app</code>".</li>
+      <li><code>--reload</code> — recarga sola cada vez que cambias el código.</li>
+    </ul>
+    <p>Cuando veas <code>Uvicorn running on http://127.0.0.1:8000</code>, tu API está corriendo. Pruébala en el navegador:</p>
+    <div class="code"><pre><code class="tok"><span class="p2">http://127.0.0.1:8000/saludo</span>
+<span class="p2">http://127.0.0.1:8000/</span>
+<span class="p2">http://127.0.0.1:8000/health</span></code></pre></div>
+
+    <div class="socratic">
+      <div class="q"><span class="qic">?</span>
+        <span class="qtxt">¿Dónde escribiste el código que convierte el diccionario de Python a JSON? ¿O lo hizo FastAPI automáticamente?</span></div>
+      <div class="answers">
+        <details class="reveal"><summary><span class="dot-esp"></span> Respuesta esperada <span class="chev">›</span></summary>
+          <div class="body">"FastAPI lo hizo automáticamente."</div></details>
+        <details class="reveal"><summary><span class="dot-cor"></span> Respuesta correcta <span class="chev">›</span></summary>
+          <div class="body">Exacto. Es un superpoder de FastAPI. En otros frameworks escribirías <code>json.dumps()</code> a mano. FastAPI lo hace solo porque <b>sabe</b> que construyes una API y todos los endpoints deben retornar JSON.</div></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · POST + PYDANTIC -->
+<section class="topic" id="sec-post" data-nav="POST y Pydantic" data-emoji="🧩">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">07</span>
+      <span class="emoji">🧩</span>
+      <h2>Recibir datos con POST y Pydantic</h2>
+    </div>
+    <p class="sec-sub">El salto clave: recibir datos del cliente, validarlos y guardarlos para leerlos después.</p>
+
+    <h3>El método POST</h3>
+    <p><strong>GET</strong> obtiene información; <strong>POST</strong> <strong>crea</strong> información nueva. Con POST, el cliente no envía datos en la URL, sino en el <strong>body</strong> (cuerpo) de la petición, en JSON.</p>
+    <div class="banner tip"><span class="bic">📝</span><div><b>De la vida real:</b> GET es preguntar "¿qué productos hay?". POST es entregar un formulario lleno diciendo "registra este nuevo producto".</div></div>
+
+    <h3>El problema que aparece de inmediato</h3>
+    <p>Un producto debería llegar así... pero, ¿y si el cliente se equivoca?</p>
+    <div class="grid2">
+      <div class="code" style="margin:0"><div class="bar"><span class="fname" style="color:#8fe3a8"><span class="dot" style="background:#3ddc97"></span> correcto</span></div>
+        <pre><code class="tok"><span class="p2">{</span>
+  <span class="s">"nombre"</span>: <span class="s">"Laptop Dell"</span>,
+  <span class="s">"precio"</span>: <span class="n">1299.99</span>,
+  <span class="s">"stock"</span>: <span class="n">15</span>
+<span class="p2">}</span></code></pre></div>
+      <div class="code" style="margin:0"><div class="bar"><span class="fname" style="color:#ff8bbd"><span class="dot" style="background:#ff6b81"></span> roto</span></div>
+        <pre><code class="tok"><span class="p2">{</span>
+  <span class="s">"nombre"</span>: <span class="s">"Laptop Dell"</span>,
+  <span class="s">"precio"</span>: <span class="s">"carísima"</span>
+<span class="p2">}</span>
+<span class="c"># falta stock, precio es texto</span></code></pre></div>
+    </div>
+    <p>Si guardamos eso, rompemos la app más adelante. Necesitamos un <strong>filtro</strong> que revise cada dato antes de dejarlo entrar. Ese filtro se llama <strong>Pydantic</strong>.</p>
+
+    <h3>¿Qué es Pydantic?</h3>
+    <div class="banner tip"><span class="bic">🗣️</span><div><b>¿Cómo se pronuncia?</b> Se lee aproximadamente <b>"paidántik"</b>.</div></div>
+    <div class="grid2">
+      <div class="def-card">
+        <span class="tag tec">Definición · técnica</span>
+        <h4>Validación en tiempo real</h4>
+        <p>Librería de Python que usa las anotaciones de tipo (<code>: int</code>, <code>: str</code>) para revisar, en el momento en que llegan los datos, que cada campo tenga el tipo correcto y esté presente. Si algo no cuadra, rechaza la petición con un error claro. FastAPI la trae integrada.</p>
+      </div>
+      <div class="def-card">
+        <span class="tag vida">Definición · vida real</span>
+        <h4>El control del aeropuerto</h4>
+        <p>Antes de subir al avión (tu lógica de negocio), cada pasajero pasa por seguridad: revisan que tenga todos los documentos (campos requeridos) y que sean válidos (tipos correctos). Sin papeles en regla, no pasa.</p>
+      </div>
+    </div>
+    <div class="card">
+      <p style="margin-top:0"><strong>¿Quién es quién?</strong></p>
+      <ul style="margin-bottom:0">
+        <li><strong>Pydantic</strong> = la librería de validación.</li>
+        <li><code>BaseModel</code> = la clase base de Pydantic. El <strong>molde</strong> del que partimos.</li>
+        <li><strong>schema</strong> = el esquema concreto que tú defines (ej. "un producto tiene nombre, precio y stock").</li>
+      </ul>
+    </div>
+
+    <h3>Paso 1 · Importar y definir el schema</h3>
+    <p>Debajo de <code>from fastapi import FastAPI</code> agrega <code>from pydantic import BaseModel</code>. Luego, debajo de <code>app = FastAPI(...)</code> y antes de los endpoints:</p>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> app/main.py</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok"><span class="k">from</span> pydantic <span class="k">import</span> BaseModel
+
+<span class="c"># ==================</span>
+<span class="c"># SCHEMAS (validación con Pydantic)</span>
+<span class="c"># ==================</span>
+
+<span class="k">class</span> <span class="f">ProductoCreate</span>(BaseModel):
+    nombre: <span class="f">str</span>
+    precio: <span class="f">float</span>
+    stock: <span class="f">int</span></code></pre></div>
+    <p><code>ProductoCreate</code> <strong>hereda</strong> de <code>BaseModel</code> (recibe sus superpoderes de validación). Declaramos tres campos con su tipo: <code>nombre</code> texto, <code>precio</code> decimal, <code>stock</code> entero. Si el cliente manda un <code>precio</code> como texto o se olvida del <code>stock</code>, Pydantic rechaza la petición — sin que escribamos una línea de validación.</p>
+
+    <h3>Paso 2 · Una "memoria" temporal</h3>
+    <div class="banner honest"><span class="bic">⚠️</span><div>Esta lista vive <b>solo mientras el servidor está encendido</b>. Si lo apagas, los datos se pierden. Eso lo resolvemos en el <b>Módulo 2</b> con una base de datos real (PostgreSQL). Hoy nos sirve perfecto para entender el flujo.</div></div>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> app/main.py</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok"><span class="c"># "Memoria" temporal: aquí guardaremos los productos creados.</span>
+productos_db <span class="p2">=</span> []</code></pre></div>
+
+    <h3>Paso 3 · El endpoint POST</h3>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> app/main.py</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok"><span class="d">@app.post</span>(<span class="s">"/productos"</span>)
+<span class="k">def</span> <span class="f">crear_producto</span>(producto: ProductoCreate):
+    productos_db.<span class="f">append</span>(producto)
+    <span class="k">return</span> {
+        <span class="s">"mensaje"</span>: <span class="s">"Producto creado exitosamente"</span>,
+        <span class="s">"producto"</span>: producto
+    }</code></pre></div>
+    <p>Usamos <code>@app.post</code> porque este endpoint <strong>crea</strong>. Al escribir <code>producto: ProductoCreate</code>, FastAPI toma el JSON del body, lo valida con Pydantic y nos lo entrega ya convertido. <code>.append()</code> lo agrega a la lista.</p>
+
+    <h3>Paso 4 · El GET que lee datos reales</h3>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> app/main.py</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok"><span class="d">@app.get</span>(<span class="s">"/productos"</span>)
+<span class="k">def</span> <span class="f">listar_productos</span>():
+    <span class="k">return</span> {
+        <span class="s">"total"</span>: <span class="f">len</span>(productos_db),
+        <span class="s">"productos"</span>: productos_db
+    }</code></pre></div>
+    <p>Mismo recurso <code>/productos</code>, distinto verbo: si llega POST, ejecuta <code>crear_producto</code>; si llega GET, ejecuta <code>listar_productos</code>. <strong>Si no has creado nada, devuelve <code>total: 0</code> y una lista vacía <code>[]</code></strong> — y eso es correcto: no hay nada, así que no se muestra nada.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 760 200" role="img" aria-label="Flujo: POST guarda en memoria, GET lee de la misma memoria">
+        <defs>
+          <marker id="arr2" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#b69bff"/></marker>
+        </defs>
+        <rect x="20" y="70" width="160" height="60" rx="11" fill="#171327" stroke="#6018F0"/>
+        <text x="100" y="95" text-anchor="middle" fill="#b69bff" font-family="JetBrains Mono" font-size="13" font-weight="700">POST /productos</text>
+        <text x="100" y="115" text-anchor="middle" fill="#a59ec5" font-family="Inter" font-size="11">crea + valida</text>
+
+        <rect x="300" y="55" width="160" height="90" rx="11" fill="#1d1830" stroke="#ffb454"/>
+        <text x="380" y="88" text-anchor="middle" font-size="22">🧠</text>
+        <text x="380" y="112" text-anchor="middle" fill="#ffb454" font-family="JetBrains Mono" font-size="12.5" font-weight="700">productos_db</text>
+        <text x="380" y="130" text-anchor="middle" fill="#a59ec5" font-family="Inter" font-size="10.5">lista en memoria</text>
+
+        <rect x="580" y="70" width="160" height="60" rx="11" fill="#171327" stroke="#3ddc97"/>
+        <text x="660" y="95" text-anchor="middle" fill="#3ddc97" font-family="JetBrains Mono" font-size="13" font-weight="700">GET /productos</text>
+        <text x="660" y="115" text-anchor="middle" fill="#a59ec5" font-family="Inter" font-size="11">lee lo guardado</text>
+
+        <line x1="182" y1="100" x2="296" y2="100" stroke="#b69bff" stroke-width="2" marker-end="url(#arr2)"/>
+        <text x="239" y="90" text-anchor="middle" fill="#8fe3a8" font-family="JetBrains Mono" font-size="10">append()</text>
+        <line x1="462" y1="100" x2="576" y2="100" stroke="#b69bff" stroke-width="2" marker-end="url(#arr2)"/>
+        <text x="519" y="90" text-anchor="middle" fill="#8fe3a8" font-family="JetBrains Mono" font-size="10">len() + lista</text>
+      </svg>
+      <div class="cap">Nada aparece sin razón: el GET solo muestra lo que el POST guardó.</div>
+    </div>
+
+    <div class="socratic">
+      <div class="q"><span class="qic">?</span>
+        <span class="qtxt">Antes de crear ningún producto, llamas a GET /productos. ¿Qué crees que va a devolver?</span></div>
+      <div class="answers">
+        <details class="reveal"><summary><span class="dot-esp"></span> Respuesta esperada <span class="chev">›</span></summary>
+          <div class="body">"Algún producto de ejemplo" o "un error".</div></details>
+        <details class="reveal"><summary><span class="dot-cor"></span> Respuesta correcta <span class="chev">›</span></summary>
+          <div class="body">Devuelve una lista <b>vacía</b> (<code>total: 0</code>, <code>productos: []</code>). Tiene todo el sentido: no inventamos datos, así que si no has creado nada, no hay nada que mostrar. Todo lo que ves tiene una razón de existir.</div></details>
+      </div>
+    </div>
+
+    <h3>Probar el flujo completo en Swagger</h3>
+    <p>El POST necesita enviar un body, así que lo probamos en <strong>Swagger</strong> (<code>/docs</code>):</p>
+    <ol>
+      <li><strong>Comprueba que está vacío:</strong> en <code>GET /productos</code> → "Try it out" → "Execute". Verás <code>total: 0</code> y <code>[]</code>.</li>
+      <li><strong>Crea un producto:</strong> en <code>POST /productos</code> → "Try it out", escribe el JSON de la Laptop Dell y "Execute".</li>
+      <li><strong>Vuelve a leer:</strong> regresa a <code>GET /productos</code> → "Execute". <strong>Ahora sí aparece tu Laptop Dell</strong>, porque el GET lee la lista real donde el POST la guardó.</li>
+    </ol>
+
+    <div class="socratic">
+      <div class="q"><span class="qic">?</span>
+        <span class="qtxt">¿Dónde validaste que el JSON tiene los 3 campos y que precio es un número? ¿Quién lo hizo?</span></div>
+      <div class="answers">
+        <details class="reveal"><summary><span class="dot-esp"></span> Respuesta esperada <span class="chev">›</span></summary>
+          <div class="body">"No lo validé, FastAPI lo hizo."</div></details>
+        <details class="reveal"><summary><span class="dot-cor"></span> Respuesta correcta <span class="chev">›</span></summary>
+          <div class="body">Exacto. El schema <code>ProductoCreate</code> se lo dijo a Pydantic y FastAPI lo aplicó solo. Pruébalo: borra <code>stock</code> o pon <code>precio: "carísima"</code> y ejecuta — verás un <b>error 422</b> indicando qué campo está mal. Validación automática, cero código manual.</div></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · SWAGGER / REDOC -->
+<section class="topic" id="sec-docs" data-nav="Swagger y ReDoc" data-emoji="📖">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">08</span>
+      <span class="emoji">📖</span>
+      <h2>Documentación automática: Swagger y ReDoc</h2>
+    </div>
+    <p class="sec-sub">Dos vistas de la misma API, generadas solas desde tu código. Nunca mienten.</p>
+
+    <div class="grid2">
+      <div class="def-card" style="border-left:3px solid var(--acc)">
+        <span class="tag tec">/docs</span>
+        <h4>Swagger · para probar</h4>
+        <p>Más <strong>funcional</strong>: lista tus endpoints, muestra el schema <code>ProductoCreate</code> con sus campos, y trae botones <strong>"Try it out"</strong> para ejecutar peticiones en vivo. Es documentación <em>y</em> banco de pruebas.</p>
+        <div class="code" style="margin:10px 0 0"><pre><code class="tok"><span class="p2">http://127.0.0.1:8000/docs</span></code></pre></div>
+      </div>
+      <div class="def-card" style="border-left:3px solid var(--ok)">
+        <span class="tag vida">/redoc</span>
+        <h4>ReDoc · para leer</h4>
+        <p>Más <strong>visual y limpio</strong>: presenta la documentación como un manual elegante, ideal para leer la API de un vistazo o compartirla con alguien que solo necesita consultarla.</p>
+        <div class="code" style="margin:10px 0 0"><pre><code class="tok"><span class="p2">http://127.0.0.1:8000/redoc</span></code></pre></div>
+      </div>
+    </div>
+    <div class="banner tip"><span class="bic">✨</span><div><b>Lo importante:</b> ambas salen del <b>mismo código</b>, sin escribir documentación a mano. Usa Swagger cuando quieras <b>probar</b>, y ReDoc cuando quieras <b>leer o presentar</b>.</div></div>
+
+    <div class="socratic">
+      <div class="q"><span class="qic">?</span>
+        <span class="qtxt">Si eres frontend y necesitas consumir esta API, ¿qué prefieres: Swagger/ReDoc (generados solos y siempre actualizados) o un documento escrito a mano?</span></div>
+      <div class="answers">
+        <details class="reveal"><summary><span class="dot-esp"></span> Respuesta esperada <span class="chev">›</span></summary>
+          <div class="body">"Swagger/ReDoc, porque puedo probar y leer directamente."</div></details>
+        <details class="reveal"><summary><span class="dot-cor"></span> Respuesta correcta <span class="chev">›</span></summary>
+          <div class="body">Exacto. Un documento a mano queda desactualizado apenas el backend cambia algo. Swagger y ReDoc se regeneran solos con cada cambio del código, así que <b>nunca mienten</b>. Frontend y backend trabajan en paralelo sin esperar explicaciones verbales.</div></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · REQUIREMENTS -->
+<section class="topic" id="sec-req" data-nav="requirements.txt" data-emoji="📌">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">09</span>
+      <span class="emoji">📌</span>
+      <h2>El archivo <code style="font-size:1.2rem">requirements.txt</code></h2>
+    </div>
+    <p class="sec-sub">Para que cualquiera instale exactamente las mismas versiones que tú.</p>
+
+    <p>En la <strong>raíz</strong> del proyecto (no dentro de <code>app/</code>), crea <code>requirements.txt</code>:</p>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> requirements.txt</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok">fastapi==0.138.0
+uvicorn==0.49.0</code></pre></div>
+    <p>Al instalar con <code>pip install fastapi</code>, Python toma la versión más nueva. En 6 meses, eso puede romper tu código. Fijando versiones (<code>==0.138.0</code>), todos instalan <strong>lo mismo</strong>. Quien clone el proyecto solo corre:</p>
+    <div class="code"><div class="bar"><span class="fname"><span class="dot"></span> terminal</span><button class="copy">Copiar</button></div>
+      <pre><code class="tok">pip install -r requirements.txt</code></pre></div>
+  </div>
+</section>
+
+<!-- 10 · RECAP -->
+<section class="topic" id="sec-recap" data-nav="Recapitulación" data-emoji="✅">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="num">10</span>
+      <span class="emoji">✅</span>
+      <h2>Recapitulación</h2>
+    </div>
+    <p class="sec-sub">Lo que hoy quedó en tus manos.</p>
+
+    <div class="recap">
+      <div class="item"><span class="ck">✓</span><div><b>API REST</b> — forma organizada de construir servicios web con verbos HTTP.</div></div>
+      <div class="item"><span class="ck">✓</span><div><b>FastAPI</b> — framework moderno que valida automáticamente y genera documentación sola.</div></div>
+      <div class="item"><span class="ck">✓</span><div><b>Endpoints GET</b> — devuelven información (incluyendo un health check de estado).</div></div>
+      <div class="item"><span class="ck">✓</span><div><b>POST + Pydantic</b> — recibe datos, los valida con un schema y los guarda.</div></div>
+      <div class="item"><span class="ck">✓</span><div><b>Swagger y ReDoc</b> — documentación interactiva generada desde el código.</div></div>
+      <div class="item"><span class="ck">✓</span><div><b>Estructura profesional</b> — carpetas con propósito, listas para crecer.</div></div>
+    </div>
+
+    <div class="banner tip"><span class="bic">🌉</span><div><b>Puente hacia la próxima clase.</b> Hoy guardamos los productos en una lista en memoria, que se borra al apagar el servidor. En la Clase 2 completaremos el manejo de datos (buscar un producto por su ID, filtrar, actualizar y borrar), y más adelante haremos que los datos <b>persistan</b> de verdad con una base de datos.</div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    © 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack ·
+    <a class="ln" href="https://linkedin.com/in/ana-alvarado-instructora-full-stack" target="_blank" rel="noopener">linkedin.com/in/ana-alvarado-instructora-full-stack</a>
+  </div>
+</footer>
+
+</main>
+
+<!-- presentation hint + bar -->
+<div class="pres-hint">Modo presentación: <kbd>P</kbd></div>
+<div id="presBar">
+  <button id="pPrev" aria-label="Anterior">←</button>
+  <span class="pp" id="pCount">1 / 11</span>
+  <button id="pNext" aria-label="Siguiente">→</button>
+  <span id="pDots" style="display:flex;gap:6px;margin-left:6px"></span>
+  <button id="pExit" aria-label="Salir" style="margin-left:10px">✕</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.hero, section.topic'));
+  var nav = document.getElementById('nav');
+
+  /* build nav */
+  slides.forEach(function(s, i){
+    var a = document.createElement('a');
+    a.href = '#'+s.id;
+    a.dataset.idx = i;
+    var num = String(i).padStart(2,'0');
+    a.innerHTML = '<span class="ic">'+s.dataset.emoji+'</span><span class="lbl">'+s.dataset.nav+'</span><span class="secnum">'+num+'</span>';
+    a.addEventListener('click', function(e){
+      if(document.body.classList.contains('present')){ e.preventDefault(); goTo(i); }
+      closeMenu();
+    });
+    nav.appendChild(a);
+  });
+  var navLinks = Array.prototype.slice.call(nav.querySelectorAll('a'));
+
+  /* scroll spy + progress */
+  var progress = document.getElementById('progress');
+  function onScroll(){
+    var y = window.scrollY + window.innerHeight*0.35;
+    var cur = 0;
+    slides.forEach(function(s,i){ if(s.offsetTop <= y) cur = i; });
+    navLinks.forEach(function(l,i){ l.classList.toggle('active', i===cur); });
+    var max = document.body.scrollHeight - window.innerHeight;
+    progress.style.width = (max>0 ? (window.scrollY/max*100) : 0)+'%';
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('load', onScroll);
+
+  /* mobile menu */
+  var sb = document.getElementById('sidebar'), ov = document.getElementById('overlay');
+  function closeMenu(){ sb.classList.remove('open'); ov.style.display='none'; }
+  document.getElementById('menuBtn').addEventListener('click', function(){
+    sb.classList.toggle('open');
+    ov.style.display = sb.classList.contains('open') ? 'block' : 'none';
+  });
+  ov.addEventListener('click', closeMenu);
+
+  /* copy buttons */
+  document.querySelectorAll('.code .copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var pre = btn.closest('.code').querySelector('pre');
+      var txt = pre.innerText;
+      navigator.clipboard.writeText(txt).then(function(){
+        btn.textContent = '✓ Copiado'; btn.classList.add('done');
+        setTimeout(function(){ btn.textContent='Copiar'; btn.classList.remove('done'); }, 1600);
+      }).catch(function(){
+        var r=document.createRange(); r.selectNodeContents(pre);
+        var sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        try{document.execCommand('copy');}catch(e){}
+        sel.removeAllRanges();
+        btn.textContent='✓ Copiado'; btn.classList.add('done');
+        setTimeout(function(){ btn.textContent='Copiar'; btn.classList.remove('done'); }, 1600);
+      });
+    });
+  });
+
+  /* ---------- presentation mode ---------- */
+  var idx = 0;
+  var pCount = document.getElementById('pCount');
+  var pDots = document.getElementById('pDots');
+  slides.forEach(function(_,i){
+    var d=document.createElement('span'); d.className='pdot'; d.dataset.i=i;
+    d.addEventListener('click',function(){goTo(i);});
+    pDots.appendChild(d);
+  });
+  var dots = Array.prototype.slice.call(pDots.children);
+
+  function render(){
+    slides.forEach(function(s,i){ s.classList.toggle('slide-on', i===idx); });
+    navLinks.forEach(function(l,i){ l.classList.toggle('active', i===idx); });
+    dots.forEach(function(d,i){ d.classList.toggle('on', i===idx); });
+    pCount.textContent = (idx+1)+' / '+slides.length;
+    window.scrollTo(0,0);
+  }
+  function goTo(i){ idx=Math.max(0,Math.min(slides.length-1,i)); render(); }
+  function enter(){
+    document.body.classList.add('present');
+    var y=window.scrollY+window.innerHeight*0.35, cur=0;
+    slides.forEach(function(s,i){ if(s.offsetTop<=y) cur=i; });
+    idx=cur; render();
+  }
+  function exit(){ document.body.classList.remove('present'); slides.forEach(function(s){s.classList.remove('slide-on');}); onScroll(); }
+  function toggle(){ document.body.classList.contains('present') ? exit() : enter(); }
+
+  document.getElementById('pNext').addEventListener('click', function(){ goTo(idx+1); });
+  document.getElementById('pPrev').addEventListener('click', function(){ goTo(idx-1); });
+  document.getElementById('pExit').addEventListener('click', exit);
+
+  document.addEventListener('keydown', function(e){
+    var tag=(e.target.tagName||'').toLowerCase();
+    if(tag==='input'||tag==='textarea') return;
+    if(e.key==='p'||e.key==='P'){ e.preventDefault(); toggle(); return; }
+    if(!document.body.classList.contains('present')) return;
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); goTo(idx+1); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); goTo(idx-1); }
+    else if(e.key==='Home'){ goTo(0); }
+    else if(e.key==='End'){ goTo(slides.length-1); }
+    else if(e.key==='Escape'){ exit(); }
+  });
+})();
+</script>
+</body>
+</html>
