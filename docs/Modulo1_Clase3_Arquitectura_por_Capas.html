@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clase 3 · Arquitectura por Capas — Dev Senior Code</title>
+
+<!--
+============================================================================
+  © 2026 Ana Alvarado — Todos los derechos reservados.
+  Educadora Tech & Desarrolladora Full Stack.
+  Material de autoría exclusiva. Prohibida su reproducción, redistribución,
+  modificación o uso fuera del contexto de clase sin autorización escrita.
+============================================================================
+-->
+
+<meta name="author" content="Ana Alvarado">
+<meta name="copyright" content="© 2026 Ana Alvarado — Todos los derechos reservados">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --acento:#6018F0;
+  --acento-2:#5418CC;
+  --acento-3:#3C1884;
+  --acento-soft:#8B5CF6;
+  --bg:#0d0b16;
+  --bg-2:#141020;
+  --bg-3:#1c1730;
+  --card:#181327;
+  --card-2:#1f1838;
+  --borde:#2a2244;
+  --texto:#e8e5f2;
+  --texto-2:#b3adc9;
+  --texto-3:#7d7799;
+  --verde:#22c55e;
+  --verde-bg:#0f2a1a;
+  --naranja:#f59e0b;
+  --naranja-bg:#2a1f08;
+  --code-bg:#0a0812;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--texto);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  user-select:none;
+}
+
+/* ===== BARRA LATERAL ===== */
+.sidebar{
+  position:fixed;
+  top:0;left:0;
+  width:280px;
+  height:100vh;
+  background:linear-gradient(180deg,var(--bg-2),var(--bg));
+  border-right:1px solid var(--borde);
+  overflow-y:auto;
+  z-index:100;
+  padding:0 0 40px;
+}
+
+.sidebar-header{
+  padding:24px 22px 18px;
+  border-bottom:1px solid var(--borde);
+  position:sticky;top:0;
+  background:linear-gradient(180deg,var(--bg-2),rgba(20,16,32,0.96));
+  backdrop-filter:blur(8px);
+  z-index:2;
+}
+
+.brand{
+  font-weight:800;
+  font-size:15px;
+  letter-spacing:.5px;
+  color:var(--texto);
+  display:flex;align-items:center;gap:8px;
+}
+.brand .logo{
+  background:linear-gradient(135deg,var(--acento),var(--acento-soft));
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  box-shadow:0 4px 14px rgba(96,24,240,.4);
+}
+.brand-sub{
+  font-size:11px;
+  color:var(--texto-3);
+  font-weight:500;
+  margin-top:6px;
+  letter-spacing:.3px;
+}
+
+.nav{padding:14px 12px 0}
+.nav-label{
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:1.2px;
+  color:var(--texto-3);
+  font-weight:700;
+  padding:12px 12px 8px;
+}
+
+.nav a{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 12px;
+  border-radius:9px;
+  color:var(--texto-2);
+  text-decoration:none;
+  font-size:13.5px;
+  font-weight:500;
+  margin-bottom:2px;
+  transition:all .16s ease;
+  border:1px solid transparent;
+}
+.nav a:hover{
+  background:var(--bg-3);
+  color:var(--texto);
+}
+.nav a.active{
+  background:linear-gradient(135deg,rgba(96,24,240,.18),rgba(96,24,240,.06));
+  color:#fff;
+  border-color:rgba(96,24,240,.35);
+}
+.nav a .ic{
+  font-size:15px;
+  width:22px;text-align:center;
+  flex-shrink:0;
+}
+.nav a .num{
+  margin-left:auto;
+  font-size:10px;
+  color:var(--texto-3);
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* ===== PROGRESO ===== */
+.progress-wrap{
+  padding:16px 22px;
+  margin-top:8px;
+}
+.progress-label{
+  font-size:11px;
+  color:var(--texto-3);
+  display:flex;justify-content:space-between;
+  margin-bottom:7px;
+  font-weight:600;
+}
+.progress-track{
+  height:6px;
+  background:var(--bg-3);
+  border-radius:99px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--acento),var(--acento-soft));
+  border-radius:99px;
+  transition:width .4s ease;
+}
+
+/* ===== ÁREA DE CONTENIDO ===== */
+.main{
+  margin-left:280px;
+  min-height:100vh;
+  padding:0 40px 80px;
+}
+.content{
+  max-width:960px;
+  margin:0 auto;
+}
+
+/* Cabecera hero */
+.hero{
+  padding:54px 0 30px;
+  border-bottom:1px solid var(--borde);
+  margin-bottom:12px;
+}
+.hero .eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--bg-3);
+  border:1px solid var(--borde);
+  color:var(--acento-soft);
+  font-size:12px;font-weight:600;
+  padding:6px 13px;border-radius:99px;
+  letter-spacing:.4px;
+  margin-bottom:20px;
+}
+.hero h1{
+  font-size:38px;
+  font-weight:800;
+  letter-spacing:-.5px;
+  line-height:1.15;
+  margin-bottom:14px;
+  background:linear-gradient(120deg,#fff 20%,var(--acento-soft));
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero p{
+  font-size:16px;
+  color:var(--texto-2);
+  max-width:680px;
+}
+.hero-meta{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;
+}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--card);
+  border:1px solid var(--borde);
+  padding:7px 13px;border-radius:8px;
+  font-size:12.5px;color:var(--texto-2);font-weight:500;
+}
+.chip b{color:var(--texto);font-weight:600}
+
+/* ===== SECCIONES ===== */
+.section{
+  padding:38px 0;
+  border-bottom:1px solid var(--borde);
+  scroll-margin-top:20px;
+}
+.section:last-of-type{border-bottom:none}
+
+.section-head{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:8px;
+}
+.section-icon{
+  font-size:26px;
+  background:linear-gradient(135deg,var(--card-2),var(--bg-3));
+  border:1px solid var(--borde);
+  width:52px;height:52px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.section-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  color:var(--acento-soft);
+  font-weight:600;
+  letter-spacing:1px;
+}
+.section h2{
+  font-size:26px;
+  font-weight:700;
+  letter-spacing:-.3px;
+  line-height:1.2;
+}
+.section-body{margin-top:20px}
+
+.section-body h3{
+  font-size:18px;
+  font-weight:650;
+  margin:28px 0 10px;
+  color:#fff;
+  display:flex;align-items:center;gap:9px;
+}
+.section-body h3::before{
+  content:"";
+  width:4px;height:18px;
+  background:linear-gradient(180deg,var(--acento),var(--acento-soft));
+  border-radius:2px;
+  flex-shrink:0;
+}
+.section-body h4{
+  font-size:15px;
+  font-weight:650;
+  margin:22px 0 8px;
+  color:var(--texto);
+}
+
+.section-body p{
+  color:var(--texto-2);
+  margin-bottom:14px;
+  font-size:15px;
+}
+.section-body strong{color:var(--texto);font-weight:650}
+.section-body ul{
+  margin:0 0 16px 4px;
+  padding-left:20px;
+}
+.section-body li{
+  color:var(--texto-2);
+  margin-bottom:8px;
+  font-size:15px;
+}
+.section-body li::marker{color:var(--acento-soft)}
+
+code.inline{
+  font-family:'JetBrains Mono',monospace;
+  background:var(--bg-3);
+  color:var(--acento-soft);
+  padding:2px 7px;border-radius:5px;
+  font-size:13px;
+  border:1px solid var(--borde);
+  user-select:text;
+}
+
+/* ===== TARJETAS DEFINICIÓN ===== */
+.def-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin:18px 0;
+}
+@media(max-width:720px){.def-grid{grid-template-columns:1fr}}
+
+.def-card{
+  background:var(--card);
+  border:1px solid var(--borde);
+  border-radius:12px;
+  padding:18px 18px 16px;
+}
+.def-card .tag{
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-weight:700;
+  margin-bottom:9px;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.def-card.tecnica{border-top:3px solid var(--acento)}
+.def-card.tecnica .tag{color:var(--acento-soft)}
+.def-card.real{border-top:3px solid var(--verde)}
+.def-card.real .tag{color:var(--verde)}
+.def-card p{margin-bottom:0;font-size:14px}
+
+/* ===== BANNER TIP / UBICACIÓN ===== */
+.banner{
+  display:flex;gap:13px;
+  border-radius:11px;
+  padding:15px 17px;
+  margin:18px 0;
+  font-size:14.5px;
+  align-items:flex-start;
+}
+.banner .b-ic{font-size:19px;flex-shrink:0;margin-top:1px}
+.banner.tip{
+  background:linear-gradient(135deg,rgba(96,24,240,.12),rgba(96,24,240,.03));
+  border:1px solid rgba(96,24,240,.3);
+}
+.banner.tip .b-ic{color:var(--acento-soft)}
+.banner.file{
+  background:var(--bg-3);
+  border:1px solid var(--borde);
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+}
+.banner.file .b-ic{color:var(--naranja)}
+.banner.warn{
+  background:var(--naranja-bg);
+  border:1px solid rgba(245,158,11,.3);
+}
+.banner.warn .b-ic{color:var(--naranja)}
+.banner p{margin:0;color:var(--texto-2)}
+.banner b{color:var(--texto)}
+
+/* ===== BLOQUES DE CÓDIGO ===== */
+.code-block{
+  background:var(--code-bg);
+  border:1px solid var(--borde);
+  border-radius:11px;
+  margin:14px 0 20px;
+  overflow:hidden;
+}
+.code-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;
+  background:var(--bg-2);
+  border-bottom:1px solid var(--borde);
+}
+.code-dots{display:flex;gap:6px}
+.code-dots span{width:11px;height:11px;border-radius:99px}
+.code-dots span:nth-child(1){background:#ff5f56}
+.code-dots span:nth-child(2){background:#ffbd2e}
+.code-dots span:nth-child(3){background:#27c93f}
+.code-lang{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--texto-3);
+  margin-left:10px;letter-spacing:.5px;
+}
+.copy-btn{
+  background:var(--bg-3);
+  border:1px solid var(--borde);
+  color:var(--texto-2);
+  font-size:11.5px;font-weight:600;
+  padding:5px 12px;border-radius:7px;
+  cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+  font-family:'Inter',sans-serif;
+  transition:all .15s;
+}
+.copy-btn:hover{background:var(--acento);color:#fff;border-color:var(--acento)}
+.copy-btn.ok{background:var(--verde);color:#fff;border-color:var(--verde)}
+
+.code-block pre{
+  margin:0;padding:16px 18px;
+  overflow-x:auto;
+  user-select:text;
+}
+.code-block code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13.5px;
+  line-height:1.7;
+  color:#d6d0ea;
+  user-select:text;
+}
+.tok-kw{color:#c084fc;font-weight:500}
+.tok-fn{color:#60a5fa}
+.tok-str{color:#4ade80}
+.tok-num{color:#fbbf24}
+.tok-com{color:#6b6488;font-style:italic}
+.tok-dec{color:#f472b6}
+.tok-cls{color:#facc15}
+
+/* ===== REFLEXIÓN (colapsable) ===== */
+.reflex{
+  background:linear-gradient(135deg,var(--card-2),var(--card));
+  border:1px solid var(--borde);
+  border-left:3px solid var(--acento);
+  border-radius:11px;
+  padding:18px 20px;
+  margin:20px 0;
+}
+.reflex-q{
+  display:flex;gap:11px;align-items:flex-start;
+}
+.reflex-q .q-ic{
+  font-size:19px;flex-shrink:0;
+}
+.reflex-q p{
+  margin:0;
+  font-size:15.5px;
+  color:var(--texto);
+  font-weight:550;
+  font-style:italic;
+}
+.reflex-toggle{
+  margin-top:14px;
+  background:var(--bg-3);
+  border:1px solid var(--borde);
+  color:var(--acento-soft);
+  font-size:13px;font-weight:600;
+  padding:8px 15px;border-radius:8px;
+  cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Inter',sans-serif;
+  transition:all .15s;
+}
+.reflex-toggle:hover{background:var(--acento);color:#fff;border-color:var(--acento)}
+.reflex-answer{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .35s ease;
+}
+.reflex-answer-inner{
+  padding:16px 16px 4px;
+  margin-top:14px;
+  border-top:1px dashed var(--borde);
+}
+.reflex-answer-inner p{
+  margin:0;
+  font-size:14.5px;
+  color:var(--texto-2);
+}
+.reflex-answer-inner .lead{
+  color:var(--verde);
+  font-weight:700;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  display:block;
+  margin-bottom:7px;
+}
+
+/* ===== INFOGRAFÍAS CSS ===== */
+.layers{
+  display:flex;flex-direction:column;gap:12px;
+  margin:22px 0;
+}
+.layer{
+  display:flex;align-items:center;gap:16px;
+  background:var(--card);
+  border:1px solid var(--borde);
+  border-radius:12px;
+  padding:16px 18px;
+  position:relative;
+}
+.layer .l-ic{
+  font-size:26px;
+  width:52px;height:52px;
+  background:var(--bg-3);
+  border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.layer .l-body{flex:1}
+.layer .l-title{
+  font-weight:700;font-size:15px;color:#fff;
+  display:flex;align-items:center;gap:9px;
+  margin-bottom:3px;
+}
+.layer .l-file{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--acento-soft);
+  background:var(--bg-3);
+  padding:2px 8px;border-radius:5px;
+  border:1px solid var(--borde);
+}
+.layer .l-desc{font-size:13.5px;color:var(--texto-2)}
+.layer.router{border-left:3px solid #60a5fa}
+.layer.service{border-left:3px solid var(--naranja)}
+.layer.data{border-left:3px solid var(--verde)}
+.layer.schema{border-left:3px solid var(--acento-soft)}
+
+/* Flujo vertical */
+.flow{
+  margin:22px 0;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.flow-step{
+  background:var(--card);
+  border:1px solid var(--borde);
+  border-radius:11px;
+  padding:14px 20px;
+  width:100%;
+  max-width:520px;
+  text-align:center;
+}
+.flow-step .fs-file{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px;color:var(--acento-soft);font-weight:600;
+}
+.flow-step .fs-desc{font-size:13px;color:var(--texto-2);margin-top:3px}
+.flow-arrow{
+  color:var(--acento-soft);
+  font-size:20px;
+  padding:6px 0;
+  line-height:1;
+}
+.flow-step.hl{border-color:var(--acento);background:linear-gradient(135deg,var(--card-2),var(--card))}
+
+/* Tabla comparativa */
+.mini-table{
+  width:100%;
+  border-collapse:collapse;
+  margin:18px 0;
+  font-size:14px;
+  background:var(--card);
+  border-radius:11px;
+  overflow:hidden;
+  border:1px solid var(--borde);
+}
+.mini-table th{
+  background:var(--bg-3);
+  color:var(--texto);
+  text-align:left;
+  padding:11px 15px;
+  font-weight:650;
+  font-size:12.5px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.mini-table td{
+  padding:11px 15px;
+  border-top:1px solid var(--borde);
+  color:var(--texto-2);
+}
+.mini-table td:first-child{color:var(--texto);font-weight:600}
+.mini-table code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px;color:var(--acento-soft);
+}
+
+/* ===== AVISO COPYRIGHT ===== */
+.copyright-notice{
+  background:var(--card);
+  border:1px solid var(--borde);
+  border-left:4px solid var(--acento);
+  border-radius:11px;
+  padding:18px 20px;
+  margin:26px 0 6px;
+}
+.copyright-notice .cn-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px;
+  text-transform:uppercase;
+  letter-spacing:1.2px;
+  color:var(--acento-soft);
+  font-weight:700;
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:10px;
+}
+.copyright-notice p{
+  font-size:13.5px;
+  color:var(--texto-2);
+  margin:0;
+}
+.copyright-notice b{color:var(--texto)}
+
+/* ===== PIE ===== */
+.footer{
+  margin-top:40px;
+  padding-top:24px;
+  border-top:1px solid var(--borde);
+  text-align:center;
+  font-size:12.5px;
+  color:var(--texto-3);
+  line-height:1.8;
+}
+.footer a{color:var(--acento-soft);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+
+/* ===== MARCA DE AGUA ===== */
+.watermark{
+  position:fixed;
+  bottom:14px;right:16px;
+  font-size:11px;
+  color:var(--texto-2);
+  opacity:.4;
+  z-index:60;
+  pointer-events:none;
+  font-family:'JetBrains Mono',monospace;
+  user-select:none;
+}
+
+/* ===== BOTÓN PRESENTACIÓN ===== */
+.present-btn{
+  position:fixed;
+  bottom:20px;left:300px;
+  z-index:70;
+  background:linear-gradient(135deg,var(--acento),var(--acento-2));
+  color:#fff;
+  border:none;
+  padding:11px 18px;
+  border-radius:10px;
+  font-size:13px;font-weight:600;
+  cursor:pointer;
+  font-family:'Inter',sans-serif;
+  box-shadow:0 6px 20px rgba(96,24,240,.4);
+  display:flex;align-items:center;gap:8px;
+  transition:transform .15s;
+}
+.present-btn:hover{transform:translateY(-2px)}
+
+/* ===== MODO PRESENTACIÓN ===== */
+body.presenting .sidebar,
+body.presenting .present-btn,
+body.presenting .watermark{display:none}
+body.presenting .main{margin-left:0;padding:0}
+body.presenting .content{max-width:1000px;padding:0 50px}
+body.presenting .section{
+  display:none;
+  min-height:100vh;
+  padding:70px 0;
+  border-bottom:none;
+  animation:slideIn .4s ease;
+}
+body.presenting .section.slide-active{
+  display:flex;flex-direction:column;justify-content:center;
+}
+body.presenting .hero{display:none}
+body.presenting .hero.slide-active{
+  display:flex;flex-direction:column;justify-content:center;
+  min-height:100vh;padding:70px 0;border-bottom:none;
+  animation:slideIn .4s ease;
+}
+body.presenting .footer{display:none}
+@keyframes slideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.present-bar{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  z-index:80;
+  background:linear-gradient(180deg,transparent,var(--bg));
+  padding:20px;
+  justify-content:center;align-items:center;gap:18px;
+}
+body.presenting .present-bar{display:flex}
+.present-bar button{
+  background:var(--card-2);
+  border:1px solid var(--borde);
+  color:var(--texto);
+  width:44px;height:44px;border-radius:11px;
+  font-size:18px;cursor:pointer;
+  transition:all .15s;
+}
+.present-bar button:hover{background:var(--acento);border-color:var(--acento);color:#fff}
+.present-counter{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;color:var(--texto-2);
+  min-width:70px;text-align:center;
+}
+.present-hint{
+  position:fixed;top:18px;right:22px;z-index:80;
+  font-size:12px;color:var(--texto-3);
+  display:none;
+  font-family:'JetBrains Mono',monospace;
+}
+body.presenting .present-hint{display:block}
+
+/* ===== RESPONSIVE ===== */
+.menu-toggle{
+  display:none;
+  position:fixed;top:14px;left:14px;z-index:110;
+  background:var(--acento);color:#fff;border:none;
+  width:44px;height:44px;border-radius:11px;
+  font-size:20px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(96,24,240,.4);
+}
+
+@media(max-width:960px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;padding:0 18px 60px}
+  .menu-toggle{display:block}
+  .present-btn{left:16px}
+  .hero{padding:70px 0 28px}
+  .hero h1{font-size:29px}
+  .watermark{display:none}
+  .content{padding-top:8px}
+}
+</style>
+</head>
+<body>
+
+<!-- Botón menú móvil -->
+<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<!-- ===== BARRA LATERAL ===== -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="brand">
+      <span class="logo">⚡</span>
+      <span>Dev Senior Code</span>
+    </div>
+    <div class="brand-sub">Python Backend Developer · Módulo 1</div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-label">Clase 3 · Arquitectura</div>
+    <a href="#intro" class="nav-link"><span class="ic">🎯</span> Punto de partida <span class="num">00</span></a>
+    <a href="#balance" class="nav-link"><span class="ic">🔁</span> Balance del recorrido <span class="num">01</span></a>
+    <a href="#concepto" class="nav-link"><span class="ic">🧠</span> ¿Qué son las capas? <span class="num">02</span></a>
+    <a href="#schemas" class="nav-link"><span class="ic">🗂️</span> Capa Schemas <span class="num">03</span></a>
+    <a href="#service" class="nav-link"><span class="ic">🍳</span> Capa Service <span class="num">04</span></a>
+    <a href="#router" class="nav-link"><span class="ic">🛎️</span> Capa Router <span class="num">05</span></a>
+    <a href="#main" class="nav-link"><span class="ic">🔌</span> Conectar todo <span class="num">06</span></a>
+    <a href="#probar" class="nav-link"><span class="ic">✅</span> Probar el refactor <span class="num">07</span></a>
+    <a href="#cuadro" class="nav-link"><span class="ic">🧩</span> El cuadro completo <span class="num">08</span></a>
+    <a href="#cierre" class="nav-link"><span class="ic">🏁</span> Cierre y puente <span class="num">09</span></a>
+  </nav>
+
+  <div class="progress-wrap">
+    <div class="progress-label"><span>Progreso</span><span id="progress-pct">0%</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+</aside>
+
+<!-- ===== CONTENIDO ===== -->
+<main class="main">
+<div class="content">
+
+  <!-- HERO -->
+  <header class="hero section-slide" id="intro">
+    <span class="eyebrow">🐍 Módulo 1 · Clase 3</span>
+    <h1>Arquitectura por Capas</h1>
+    <p>Hoy no agregamos funciones nuevas: tomamos el <code class="inline">main.py</code> que ya lo hace todo y lo repartimos en capas con responsabilidades claras. Los mismos muebles, pero cada cosa en su cuarto. Al final la API responderá idéntica… pero el código será profesional.</p>
+    <div class="hero-meta">
+      <span class="chip">🎓 Nivel <b>Intermedio</b></span>
+      <span class="chip">🛠️ <b>FastAPI · APIRouter</b></span>
+      <span class="chip">📦 <b>Refactor del CRUD</b></span>
+      <span class="chip">🧩 <b>schema · service · router</b></span>
+    </div>
+
+    <div class="copyright-notice">
+      <div class="cn-title">© Aviso de derechos de autor</div>
+      <p>Este material es de autoría exclusiva de <b>Ana Alvarado</b> y su acceso está limitado a las y los estudiantes de esta cohorte. <b>Queda prohibida su reproducción, redistribución o uso fuera de clase</b> sin autorización escrita de la autora.</p>
+    </div>
+  </header>
+
+  <!-- ===== 00 · APERTURA ===== -->
+  <section class="section section-slide" id="apertura">
+    <div class="section-head">
+      <div class="section-icon">🎯</div>
+      <div>
+        <div class="section-num">PUNTO DE PARTIDA</div>
+        <h2>Una pregunta de negocio</h2>
+      </div>
+    </div>
+    <div class="section-body">
+      <p>Imagina que tu API de la tienda creció. Ahora el negocio pide sumar <strong>usuarios</strong>, <strong>ventas</strong>, <strong>categorías</strong>, <strong>proveedores</strong>… y contratan a dos compañeros más para ayudarte.</p>
+      <p>El lunes llegan, abren el proyecto, y se encuentran con <strong>un solo archivo <code class="inline">main.py</code> de 800 líneas</strong> donde está TODO: los schemas, la base de datos y los treinta endpoints mezclados.</p>
+      <p>Compañero 1 quiere trabajar en usuarios. Compañero 2, en ventas. Ambos tienen que editar <strong>el mismo archivo gigante</strong> al tiempo. Se pisan los cambios, chocan en cada guardado, y encontrar “dónde se crea un producto” es bajar por un río interminable de código.</p>
+
+      <div class="banner tip">
+        <span class="b-ic">💡</span>
+        <p><b>La pregunta de hoy:</b> ¿cómo organizo mi código para que varias personas trabajen sin estorbarse, para encontrar cada cosa en segundos, y para que cambiar una parte no rompa las demás?</p>
+      </div>
+
+      <p>Eso resolveremos hoy: <strong>arquitectura por capas</strong>. No cambiaremos lo que la API hace; cambiaremos <strong>cómo está organizada por dentro</strong>. Y eso es justo lo que separa un proyecto de juguete de uno profesional.</p>
+    </div>
+  </section>
+
+  <!-- ===== 01 · BALANCE ===== -->
+  <section class="section section-slide" id="balance">
+    <div class="section-head">
+      <div class="section-icon">🔁</div>
+      <div>
+        <div class="section-num">01 · BALANCE</div>
+        <h2>¿Qué tenemos y cómo llegamos aquí?</h2>
+      </div>
+    </div>
+    <div class="section-body">
+      <p>Hoy es el día en que todo lo construido cobra su forma final. Veámoslo como una historia de tres capítulos:</p>
+      <ul>
+        <li><strong>Clase 1:</strong> qué es una API REST, instalación de FastAPI, la estructura de carpetas (varias quedaron <strong>vacías</strong>), primeros GET, y POST + Pydantic para crear y guardar en memoria.</li>
+        <li><strong>Clase 2:</strong> completamos el CRUD. Identidad con ID + contador, GET por id, filtros con query, PUT, DELETE y errores con <code class="inline">HTTPException</code> 404.</li>
+        <li><strong>Clase 3 (hoy):</strong> no agregamos funciones nuevas. <strong>Organizamos</strong> todo lo anterior en capas profesionales.</li>
+      </ul>
+
+      <h3>Lo que tu API ya sabe hacer</h3>
+      <p>Tu <code class="inline">main.py</code> actual tiene, todo junto: el <strong>schema</strong> <code class="inline">ProductoCreate</code>, la <strong>“base de datos” en memoria</strong> (<code class="inline">productos_db</code> y <code class="inline">contador_id</code>), y los <strong>seis endpoints</strong> del CRUD. Todo funcionando. Todo en <strong>un solo archivo</strong>.</p>
+
+      <div class="reflex">
+        <div class="reflex-q">
+          <span class="q-ic">🤔</span>
+          <p>Si levantamos el <code class="inline">main.py</code> actual y lo miramos completo: ¿cuántas responsabilidades distintas está cumpliendo ese único archivo?</p>
+        </div>
+        <button class="reflex-toggle" onclick="toggleAnswer(this)">🔍 Ver explicación</button>
+        <div class="reflex-answer">
+          <div class="reflex-answer-inner">
+            <span class="lead">Respuesta</span>
+            <p>Al menos <strong>tres</strong> responsabilidades muy distintas conviven ahí: (1) <strong>validar</strong> los datos que entran (el schema Pydantic), (2) <strong>guardar y manipular</strong> los datos (la lista en memoria y la lógica de buscar/crear/borrar), y (3) <strong>atender las peticiones HTTP</strong> (los endpoints con sus decoradores). Son tres trabajos diferentes metidos en la misma habitación. Hoy le damos a cada uno su propio cuarto.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Verifiquemos que todo corre</h3>
+      <p>Antes de refactorizar, confirmemos que la API de la Clase 2 funciona. Con el <code class="inline">(venv)</code> activo, desde la carpeta que contiene <code class="inline">app/</code>:</p>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">bash</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code>uvicorn app.main:app --reload</code></pre>
+      </div>
+
+      <p>Abre <code class="inline">http://127.0.0.1:8000/docs</code>, crea un par de productos con <code class="inline">POST /productos</code> y haz <code class="inline">GET /productos</code>. Si ves tus productos con su id, estamos listos. Es también el momento de resolver dudas que quedaron de la Clase 2: probamos cada endpoint una vez más antes de moverlo.</p>
+
+      <div class="banner warn">
+        <span class="b-ic">⚠️</span>
+        <p>Cada vez que guardemos un archivo, el <b>--reload</b> reinicia el servidor y la lista en memoria se vacía. Es normal. Volveremos a crear productos de prueba al final, cuando todo esté reorganizado.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 02 · CONCEPTO ===== -->
+  <section class="section section-slide" id="concepto">
+    <div class="section-head">
+      <div class="section-icon">🧠</div>
+      <div>
+        <div class="section-num">02 · CONCEPTO</div>
+        <h2>¿Qué es la arquitectura por capas?</h2>
+      </div>
+    </div>
+    <div class="section-body">
+      <h3>El problema de fondo</h3>
+      <p>Cuando todo vive en un archivo, ese archivo tiene <strong>demasiadas razones para cambiar</strong>. Si cambias la validación, lo tocas. Si cambias cómo guardas datos, lo tocas. Si cambias una ruta, lo tocas. Todos metiendo mano en el mismo sitio. Es frágil y caótico.</p>
+
+      <h3>La idea: separar por responsabilidades</h3>
+      <p>Dividir el código en grupos, donde <strong>cada grupo tiene un único trabajo bien definido</strong>. En una API backend profesional, las capas clásicas son tres:</p>
+      <ul>
+        <li><strong>Capa de rutas (router):</strong> recibe la petición HTTP y devuelve la respuesta. Es la “recepción”.</li>
+        <li><strong>Capa de servicio (service):</strong> contiene la <strong>lógica de negocio</strong> (cómo se busca, se crea, se borra). Es la “cocina”.</li>
+        <li><strong>Capa de datos:</strong> guarda la información (hoy, memoria; en Módulo 2, PostgreSQL). Es la “bodega”.</li>
+      </ul>
+      <p>Y aparte, los <strong>schemas</strong> (validación) viven en su propia carpeta, porque validar también es un trabajo propio.</p>
+
+      <div class="def-grid">
+        <div class="def-card tecnica">
+          <div class="tag">⚙️ Definición técnica</div>
+          <p>Patrón de diseño que organiza el software en capas horizontales, cada una con una responsabilidad específica, donde una capa solo se comunica con la contigua. Se apoya en el <strong>Principio de Responsabilidad Única</strong> (la “S” de SOLID): cada módulo debe tener una sola razón para cambiar.</p>
+        </div>
+        <div class="def-card real">
+          <div class="tag">🍽️ En la vida real</div>
+          <p>Un <strong>restaurante</strong>: el <strong>mesero</strong> (router) toma tu pedido y trae el plato, no cocina. El <strong>cocinero</strong> (service) prepara la comida, no atiende mesas. La <strong>bodega</strong> (datos) guarda ingredientes. Si el mesero cocinara, lavara y comprara, sería un caos. La cocina profesional separa roles.</p>
+        </div>
+      </div>
+
+      <div class="reflex">
+        <div class="reflex-q">
+          <span class="q-ic">🤔</span>
+          <p>En el restaurante, si un día cambias de proveedor de carne, ¿tiene que enterarse el mesero? ¿Cambia algo en cómo atiende las mesas?</p>
+        </div>
+        <button class="reflex-toggle" onclick="toggleAnswer(this)">🔍 Ver explicación</button>
+        <div class="reflex-answer">
+          <div class="reflex-answer-inner">
+            <span class="lead">Respuesta</span>
+            <p>No, para nada. El mesero sigue tomando pedidos igual; lo único que cambió fue de dónde sale la carne, allá en la bodega. <strong>Esa es la ganancia de separar capas.</strong> Cuando en el Módulo 2 cambiemos la “bodega” (de lista en memoria a PostgreSQL), los routers <strong>no se van a enterar</strong>: seguirán atendiendo igual. Solo cambiaremos la capa de datos por dentro. Hoy construimos justamente esa independencia.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Cómo va a quedar el proyecto</h3>
+      <p>Recuerda las carpetas que creamos <strong>vacías</strong> en la Clase 1. Hoy por fin cobran sentido:</p>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">estructura</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code>tienda_dev/
+└── app/
+    ├── __init__.py
+    ├── main.py              <span class="tok-com"># queda mínimo: arranca la app y conecta el router</span>
+    ├── schemas/
+    │   └── producto_schema.py   <span class="tok-com"># el schema Pydantic (validación)</span>
+    ├── services/
+    │   └── producto_service.py  <span class="tok-com"># la lógica + la "base de datos" en memoria</span>
+    ├── routers/
+    │   └── producto_router.py   <span class="tok-com"># los endpoints (rutas HTTP)</span>
+    ├── models/             <span class="tok-com"># se queda VACÍA (será para el Módulo 2)</span>
+    └── config/             <span class="tok-com"># se queda VACÍA (será para más adelante)</span></code></pre>
+      </div>
+
+      <div class="banner tip">
+        <span class="b-ic">🧭</span>
+        <p><b>models/ y config/ se quedan vacías a propósito.</b> No las llenamos con algo inventado solo por llenarlas. Su momento llegará, y cuando llegue tendrán contenido real y necesario.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 03 · SCHEMAS ===== -->
+  <section class="section section-slide" id="schemas">
+    <div class="section-head">
+      <div class="section-icon">🗂️</div>
+      <div>
+        <div class="section-num">03 · PRIMERA CAPA</div>
+        <h2>Los Schemas</h2>
+      </div>
+    </div>
+    <div class="section-body">
+      <p>Empezamos por la pieza más independiente de todas. El schema <code class="inline">ProductoCreate</code> tiene un único trabajo: <strong>describir y validar</strong> la forma de un producto que entra. No sabe nada de rutas ni de cómo se guardan los datos. Por eso merece vivir aislado en <code class="inline">schemas/</code>.</p>
+
+      <div class="reflex">
+        <div class="reflex-q">
+          <span class="q-ic">🤔</span>
+          <p>El schema lo usa el POST y también el PUT (lo reutilizamos en la Clase 2). Si mañana creamos “duplicar producto” que también recibe esos datos, ¿dónde preferirías el schema: copiado en cada endpoint, o en un solo lugar que todos importan?</p>
+        </div>
+        <button class="reflex-toggle" onclick="toggleAnswer(this)">🔍 Ver explicación</button>
+        <div class="reflex-answer">
+          <div class="reflex-answer-inner">
+            <span class="lead">Respuesta</span>
+            <p>En <strong>un solo lugar</strong>, sin dudarlo. Si el schema está copiado en varios sitios y un día le agregas un campo (como hicimos con <code class="inline">categoria</code>), tendrías que cambiarlo en todos lados y tarde o temprano se te escapa uno. Centralizado en <code class="inline">schemas/</code>, lo cambias una vez y <strong>todos</strong> los que lo importan reciben el cambio. Eso es <strong>reutilización de código</strong>. Menos copias = menos errores.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Paso 1 · Crear el archivo del schema</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p><b>Archivo NUEVO.</b> En VS Code, dentro de <b>app/schemas/</b>, click derecho → “New File” → nómbralo <b>producto_schema.py</b></p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/schemas/producto_schema.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code><span class="tok-kw">from</span> pydantic <span class="tok-kw">import</span> BaseModel
+
+
+<span class="tok-kw">class</span> <span class="tok-cls">ProductoCreate</span>(BaseModel):
+    nombre: <span class="tok-cls">str</span>
+    precio: <span class="tok-cls">float</span>
+    stock: <span class="tok-cls">int</span>
+    categoria: <span class="tok-cls">str</span></code></pre>
+      </div>
+
+      <h4>Qué está pasando</h4>
+      <p>Es <strong>exactamente el mismo schema</strong> que ya tenías en <code class="inline">main.py</code>, ni una coma cambia. Lo único distinto es que ahora vive en su <strong>propio archivo</strong>.</p>
+      <p>Arriba repetimos <code class="inline">from pydantic import BaseModel</code> porque cada archivo de Python es un mundo independiente: necesita traer por sí mismo todo lo que usa. Este archivo usa <code class="inline">BaseModel</code>, así que este archivo lo importa. No hereda los imports de <code class="inline">main.py</code>.</p>
+
+      <h3>Paso 2 · Recordar el <code class="inline">__init__.py</code></h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p>Confirma que en <b>app/schemas/</b> ya existe el <b>__init__.py</b> que creamos en la Clase 1 (aunque esté vacío).</p>
+      </div>
+      <p>¿Recuerdas el “letrero en la puerta” de la Clase 1? Ese <code class="inline">__init__.py</code> es lo que convierte a <code class="inline">schemas/</code> en un <strong>paquete</strong> del que Python puede importar. Sin él, cuando escribamos <code class="inline">from app.schemas.producto_schema import ProductoCreate</code>, Python respondería con el temido <code class="inline">ModuleNotFoundError</code>. Por eso lo dejamos preparado desde el día uno: hoy es el día en que se usa.</p>
+    </div>
+  </section>
+
+  <!-- ===== 04 · SERVICE ===== -->
+  <section class="section section-slide" id="service">
+    <div class="section-head">
+      <div class="section-icon">🍳</div>
+      <div>
+        <div class="section-num">04 · SEGUNDA CAPA</div>
+        <h2>El Service</h2>
+      </div>
+    </div>
+    <div class="section-body">
+      <p>Esta es la capa más importante de la clase. Mira uno de tus endpoints de la Clase 2, por ejemplo el de obtener por id. Tiene <strong>dos cosas mezcladas</strong>:</p>
+      <ul>
+        <li>La parte de <strong>HTTP</strong>: “soy un GET en <code class="inline">/productos/{id}</code>, recibo un id, devuelvo una respuesta”.</li>
+        <li>La parte de <strong>lógica</strong>: “recorro la lista, comparo ids, si lo encuentro lo devuelvo, si no, aviso que no existe”.</li>
+      </ul>
+      <p>Esa segunda parte —el <strong>cómo se resuelve</strong> el problema— es la <strong>lógica de negocio</strong>. No tiene por qué vivir pegada al HTTP. La sacamos a su propia capa: el <strong>service</strong>.</p>
+
+      <div class="def-grid">
+        <div class="def-card tecnica">
+          <div class="tag">⚙️ Definición técnica</div>
+          <p>La <strong>lógica de negocio</strong> es el conjunto de reglas y operaciones que resuelven el problema real del dominio (buscar, crear, validar, calcular), independientemente de cómo se comunique con el exterior. La <strong>capa de servicio</strong> agrupa esa lógica en funciones reutilizables, separadas del transporte (HTTP).</p>
+        </div>
+        <div class="def-card real">
+          <div class="tag">🍽️ En la vida real</div>
+          <p>El <strong>cocinero</strong> sabe preparar el plato: esa receta es la misma sin importar si el pedido llegó por un mesero, por teléfono o por una app de domicilios. La <strong>receta</strong> (lógica) es independiente del <strong>canal</strong> por el que entró el pedido (HTTP).</p>
+        </div>
+      </div>
+
+      <div class="reflex">
+        <div class="reflex-q">
+          <span class="q-ic">🤔</span>
+          <p>En la Clase 2, POST, PUT y DELETE <strong>repetían</strong> el mismo patrón: recorrer <code class="inline">productos_db</code>, comparar por id, actuar. Si esa lógica de “buscar por id” estuviera escrita <strong>una sola vez</strong> en una función aparte, ¿cuántas veces la podrían reutilizar los endpoints?</p>
+        </div>
+        <button class="reflex-toggle" onclick="toggleAnswer(this)">🔍 Ver explicación</button>
+        <div class="reflex-answer">
+          <div class="reflex-answer-inner">
+            <span class="lead">Respuesta</span>
+            <p><strong>Todas las que quieran</strong>, sin repetir código. GET por id, PUT y DELETE necesitan “encontrar el producto tal”. Si esa búsqueda vive una vez en el service, los tres la llaman y ya. Hoy movemos toda la lógica al service, dejando la puerta abierta a esa reutilización. Menos repetición, código más limpio.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Paso 1 · Crear el archivo con la “base de datos”</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p><b>Archivo NUEVO.</b> En <b>app/services/</b>, crea <b>producto_service.py</b>. La “base de datos” en memoria <b>se muda desde main.py hasta aquí</b>.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/services/producto_service.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code>productos_db = []
+contador_id = <span class="tok-num">1</span></code></pre>
+      </div>
+      <p>Estas dos variables <strong>ya no vivirán en main.py</strong>. Su lugar natural es la capa que maneja los datos: el service. Son las mismas de siempre, solo cambiaron de casa.</p>
+
+      <div class="banner tip">
+        <span class="b-ic">🧭</span>
+        <p><b>¿Por qué aquí y no en models/?</b> Porque <b>models/</b> se reservará para los modelos de tablas reales de PostgreSQL (Módulo 2). Una lista en memoria no es un modelo de tabla: es un almacén temporal. Su hogar honesto hoy es el service. Cuando llegue PostgreSQL, será justo este archivo el que evolucione.</p>
+      </div>
+
+      <h3>Paso 2 · Mover la lógica de crear</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p>En el mismo <b>producto_service.py</b>, <b>debajo</b> de las dos variables.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/services/producto_service.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code><span class="tok-kw">def</span> <span class="tok-fn">crear_producto</span>(datos):
+    <span class="tok-kw">global</span> contador_id
+    nuevo = {
+        <span class="tok-str">"id"</span>: contador_id,
+        <span class="tok-str">"nombre"</span>: datos.nombre,
+        <span class="tok-str">"precio"</span>: datos.precio,
+        <span class="tok-str">"stock"</span>: datos.stock,
+        <span class="tok-str">"categoria"</span>: datos.categoria
+    }
+    productos_db.<span class="tok-fn">append</span>(nuevo)
+    contador_id += <span class="tok-num">1</span>
+    <span class="tok-kw">return</span> nuevo</code></pre>
+      </div>
+      <p>Es el <strong>mismo cuerpo</strong> que tenías dentro del endpoint POST, con un detalle: aquí es una <strong>función normal de Python</strong>, sin decorador <code class="inline">@app.post</code>. Ya no es un endpoint, es <strong>lógica pura</strong>. Recibe <code class="inline">datos</code>, construye el diccionario con su id, guarda, sube el contador y <strong>devuelve el producto creado</strong>. El <code class="inline">global contador_id</code> sigue siendo necesario por la misma razón de la Clase 2.</p>
+      <p>Nota lo que <strong>no</strong> hace: no sabe nada de HTTP, ni de códigos de respuesta, ni de rutas. Solo sabe crear productos.</p>
+
+      <h3>Paso 3 · Mover listar y filtrar</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p>En <b>producto_service.py</b>, debajo de <b>crear_producto</b>.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/services/producto_service.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code><span class="tok-kw">def</span> <span class="tok-fn">listar_productos</span>(categoria=<span class="tok-kw">None</span>, precio_max=<span class="tok-kw">None</span>):
+    resultado = productos_db
+    <span class="tok-kw">if</span> categoria <span class="tok-kw">is not</span> <span class="tok-kw">None</span>:
+        resultado = [p <span class="tok-kw">for</span> p <span class="tok-kw">in</span> resultado <span class="tok-kw">if</span> p[<span class="tok-str">"categoria"</span>].<span class="tok-fn">lower</span>() == categoria.<span class="tok-fn">lower</span>()]
+    <span class="tok-kw">if</span> precio_max <span class="tok-kw">is not</span> <span class="tok-kw">None</span>:
+        resultado = [p <span class="tok-kw">for</span> p <span class="tok-kw">in</span> resultado <span class="tok-kw">if</span> p[<span class="tok-str">"precio"</span>] &lt;= precio_max]
+    <span class="tok-kw">return</span> resultado</code></pre>
+      </div>
+      <p>Es la lógica de filtrado de la Clase 2, mudada tal cual. Una diferencia valiosa: aquí devolvemos <strong>solo la lista</strong>, no el <code class="inline">{"total": ..., "productos": ...}</code>. ¿Por qué? Porque armar esa respuesta es tarea de <strong>presentación</strong>, y eso le toca al router. El service consigue los datos correctos; el router decide cómo presentarlos.</p>
+
+      <h3>Paso 4 · Mover obtener por id</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p>En <b>producto_service.py</b>, debajo de lo anterior.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/services/producto_service.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code><span class="tok-kw">def</span> <span class="tok-fn">obtener_producto</span>(producto_id):
+    <span class="tok-kw">for</span> p <span class="tok-kw">in</span> productos_db:
+        <span class="tok-kw">if</span> p[<span class="tok-str">"id"</span>] == producto_id:
+            <span class="tok-kw">return</span> p
+    <span class="tok-kw">return</span> <span class="tok-kw">None</span></code></pre>
+      </div>
+      <p>Recorre la lista buscando el id, igual que en la Clase 2. Pero mira el cambio clave: cuando <strong>no</strong> encuentra el producto, aquí devolvemos <code class="inline">None</code>, <strong>no</strong> lanzamos <code class="inline">HTTPException</code>.</p>
+      <p>¿Por qué? Porque <code class="inline">HTTPException</code> es un concepto <strong>de HTTP</strong>, y el service no debe saber de HTTP (es la cocina, no el mesero). El service informa el hecho puro: “lo encontré” (devuelve el producto) o “no existe” (devuelve <code class="inline">None</code>). Será el <strong>router</strong> quien traduzca ese <code class="inline">None</code> en un 404.</p>
+
+      <div class="reflex">
+        <div class="reflex-q">
+          <span class="q-ic">🤔</span>
+          <p>El service, cuando no encuentra el producto, devuelve <code class="inline">None</code> en vez de lanzar el 404. ¿Por qué es mejor que el service NO sepa nada de códigos HTTP como el 404?</p>
+        </div>
+        <button class="reflex-toggle" onclick="toggleAnswer(this)">🔍 Ver explicación</button>
+        <div class="reflex-answer">
+          <div class="reflex-answer-inner">
+            <span class="lead">Respuesta</span>
+            <p>Porque el 404 es lenguaje de <strong>HTTP</strong>, y la lógica de negocio debería funcionar <strong>aunque no hubiera HTTP</strong>. Imagina usar <code class="inline">obtener_producto</code> desde un script de terminal o una tarea programada: ahí no existe el “404”. Si el service devuelve <code class="inline">None</code>, sirve para cualquier contexto; quien lo llame decide qué hacer. Mantener el service “puro” lo hace <strong>reutilizable en cualquier canal</strong>. Es la misma lección del cocinero cuya receta no depende de si el pedido entró por teléfono o por app.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Paso 5 · Mover actualizar y borrar</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p>En <b>producto_service.py</b>, al final del archivo.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/services/producto_service.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code><span class="tok-kw">def</span> <span class="tok-fn">actualizar_producto</span>(producto_id, datos):
+    <span class="tok-kw">for</span> p <span class="tok-kw">in</span> productos_db:
+        <span class="tok-kw">if</span> p[<span class="tok-str">"id"</span>] == producto_id:
+            p[<span class="tok-str">"nombre"</span>] = datos.nombre
+            p[<span class="tok-str">"precio"</span>] = datos.precio
+            p[<span class="tok-str">"stock"</span>] = datos.stock
+            p[<span class="tok-str">"categoria"</span>] = datos.categoria
+            <span class="tok-kw">return</span> p
+    <span class="tok-kw">return</span> <span class="tok-kw">None</span>
+
+
+<span class="tok-kw">def</span> <span class="tok-fn">eliminar_producto</span>(producto_id):
+    <span class="tok-kw">for</span> p <span class="tok-kw">in</span> productos_db:
+        <span class="tok-kw">if</span> p[<span class="tok-str">"id"</span>] == producto_id:
+            productos_db.<span class="tok-fn">remove</span>(p)
+            <span class="tok-kw">return</span> <span class="tok-kw">True</span>
+    <span class="tok-kw">return</span> <span class="tok-kw">False</span></code></pre>
+      </div>
+      <p><code class="inline">actualizar_producto</code> busca, sobrescribe los campos (sin tocar el <code class="inline">id</code>) y devuelve el producto; si no lo encuentra, devuelve <code class="inline">None</code>. <code class="inline">eliminar_producto</code> busca, quita con <code class="inline">.remove()</code> y devuelve <code class="inline">True</code>; si no encontró nada, <code class="inline">False</code>. El patrón se repite en todo el service: <strong>devolver un dato o una señal simple</strong> (<code class="inline">None</code>, <code class="inline">True</code>, <code class="inline">False</code>), nunca un error HTTP. El service reporta hechos; el router los interpreta.</p>
+
+      <div class="banner tip">
+        <span class="b-ic">✅</span>
+        <p>Con esto, <b>toda la lógica de negocio ya vive en el service</b>. La cocina está completa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 05 · ROUTER ===== -->
+  <section class="section section-slide" id="router">
+    <div class="section-head">
+      <div class="section-icon">🛎️</div>
+      <div>
+        <div class="section-num">05 · TERCERA CAPA</div>
+        <h2>El Router (APIRouter)</h2>
+      </div>
+    </div>
+    <div class="section-body">
+      <p>Ya tenemos la validación (schemas) y la lógica (service). Falta la “recepción”: la capa que recibe las peticiones HTTP y llama al service. Aquí aparece la gran herramienta nueva de hoy: <code class="inline">APIRouter</code>.</p>
+
+      <p>Hasta ahora, todos tus endpoints colgaban de <code class="inline">app</code> (<code class="inline">@app.get</code>, <code class="inline">@app.post</code>…). Eso obliga a que todo esté en <code class="inline">main.py</code>. Para separar los endpoints en su propio archivo, FastAPI nos da <code class="inline">APIRouter</code>.</p>
+
+      <div class="def-grid">
+        <div class="def-card tecnica">
+          <div class="tag">⚙️ Definición técnica</div>
+          <p><code class="inline">APIRouter</code> es una clase de FastAPI que funciona como una <strong>mini-aplicación</strong> de rutas: permite definir endpoints en un archivo aparte, agrupados, para luego <strong>conectarlos</strong> a la app principal con <code class="inline">app.include_router()</code>. Es el mecanismo oficial de FastAPI para dividir una API en múltiples archivos.</p>
+        </div>
+        <div class="def-card real">
+          <div class="tag">🏢 En la vida real</div>
+          <p>Una <strong>empresa con departamentos</strong>. Cada departamento (ventas, soporte, facturación) tiene su extensión y atiende lo suyo. La <strong>recepción central</strong> (la <code class="inline">app</code>) no atiende cada llamada: la <strong>redirige</strong> al departamento correcto. <code class="inline">APIRouter</code> es un departamento; <code class="inline">include_router</code> es la recepción diciendo “las llamadas de productos van a este departamento”.</p>
+        </div>
+      </div>
+
+      <div class="reflex">
+        <div class="reflex-q">
+          <span class="q-ic">🤔</span>
+          <p>Hoy tenemos un router: productos. Pero el negocio pedía sumar usuarios, ventas, categorías… Si cada uno tuviera su propio archivo de router, ¿qué ventaja tendrían tus compañeros al trabajar, comparado con el archivo gigante único?</p>
+        </div>
+        <button class="reflex-toggle" onclick="toggleAnswer(this)">🔍 Ver explicación</button>
+        <div class="reflex-answer">
+          <div class="reflex-answer-inner">
+            <span class="lead">Respuesta</span>
+            <p>Compañero 1 edita <code class="inline">usuario_router.py</code>, compañero 2 edita <code class="inline">venta_router.py</code>, y tú sigues en <code class="inline">producto_router.py</code>. <strong>Nadie pisa el archivo del otro.</strong> Se acabaron los choques al guardar. Y encontrar algo es instantáneo: “¿dónde se crea una venta?” → obvio, en <code class="inline">venta_router.py</code>. Esa es la <strong>organización profesional</strong> que busca la clase: el proyecto escala a muchos módulos sin volverse un caos.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Paso 1 · Crear el router e importar lo que usa</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p><b>Archivo NUEVO.</b> En <b>app/routers/</b>, crea <b>producto_router.py</b>.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/routers/producto_router.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code><span class="tok-kw">from</span> fastapi <span class="tok-kw">import</span> APIRouter, HTTPException
+<span class="tok-kw">from</span> app.schemas.producto_schema <span class="tok-kw">import</span> ProductoCreate
+<span class="tok-kw">from</span> app.services <span class="tok-kw">import</span> producto_service
+
+router = <span class="tok-fn">APIRouter</span>(prefix=<span class="tok-str">"/productos"</span>, tags=[<span class="tok-str">"Productos"</span>])</code></pre>
+      </div>
+      <h4>Línea por línea</h4>
+      <ul>
+        <li><code class="inline">from fastapi import APIRouter, HTTPException</code> → traemos la herramienta nueva para agrupar rutas y <code class="inline">HTTPException</code> para los 404, que <strong>ahora sí</strong> viven aquí, en la capa HTTP.</li>
+        <li><code class="inline">from app.schemas.producto_schema import ProductoCreate</code> → importamos el schema desde su nueva casa. Se lee como una ruta de carpetas. Aquí ves <strong>por qué necesitábamos los __init__.py</strong>.</li>
+        <li><code class="inline">from app.services import producto_service</code> → importamos el service <strong>completo</strong>, como módulo. Luego lo usamos con punto: <code class="inline">producto_service.crear_producto(...)</code>. Se lee clarísimo.</li>
+        <li><code class="inline">router = APIRouter(prefix="/productos", tags=["Productos"])</code> → el <code class="inline">prefix</code> hace que <strong>todas</strong> las rutas empiecen por <code class="inline">/productos</code> automáticamente; el <code class="inline">tags</code> las agrupa bajo “Productos” en Swagger.</li>
+      </ul>
+
+      <h3>Paso 2 · Endpoint de crear (POST)</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p>En <b>producto_router.py</b>, debajo de la creación del <b>router</b>.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/routers/producto_router.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code><span class="tok-dec">@router.post</span>(<span class="tok-str">"/"</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">crear</span>(producto: ProductoCreate):
+    nuevo = producto_service.<span class="tok-fn">crear_producto</span>(producto)
+    <span class="tok-kw">return</span> {<span class="tok-str">"mensaje"</span>: <span class="tok-str">"Producto creado exitosamente"</span>, <span class="tok-str">"producto"</span>: nuevo}</code></pre>
+      </div>
+      <p>Tres cambios respecto a la Clase 2: el decorador es <code class="inline">@router.post</code> (cuelga del router); la ruta es solo <code class="inline">"/"</code> (con el prefijo, significa <code class="inline">/productos</code>); y el cuerpo quedó <strong>diminuto</strong>: solo le pide al service que cree, y arma la respuesta HTTP. Lo que <strong>no</strong> cambia: sigue recibiendo <code class="inline">producto: ProductoCreate</code>, así la validación de Pydantic funciona idéntica.</p>
+
+      <h3>Paso 3 · Endpoint de listar (GET con filtros)</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p>En <b>producto_router.py</b>, debajo del anterior.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/routers/producto_router.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code><span class="tok-dec">@router.get</span>(<span class="tok-str">"/"</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">listar</span>(categoria: <span class="tok-cls">str</span> | <span class="tok-kw">None</span> = <span class="tok-kw">None</span>, precio_max: <span class="tok-cls">float</span> | <span class="tok-kw">None</span> = <span class="tok-kw">None</span>):
+    resultado = producto_service.<span class="tok-fn">listar_productos</span>(categoria, precio_max)
+    <span class="tok-kw">return</span> {<span class="tok-str">"total"</span>: <span class="tok-fn">len</span>(resultado), <span class="tok-str">"productos"</span>: resultado}</code></pre>
+      </div>
+      <p>El router recibe los parámetros de query y se los pasa al service. Aquí se ve clarísima la división: el <strong>service</strong> devolvió solo la lista; el <strong>router</strong> la envuelve en <code class="inline">{"total": ..., "productos": ...}</code> para presentarla. Conseguir los datos es de la cocina; darles formato es de la recepción.</p>
+
+      <h3>Paso 4 · Endpoint de obtener por id (GET)</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p>En <b>producto_router.py</b>, debajo.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/routers/producto_router.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code><span class="tok-dec">@router.get</span>(<span class="tok-str">"/{producto_id}"</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">obtener</span>(producto_id: <span class="tok-cls">int</span>):
+    producto = producto_service.<span class="tok-fn">obtener_producto</span>(producto_id)
+    <span class="tok-kw">if</span> producto <span class="tok-kw">is</span> <span class="tok-kw">None</span>:
+        <span class="tok-kw">raise</span> <span class="tok-fn">HTTPException</span>(status_code=<span class="tok-num">404</span>, detail=<span class="tok-str">"Producto no encontrado"</span>)
+    <span class="tok-kw">return</span> producto</code></pre>
+      </div>
+      <p>Aquí ocurre la <strong>traducción</strong>. El router pide el producto al service. El service devuelve el producto <strong>o</strong> <code class="inline">None</code>. Entonces el router revisa: si vino <code class="inline">None</code>, <strong>es el router</strong> quien lanza el 404. El service dijo el <strong>hecho</strong> (“no existe”, con <code class="inline">None</code>), y el router lo tradujo al <strong>idioma HTTP</strong> (404).</p>
+
+      <div class="reflex">
+        <div class="reflex-q">
+          <span class="q-ic">🤔</span>
+          <p>La decisión del 404 la toma el router, no el service. Si tuviéramos otro router que también use <code class="inline">obtener_producto</code>, ¿podría cada uno reaccionar diferente ante el <code class="inline">None</code>?</p>
+        </div>
+        <button class="reflex-toggle" onclick="toggleAnswer(this)">🔍 Ver explicación</button>
+        <div class="reflex-answer">
+          <div class="reflex-answer-inner">
+            <span class="lead">Respuesta</span>
+            <p>Sí, y ahí está la belleza. Un router de API pública podría responder 404. Otro contexto podría, ante el mismo <code class="inline">None</code>, devolver un producto por defecto, registrarlo en un log, o reintentar. El service entregó el hecho neutral (<code class="inline">None</code>); <strong>cada quien decide cómo reaccionar</strong>. Si el service ya hubiera lanzado el 404, les habría impuesto esa decisión a todos. Esa flexibilidad es lo que ganamos separando capas.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Paso 5 · Actualizar (PUT) y borrar (DELETE)</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p>En <b>producto_router.py</b>, al final del archivo.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/routers/producto_router.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code><span class="tok-dec">@router.put</span>(<span class="tok-str">"/{producto_id}"</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">actualizar</span>(producto_id: <span class="tok-cls">int</span>, datos: ProductoCreate):
+    producto = producto_service.<span class="tok-fn">actualizar_producto</span>(producto_id, datos)
+    <span class="tok-kw">if</span> producto <span class="tok-kw">is</span> <span class="tok-kw">None</span>:
+        <span class="tok-kw">raise</span> <span class="tok-fn">HTTPException</span>(status_code=<span class="tok-num">404</span>, detail=<span class="tok-str">"Producto no encontrado"</span>)
+    <span class="tok-kw">return</span> {<span class="tok-str">"mensaje"</span>: <span class="tok-str">"Producto actualizado"</span>, <span class="tok-str">"producto"</span>: producto}
+
+
+<span class="tok-dec">@router.delete</span>(<span class="tok-str">"/{producto_id}"</span>)
+<span class="tok-kw">def</span> <span class="tok-fn">eliminar</span>(producto_id: <span class="tok-cls">int</span>):
+    eliminado = producto_service.<span class="tok-fn">eliminar_producto</span>(producto_id)
+    <span class="tok-kw">if</span> <span class="tok-kw">not</span> eliminado:
+        <span class="tok-kw">raise</span> <span class="tok-fn">HTTPException</span>(status_code=<span class="tok-num">404</span>, detail=<span class="tok-str">"Producto no encontrado"</span>)
+    <span class="tok-kw">return</span> {<span class="tok-str">"mensaje"</span>: <span class="tok-str">f"Producto {producto_id} eliminado correctamente"</span>}</code></pre>
+      </div>
+      <p>Ambos siguen el mismo patrón limpio: piden al service y traducen la respuesta a HTTP. En el PUT, el <code class="inline">None</code> se vuelve 404. En el DELETE, el <code class="inline">False</code> se vuelve 404 (<code class="inline">if not eliminado</code> se lee “si NO se eliminó”). Comparados con la Clase 2 hacen lo mismo, pero ahora cada endpoint es <strong>corto y legible</strong> porque delegó el trabajo pesado.</p>
+
+      <h3>Paso 6 · Los <code class="inline">__init__.py</code> de routers y services</h3>
+      <p>Confirma que existen <code class="inline">app/routers/__init__.py</code> y <code class="inline">app/services/__init__.py</code> (creados en la Clase 1, pueden estar vacíos). Sin esos “letreros”, los imports <code class="inline">from app.routers...</code> y <code class="inline">from app.services...</code> fallarían con <code class="inline">ModuleNotFoundError</code>. Otro pago de la preparación del primer día.</p>
+    </div>
+  </section>
+
+  <!-- ===== 06 · MAIN ===== -->
+  <section class="section section-slide" id="main">
+    <div class="section-head">
+      <div class="section-icon">🔌</div>
+      <div>
+        <div class="section-num">06 · CONECTAR TODO</div>
+        <h2>El main.py mínimo</h2>
+      </div>
+    </div>
+    <div class="section-body">
+      <p>Ya tenemos las tres capas en sus archivos. Falta dejar <code class="inline">main.py</code> limpio y <strong>conectar</strong> el router a la app. <code class="inline">main.py</code> deja de ser el archivo que hace todo y pasa a ser el <strong>punto de arranque</strong>: crea la app y le dice “tus rutas de productos están en este router, conéctalas”. Nada más.</p>
+
+      <div class="reflex">
+        <div class="reflex-q">
+          <span class="q-ic">🤔</span>
+          <p>El <code class="inline">main.py</code> de la Clase 2 tenía como 60 líneas con todo mezclado. ¿Qué dice de la calidad de un proyecto que su archivo principal quede corto y fácil de leer?</p>
+        </div>
+        <button class="reflex-toggle" onclick="toggleAnswer(this)">🔍 Ver explicación</button>
+        <div class="reflex-answer">
+          <div class="reflex-answer-inner">
+            <span class="lead">Respuesta</span>
+            <p>Dice que las responsabilidades <strong>están bien repartidas</strong>. Cuando el archivo de entrada es corto, es porque cada pieza encontró su lugar en otra capa. Un <code class="inline">main.py</code> de arranque debería leerse casi como un índice: “esto es la app, estos son sus routers”. Si en cambio es un monstruo de mil líneas, las responsabilidades están amontonadas. <strong>La brevedad del main.py es un síntoma de buena arquitectura.</strong></p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Reescribir main.py</h3>
+      <div class="banner file">
+        <span class="b-ic">📍</span>
+        <p>En <b>app/main.py</b>: <b>borra todo lo que tiene</b> (schema, variables, los seis endpoints) y <b>reemplázalo completo</b> por esto.</p>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">app/main.py</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code><span class="tok-kw">from</span> fastapi <span class="tok-kw">import</span> FastAPI
+<span class="tok-kw">from</span> app.routers <span class="tok-kw">import</span> producto_router
+
+app = <span class="tok-fn">FastAPI</span>(
+    title=<span class="tok-str">"Tienda Dev Senior"</span>,
+    description=<span class="tok-str">"API Backend profesional - Dev Senior Code"</span>,
+    version=<span class="tok-str">"1.0.0"</span>
+)
+
+app.<span class="tok-fn">include_router</span>(producto_router.router)</code></pre>
+      </div>
+      <h4>Línea por línea</h4>
+      <ul>
+        <li>Traemos <code class="inline">FastAPI</code> para crear la app y <code class="inline">producto_router</code> (el módulo entero) desde <code class="inline">routers</code>.</li>
+        <li>Creamos la app con su metadata para Swagger. Esto no cambió.</li>
+        <li><code class="inline">app.include_router(producto_router.router)</code> es la <strong>línea clave de conexión</strong>: le dice a la app “toma el <code class="inline">router</code> que está dentro de <code class="inline">producto_router</code> y súmate todas sus rutas”. Fíjate en la doble parte: <code class="inline">producto_router</code> (el archivo/módulo) <code class="inline">.router</code> (la variable <code class="inline">APIRouter</code> que creamos dentro).</li>
+      </ul>
+
+      <div class="banner tip">
+        <span class="b-ic">✨</span>
+        <p>Mira lo que <b>ya no está</b> aquí: ni schema, ni productos_db, ni contador_id, ni un solo endpoint. Todo encontró su hogar en otra capa. <b>main.py quedó en seis líneas de contenido real.</b> Ese vacío es la señal de que el refactor salió bien.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 07 · PROBAR ===== -->
+  <section class="section section-slide" id="probar">
+    <div class="section-head">
+      <div class="section-icon">✅</div>
+      <div>
+        <div class="section-num">07 · PROBAR EL REFACTOR</div>
+        <h2>Que todo siga funcionando igual</h2>
+      </div>
+    </div>
+    <div class="section-body">
+      <p>El momento de la verdad. Refactorizar bien significa que, por fuera, <strong>nada cambió</strong>: la API debe comportarse idéntica a la de la Clase 2.</p>
+
+      <h3>Levantar el servidor</h3>
+      <p>Guarda todos los archivos. Con el <code class="inline">(venv)</code> activo, desde la carpeta que contiene <code class="inline">app/</code>:</p>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div style="display:flex;align-items:center"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">bash</span></div>
+          <button class="copy-btn" onclick="copyCode(this)"><span>📋</span> Copiar</button>
+        </div>
+        <pre><code>uvicorn app.main:app --reload</code></pre>
+      </div>
+      <p>El comando de arranque es <strong>exactamente el mismo</strong>. Desde afuera, nadie nota que por dentro reorganizamos todo. Abre <code class="inline">http://127.0.0.1:8000/docs</code>: verás tus endpoints agrupados bajo la sección <strong>“Productos”</strong> (ese fue el <code class="inline">tags=["Productos"]</code>). Ya se ve más profesional.</p>
+
+      <h3>La batería de pruebas</h3>
+      <ul>
+        <li><strong>Crear</strong> — <code class="inline">POST /productos</code> con un producto → responde con su <code class="inline">id: 1</code>. Crea un par más.</li>
+        <li><strong>Listar</strong> — <code class="inline">GET /productos</code> → todos con su <code class="inline">total</code>.</li>
+        <li><strong>Filtrar</strong> — <code class="inline">GET /productos</code> con <code class="inline">categoria = tecnologia</code> → solo los de esa categoría. La combinación de filtros sigue funcionando.</li>
+        <li><strong>Obtener uno</strong> — <code class="inline">GET /productos/1</code> → el producto 1. <code class="inline">GET /productos/999</code> → <strong>404</strong>.</li>
+        <li><strong>Actualizar</strong> — <code class="inline">PUT /productos/1</code> con datos nuevos → confirma el cambio conservando el id.</li>
+        <li><strong>Borrar</strong> — <code class="inline">DELETE /productos/1</code> → confirma. Repite el mismo DELETE → <strong>404</strong>.</li>
+      </ul>
+
+      <div class="reflex">
+        <div class="reflex-q">
+          <span class="q-ic">🤔</span>
+          <p>Reorganizamos TODO el código en tres capas nuevas, y sin embargo la API responde exactamente igual que la clase pasada. ¿Cómo puede ser que cambiáramos tantísimo por dentro y el comportamiento externo sea idéntico?</p>
+        </div>
+        <button class="reflex-toggle" onclick="toggleAnswer(this)">🔍 Ver explicación</button>
+        <div class="reflex-answer">
+          <div class="reflex-answer-inner">
+            <span class="lead">Respuesta</span>
+            <p>No cambiamos <strong>qué</strong> hace el código, solo <strong>dónde</strong> vive cada parte. A eso se le llama <strong>refactorizar</strong>: mejorar la estructura interna sin alterar el comportamiento externo. Es como reorganizar los cajones de tu cocina: los mismos utensilios, ahora ordenados; cocinas igual de rico, pero encuentras todo más rápido. Que la API responda idéntica <strong>es la prueba de que el refactor salió bien</strong>. La igualdad externa es nuestra red de seguridad.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 08 · CUADRO COMPLETO ===== -->
+  <section class="section section-slide" id="cuadro">
+    <div class="section-head">
+      <div class="section-icon">🧩</div>
+      <div>
+        <div class="section-num">08 · EL CUADRO COMPLETO</div>
+        <h2>Cómo viaja una petición</h2>
+      </div>
+    </div>
+    <div class="section-body">
+      <p>Un mismo pedido de “crear producto” ahora hace este viaje limpio por las capas:</p>
+
+      <div class="flow">
+        <div class="flow-step">
+          <div class="fs-file">Cliente (Swagger)</div>
+          <div class="fs-desc">POST /productos { …json… }</div>
+        </div>
+        <div class="flow-arrow">▼</div>
+        <div class="flow-step hl">
+          <div class="fs-file">producto_router.py</div>
+          <div class="fs-desc">recibe HTTP, valida con el schema → llama a producto_service.crear_producto(datos)</div>
+        </div>
+        <div class="flow-arrow">▼</div>
+        <div class="flow-step">
+          <div class="fs-file">producto_service.py</div>
+          <div class="fs-desc">lógica: arma el dict, asigna id, guarda en productos_db → devuelve el producto</div>
+        </div>
+        <div class="flow-arrow">▼</div>
+        <div class="flow-step hl">
+          <div class="fs-file">producto_router.py</div>
+          <div class="fs-desc">arma la respuesta HTTP de confirmación</div>
+        </div>
+        <div class="flow-arrow">▼</div>
+        <div class="flow-step">
+          <div class="fs-file">Cliente (Swagger)</div>
+          <div class="fs-desc">recibe el JSON de confirmación</div>
+        </div>
+      </div>
+
+      <p>Cada archivo tocó <strong>solo su parte</strong>. El router no supo cómo se guarda; el service no supo de HTTP; el schema solo validó. Tres especialistas, un trabajo en equipo.</p>
+
+      <h3>Las capas de un vistazo</h3>
+      <div class="layers">
+        <div class="layer schema">
+          <div class="l-ic">🗂️</div>
+          <div class="l-body">
+            <div class="l-title">Schema <span class="l-file">schemas/producto_schema.py</span></div>
+            <div class="l-desc">Valida la forma de los datos que entran. No sabe de rutas ni de almacenamiento.</div>
+          </div>
+        </div>
+        <div class="layer router">
+          <div class="l-ic">🛎️</div>
+          <div class="l-body">
+            <div class="l-title">Router <span class="l-file">routers/producto_router.py</span></div>
+            <div class="l-desc">Los endpoints (APIRouter). Traduce entre HTTP y el service. Aquí viven los 404.</div>
+          </div>
+        </div>
+        <div class="layer service">
+          <div class="l-ic">🍳</div>
+          <div class="l-body">
+            <div class="l-title">Service <span class="l-file">services/producto_service.py</span></div>
+            <div class="l-desc">La lógica de negocio + la “base de datos” en memoria. No sabe de HTTP (devuelve None/True/False).</div>
+          </div>
+        </div>
+        <div class="layer data">
+          <div class="l-ic">🔌</div>
+          <div class="l-body">
+            <div class="l-title">main.py <span class="l-file">app/main.py</span></div>
+            <div class="l-desc">Mínimo: crea la app y conecta el router con include_router.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="def-grid">
+        <div class="def-card tecnica">
+          <div class="tag">⚙️ Definición técnica</div>
+          <p>Acabas de implementar una <strong>separación de responsabilidades</strong> (<em>separation of concerns</em>): schema valida, service resuelve, router comunica. Es la base de los backends profesionales reales, y el patrón del proyecto final del programa con usuarios, productos y ventas.</p>
+        </div>
+        <div class="def-card real">
+          <div class="tag">🚀 Hacia el proyecto final</div>
+          <p>Esta estructura (schema + service + router por recurso) es <strong>literalmente</strong> la del proyecto final. Hoy montas la plantilla que replicarás para usuarios y ventas. Cada recurso nuevo = tres archivos + una línea en main.py.</p>
+        </div>
+      </div>
+
+      <div class="reflex">
+        <div class="reflex-q">
+          <span class="q-ic">🤔</span>
+          <p>Vuelve al problema de la apertura: dos compañeros llegan a sumar usuarios y ventas. Con la estructura de hoy, ¿qué archivos crearían, y por qué casi no chocarían contigo?</p>
+        </div>
+        <button class="reflex-toggle" onclick="toggleAnswer(this)">🔍 Ver explicación</button>
+        <div class="reflex-answer">
+          <div class="reflex-answer-inner">
+            <span class="lead">Respuesta</span>
+            <p>Cada uno crearía su <code class="inline">usuario_schema.py</code> + <code class="inline">usuario_service.py</code> + <code class="inline">usuario_router.py</code> (y lo mismo para ventas), y en <code class="inline">main.py</code> solo agregarían <strong>una línea</strong> <code class="inline">include_router(...)</code> cada uno. Trabajarían en <strong>sus</strong> archivos, sin tocar los tuyos. El único punto compartido sería esa lista de <code class="inline">include_router</code>, líneas independientes fáciles de fusionar. <strong>El patrón que montamos hoy se repite idéntico para cada recurso.</strong> Así escala un backend de verdad: no creciendo un archivo, sino sumando módulos ordenados.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 09 · CIERRE ===== -->
+  <section class="section section-slide" id="cierre">
+    <div class="section-head">
+      <div class="section-icon">🏁</div>
+      <div>
+        <div class="section-num">09 · CIERRE Y PUENTE</div>
+        <h2>Lo que cambió y lo que no</h2>
+      </div>
+    </div>
+    <div class="section-body">
+      <table class="mini-table">
+        <thead><tr><th>Pieza</th><th>Responsabilidad</th></tr></thead>
+        <tbody>
+          <tr><td>schemas/producto_schema.py</td><td>Validar la forma de los datos</td></tr>
+          <tr><td>services/producto_service.py</td><td>Lógica de negocio + “base de datos” en memoria. No sabe de HTTP</td></tr>
+          <tr><td>routers/producto_router.py</td><td>Endpoints con APIRouter. Traduce entre HTTP y el service (los 404)</td></tr>
+          <tr><td>main.py</td><td>Mínimo: crea la app y conecta el router con include_router</td></tr>
+          <tr><td>models/ · config/</td><td>Siguen vacías, esperando su momento real (Módulo 2 y más adelante)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="banner tip">
+        <span class="b-ic">🎯</span>
+        <p><b>NO cambió</b> lo que la API hace (mismo CRUD, mismas respuestas). <b>SÍ cambió</b> cómo está organizada: de un main.py monstruo a tres capas con responsabilidad única. <b>Refactorizar</b> = mejorar la estructura sin cambiar el comportamiento. La API idéntica por fuera es la prueba del éxito.</p>
+      </div>
+
+      <p>Resolvimos el problema de la apertura: ahora el proyecto puede crecer con muchos recursos y muchas manos, sin volverse un caos.</p>
+
+      <h3>🌉 Puente hacia la Clase 4: Validaciones y Manejo de Errores</h3>
+      <p>Hoy dejamos la lógica ordenada en capas. Pero fíjate: nuestras validaciones son todavía básicas (un precio puede ser negativo y nadie se queja), y el manejo de errores se limita al 404 repetido en cada router.</p>
+      <p>En la <strong>Clase 4</strong> puliremos justo eso: validaciones más ricas con Pydantic (que un precio no pueda ser negativo, que un nombre no venga vacío), excepciones personalizadas y respuestas de error consistentes. Y como hoy separamos en capas, agregar esas mejoras será limpio: cada una entrará en su lugar exacto sin ensuciar el resto. Ahí verás, otra vez, por qué valió la pena ordenar la casa hoy.</p>
+
+      <div class="footer">
+        © 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · Todos los derechos reservados<br>
+        <a href="https://linkedin.com/in/ana-alvarado-instructora-full-stack" target="_blank" rel="noopener">linkedin.com/in/ana-alvarado-instructora-full-stack</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<!-- Marca de agua -->
+<div class="watermark">© 2026 Ana Alvarado</div>
+
+<!-- Botón presentación -->
+<button class="present-btn" onclick="enterPresent()">🖥️ Modo presentación</button>
+
+<!-- Barra de presentación -->
+<div class="present-hint">◀ ▶ navegar · Esc salir</div>
+<div class="present-bar">
+  <button onclick="prevSlide()">◀</button>
+  <span class="present-counter" id="present-counter">1 / 10</span>
+  <button onclick="nextSlide()">▶</button>
+  <button onclick="exitPresent()" title="Salir">✕</button>
+</div>
+
+<script>
+/* ============================================================
+   © 2026 Ana Alvarado — Todos los derechos reservados.
+   Material de autoría exclusiva. Prohibida su reproducción.
+   ============================================================ */
+
+/* --- Consola: aviso de autoría --- */
+console.log("%c© 2026 Ana Alvarado","color:#6018F0;font-weight:bold;font-size:16px");
+console.log("Educadora Tech & Desarrolladora Full Stack — Todos los derechos reservados.");
+console.log("Este material es de autoría exclusiva. Prohibida su reproducción o redistribución sin autorización.");
+
+/* --- Copiar código --- */
+function copyCode(btn){
+  const block = btn.closest('.code-block');
+  const code = block.querySelector('code');
+  const text = code.innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span>✓</span> Copiado';
+    btn.classList.add('ok');
+    setTimeout(()=>{ btn.innerHTML = orig; btn.classList.remove('ok'); },1600);
+  });
+}
+
+/* --- Colapsables de reflexión --- */
+function toggleAnswer(btn){
+  const ans = btn.nextElementSibling;
+  if(ans.style.maxHeight && ans.style.maxHeight !== '0px'){
+    ans.style.maxHeight = '0px';
+    btn.innerHTML = '🔍 Ver explicación';
+  }else{
+    ans.style.maxHeight = ans.scrollHeight + 40 + 'px';
+    btn.innerHTML = '🔽 Ocultar explicación';
+  }
+}
+
+/* --- Navegación activa + progreso --- */
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('.section-slide');
+const seen = new Set();
+
+function onScroll(){
+  let current = '';
+  sections.forEach(s=>{
+    const top = s.getBoundingClientRect().top;
+    if(top < 200){ current = s.id; seen.add(s.id); }
+  });
+  navLinks.forEach(a=>{
+    a.classList.toggle('active', a.getAttribute('href') === '#'+current);
+  });
+  const pct = Math.round((seen.size / sections.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+window.addEventListener('scroll', onScroll);
+onScroll();
+
+/* Cerrar menú móvil al navegar */
+navLinks.forEach(a=>a.addEventListener('click',()=>{
+  document.querySelector('.sidebar').classList.remove('open');
+}));
+
+/* ============================================================
+   MODO PRESENTACIÓN
+   ============================================================ */
+let presenting = false;
+let slideIndex = 0;
+const slides = Array.from(document.querySelectorAll('.section-slide'));
+
+function enterPresent(){
+  presenting = true;
+  document.body.classList.add('presenting');
+  slideIndex = 0;
+  showSlide();
+  if(document.documentElement.requestFullscreen){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  }
+}
+function exitPresent(){
+  presenting = false;
+  document.body.classList.remove('presenting');
+  slides.forEach(s=>s.classList.remove('slide-active'));
+  if(document.fullscreenElement){ document.exitFullscreen().catch(()=>{}); }
+}
+function showSlide(){
+  slides.forEach((s,i)=>s.classList.toggle('slide-active', i === slideIndex));
+  document.getElementById('present-counter').textContent = (slideIndex+1)+' / '+slides.length;
+  window.scrollTo(0,0);
+}
+function nextSlide(){ if(slideIndex < slides.length-1){ slideIndex++; showSlide(); } }
+function prevSlide(){ if(slideIndex > 0){ slideIndex--; showSlide(); } }
+
+document.addEventListener('keydown', e=>{
+  if(!presenting){
+    if(e.key === 'p' || e.key === 'P'){ enterPresent(); }
+    return;
+  }
+  if(e.key === 'ArrowRight' || e.key === 'PageDown'){ e.preventDefault(); nextSlide(); }
+  else if(e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); prevSlide(); }
+  else if(e.key === 'Escape'){ exitPresent(); }
+});
+document.addEventListener('fullscreenchange', ()=>{
+  if(!document.fullscreenElement && presenting){ exitPresent(); }
+});
+
+/* ============================================================
+   PROTECCIÓN DE CONTENIDO (disuasión, no bloqueo)
+   ============================================================ */
+document.addEventListener('contextmenu', e=>{
+  if(!e.target.closest('.code-block')){ e.preventDefault(); }
+});
+</script>
+</body>
+</html>
