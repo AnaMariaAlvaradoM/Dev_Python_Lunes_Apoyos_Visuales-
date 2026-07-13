@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<!--
+============================================================================
+  © 2026 Ana Alvarado — Todos los derechos reservados.
+  Educadora Tech & Desarrolladora Full Stack.
+  Material de autoría exclusiva. Prohibida su reproducción, redistribución,
+  modificación o uso fuera del contexto de clase sin autorización escrita.
+============================================================================
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       META FIJO — no tocar
+       ════════════════════════════════════════════════════════════════════ -->
+  <meta name="author" content="Ana Alvarado">
+  <meta name="copyright" content="© 2026 Ana Alvarado — Todos los derechos reservados">
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+
+  <!-- ┌──────────────────────────────────────────────────────────────────┐
+       │  HUECO 1 · TÍTULO DE LA CLASE                                      │
+       │  Cambia solo el texto de <title> por el de la clase.               │
+       └──────────────────────────────────────────────────────────────────┘ -->
+  <title>Módulo 1 · Clase 4 · Validaciones y Manejo de Errores · Ana Alvarado</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ══════════════════════════════════════════════════════════════════
+       ESTILOS FIJOS — no se regeneran entre clases.
+       Lo ÚNICO que se cambia aquí es el bloque "ACENTO POR EMPRESA".
+       ══════════════════════════════════════════════════════════════════ */
+
+    /* ┌────────────────────────────────────────────────────────────────┐
+       │  HUECO 2 · ACENTO POR EMPRESA                                    │
+       │  Descomenta el bloque de la empresa de esta clase.               │
+       │  Solo uno de los dos debe quedar activo.                         │
+       └────────────────────────────────────────────────────────────────┘ */
+
+    :root {
+      /* ── DEV SENIOR (morado) ── ACTIVO POR DEFECTO ── */
+      --accent:      #A88CFF;   /* acento principal en modo oscuro */
+      --accent-2:    #8B6FE8;   /* acento secundario / hover */
+      --accent-ink:  #5418CC;   /* acento fuerte para modo claro */
+
+      /* ── GENERATION COLOMBIA (azul) ── descomenta para usar ──
+      --accent:      #4FA3D9;
+      --accent-2:    #3B8BC4;
+      --accent-ink:  #006CA8;
+      */
+    }
+
+    /* ── PALETA MODO OSCURO (por defecto) ── */
+    :root {
+      --bg:        #16151C;
+      --surface:   #1C1B24;
+      --surface-2: #23222D;
+      --border:    #2C2A38;
+      --text:      #EAE8F0;
+      --text-dim:  #9C98A8;
+      --code-bg:   #121016;
+      --code-text: #E4E1EA;
+      --shadow:    rgba(0,0,0,0.3);
+    }
+
+    /* ── PALETA MODO CLARO (papel cálido) ── */
+    :root[data-tema="claro"] {
+      --bg:        #FAF8F3;
+      --surface:   #F4F1EA;
+      --surface-2: #FFFFFF;
+      --border:    #E8E3D9;
+      --text:      #2A2620;
+      --text-dim:  #8A8478;
+      --code-bg:   #2A2620;
+      --code-text: #F0EDE6;
+      --shadow:    rgba(0,0,0,0.08);
+      --accent:    var(--accent-ink);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.35s, color 0.35s;
+      user-select: none;               /* protección: no seleccionar en general */
+    }
+
+    /* ── LAYOUT: barra lateral fija + contenido centrado ── */
+    .layout { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 0.5px solid var(--border);
+      padding: 28px 20px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      transition: background 0.35s, border-color 0.35s;
+    }
+
+    .sidebar-brand {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 19px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 2px;
+      line-height: 1.25;
+    }
+    .sidebar-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 26px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      color: var(--text-dim);
+      font-size: 13.5px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-left: 2px solid transparent;
+      border-radius: 0 8px 8px 0;
+    }
+    .nav-item:hover { background: var(--surface-2); color: var(--text); }
+    .nav-item.active {
+      color: var(--text);
+      font-weight: 500;
+      border-left: 2px solid var(--accent);
+      background: var(--surface-2);
+    }
+    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+    /* ── ÁREA DE CONTENIDO: columna centrada (clave para proyectar) ── */
+    .content-area { flex: 1; padding: 0 24px; }
+    .content-column {
+      max-width: 940px;
+      margin: 0 auto;
+      padding: 48px 0 80px;
+    }
+
+    /* ── ENCABEZADO DE CLASE ── */
+    .clase-header { margin-bottom: 36px; }
+    .clase-kicker {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .clase-titulo {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 34px;
+      font-weight: 600;
+      line-height: 1.15;
+      color: var(--text);
+    }
+
+    /* ── SECCIONES ── */
+    .seccion { margin-bottom: 44px; scroll-margin-top: 32px; }
+    .seccion-numero {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .seccion h2 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 25px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .seccion h3 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text);
+      margin: 24px 0 10px;
+    }
+    .seccion p { margin-bottom: 14px; color: var(--text); }
+    .seccion strong { font-weight: 600; color: var(--text); }
+
+    /* ── TARJETA ── */
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 18px;
+      transition: background 0.35s, border-color 0.35s;
+    }
+
+    /* ── BLOQUE TIP / DESTACADO (borde de acento, sin relleno de color) ── */
+    .tip {
+      background: var(--surface);
+      border-left: 2px solid var(--accent);
+      border-radius: 0;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      transition: background 0.35s;
+    }
+    .tip-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .tip p { margin: 0; color: var(--text-dim); font-size: 14.5px; }
+
+    /* ── DEFINICIÓN (técnica + vida real) ── */
+    .definicion { border-left: 2px solid var(--border); padding-left: 18px; margin-bottom: 18px; }
+    .definicion .tecnica { color: var(--text); margin-bottom: 8px; }
+    .definicion .real { color: var(--text-dim); font-size: 14.5px; }
+    .definicion .real::before { content: "🌎 "; }
+
+    /* ── BLOQUE DE REFLEXIÓN (colapsable) ── */
+    .reflexion {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 18px;
+      transition: background 0.35s;
+    }
+    .reflexion-pregunta {
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .reflexion-pregunta::before { content: "💭"; }
+    .ver-explicacion {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--accent);
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+    .explicacion {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .explicacion.abierta { max-height: 600px; }
+    .explicacion-inner {
+      padding-top: 12px;
+      margin-top: 12px;
+      border-top: 0.5px solid var(--border);
+      color: var(--text-dim);
+      font-size: 14.5px;
+    }
+
+    /* ── BLOQUE DE CÓDIGO (seleccionable + botón copiar) ── */
+    .code-block {
+      background: var(--code-bg);
+      border: 0.5px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+    .code-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 14px;
+      border-bottom: 0.5px solid rgba(255,255,255,0.06);
+    }
+    .code-file {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: var(--text-dim);
+    }
+    .copy-btn {
+      background: transparent;
+      border: 0.5px solid var(--border);
+      color: var(--text-dim);
+      font-size: 11.5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .code-block pre {
+      padding: 14px 16px;
+      overflow-x: auto;
+      user-select: text;               /* protección: código SÍ seleccionable */
+    }
+    .code-block code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--code-text);
+      user-select: text;
+    }
+    .code-block pre, .code-block code { -webkit-user-select: text; }
+
+    /* ── AVISO DE COPYRIGHT (tarjeta seria) ── */
+    .aviso-copyright {
+      border-left: 3px solid var(--accent);
+      background: var(--surface);
+      border-radius: 0;
+      padding: 16px 20px;
+      margin-bottom: 32px;
+    }
+    .aviso-titulo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .aviso-copyright p { font-size: 13px; color: var(--text-dim); margin: 0; }
+
+    /* ── PIE DE PÁGINA ── */
+    .footer {
+      margin-top: 60px;
+      padding-top: 24px;
+      border-top: 0.5px solid var(--border);
+      font-size: 12px;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    /* ── MARCA DE AGUA FIJA ── */
+    .watermark {
+      position: fixed;
+      bottom: 14px;
+      right: 16px;
+      font-size: 11px;
+      color: var(--text-dim);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 50;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── BOTONES FLOTANTES (toggle tema + modo presentación) ── */
+    .controls {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 60;
+    }
+    .ctrl-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 0.5px solid var(--border);
+      background: var(--surface-2);
+      color: var(--accent);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.25s;
+    }
+    .ctrl-btn:hover { border-color: var(--accent); }
+
+    /* ── BARRA DE PROGRESO ── */
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--accent);
+      width: 0%;
+      z-index: 70;
+      transition: width 0.15s;
+    }
+
+    /* ── MODO PRESENTACIÓN ── */
+    body.presentacion .sidebar,
+    body.presentacion .watermark,
+    body.presentacion .controls { display: none; }
+    body.presentacion .seccion { display: none; }
+    body.presentacion .seccion.slide-activa {
+      display: block;
+      min-height: 80vh;
+      animation: fadeIn 0.3s ease;
+    }
+    body.presentacion .content-column { max-width: 940px; padding-top: 80px; }
+    body.presentacion .clase-header { display: none; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .slide-hint {
+      display: none;
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: var(--text-dim);
+      background: var(--surface);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 0.5px solid var(--border);
+      z-index: 60;
+    }
+    body.presentacion .slide-hint { display: block; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 0.5px solid var(--border); }
+      .content-column { padding: 32px 0 60px; }
+      .clase-titulo { font-size: 27px; }
+      .watermark { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- CONTROLES FIJOS -->
+  <div class="controls">
+    <button class="ctrl-btn" id="temaBtn" aria-label="Cambiar tema claro u oscuro" title="Claro / oscuro">☀️</button>
+    <button class="ctrl-btn" id="presentBtn" aria-label="Modo presentación" title="Modo presentación (P)">▢</button>
+  </div>
+
+  <div class="layout">
+
+    <!-- BARRA LATERAL -->
+    <aside class="sidebar">
+      <!-- ┌──────────────────────────────────────────────────────────┐
+           │  HUECO 3 · NAVEGACIÓN                                      │
+           │  Un .nav-item por sección. El href apunta al id.          │
+           └──────────────────────────────────────────────────────────┘ -->
+      <div class="sidebar-brand">Python Backend Developer</div>
+      <div class="sidebar-sub">Módulo 1 · Clase 4</div>
+      <nav id="nav">
+        <a class="nav-item active" href="#sec-0"><span class="nav-icon">🛡️</span> Cómo se protegen los datos</a>
+        <a class="nav-item" href="#sec-1"><span class="nav-icon">🚧</span> Validar con Field</a>
+        <a class="nav-item" href="#sec-2"><span class="nav-icon">🧹</span> field_validator</a>
+        <a class="nav-item" href="#sec-3"><span class="nav-icon">🔗</span> model_validator</a>
+        <a class="nav-item" href="#sec-4"><span class="nav-icon">🏷️</span> Excepciones propias</a>
+        <a class="nav-item" href="#sec-5"><span class="nav-icon">📐</span> Errores consistentes</a>
+        <a class="nav-item" href="#sec-6"><span class="nav-icon">🎓</span> Cierre y qué viene</a>
+      </nav>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <main class="content-area">
+      <div class="content-column">
+
+        <!-- ENCABEZADO -->
+        <header class="clase-header">
+          <!-- HUECO 1 (repetido) · kicker + título de la clase -->
+          <div class="clase-kicker">Python Backend Developer · Módulo 1</div>
+          <h1 class="clase-titulo">Validaciones y Manejo de Errores</h1>
+        </header>
+
+        <!-- AVISO DE COPYRIGHT (fijo) -->
+        <div class="aviso-copyright">
+          <div class="aviso-titulo">© AVISO DE DERECHOS DE AUTOR</div>
+          <p>Este material es de <strong>autoría exclusiva de Ana Alvarado</strong> y su acceso está limitado a las y los <strong>estudiantes de esta cohorte</strong>. Queda prohibida su reproducción, redistribución o uso fuera de clase sin autorización escrita de la autora.</p>
+        </div>
+
+        <!-- ┌────────────────────────────────────────────────────────────┐
+             │  HUECO 4 · SECCIONES DE CONTENIDO                            │
+             │  Aquí va TODO el contenido del .md. Una <section> por tema.  │
+             │  Usa los patrones de abajo (card, tip, definición,          │
+             │  reflexión, código). Numera con .seccion-numero "01 ·".      │
+             └────────────────────────────────────────────────────────────┘ -->
+
+        <section class="seccion slide-activa" id="sec-0">
+          <div class="seccion-numero">00 · FUNDAMENTO</div>
+          <h2>🛡️ ¿Cómo se protegen los datos en Python?</h2>
+
+          <p>Imagina esta escena en tu tienda: un empleado nuevo, con prisa, registra un producto sin nombre, con precio <code>-5000</code> y stock <code>-3</code>. Le da guardar. Y tu API lo acepta feliz: responde <code>200 OK</code>. Ese producto fantasma ya está en tu sistema.</p>
+
+          <p>Antes de arreglarlo, respondamos una pregunta que quizás ya te hiciste: si vienes de un lenguaje como Java, sabes que allí un dato se protege con <code>private</code>. ¿Dónde está el <code>private</code> de Python?</p>
+
+          <h3>En Java: un muro obligatorio</h3>
+          <p>En Java, cuando declaras un campo como <code>private</code>, el lenguaje impide a la fuerza que otro código lo toque desde fuera. Si lo intentas, el programa <strong>ni siquiera compila</strong>. El compilador es un guardia en la puerta. Para leer o cambiar ese dato pasas por métodos públicos, y también sueles crear <strong>DTOs</strong> (Data Transfer Objects): clases cuyo único trabajo es transportar datos entre las capas.</p>
+
+          <h3>En Python: una señal, no un muro</h3>
+          <p>En Python <strong>no existe <code>private</code> de verdad</strong>. Puedes tocar cualquier dato de cualquier objeto, siempre. No es un descuido: es una decisión de diseño. La filosofía de Python se resume en una frase de su comunidad: <em>"aquí todos somos adultos responsables"</em>. Donde Java prohíbe, Python confía y señala.</p>
+
+          <p>Lo más parecido a <code>private</code> es un guion bajo antes del nombre:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">solo ilustrativo</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>self._precio    # "esto es interno, no me toques desde fuera"</code></pre>
+          </div>
+
+          <p>Pero ese <code>_</code> es una convención de caballeros, no una prohibición. Es un letrero de "PRIVADO" en una puerta sin cerradura: comunica la intención, pero no traba la puerta. En Java la puerta tiene cerradura; en Python tiene un letrero.</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">Si Python no puede impedir el acceso a los datos como Java, entonces su protección no puede estar en "esconderlos". ¿Dónde más podría estar?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">En <strong>revisarlos</strong>. Como Python no protege escondiendo el dato, lo protege controlando qué entra. En vez de decir "nadie toca el precio", dice "el precio entra por una puerta donde reviso que sea válido". La protección se muda del <strong>acceso</strong> (Java) a la <strong>entrada</strong> (Python). Y esa puerta de entrada, en una API de FastAPI, se llama <strong>Pydantic</strong>.</div>
+            </div>
+          </div>
+
+          <h3>Tu schema ES un DTO (con superpoderes)</h3>
+          <p>Recuerda tus schemas de la clase pasada: <code>ProductoCreate</code>, <code>CategoriaCreate</code>. Cada uno es un objeto cuyo único trabajo es recibir y transportar los datos que entran a tu API. Eso es <strong>exactamente la definición de un DTO</strong>. Sin saberlo, ya estabas creando DTOs.</p>
+
+          <p>Pero el schema de Pydantic hace algo que el DTO de Java no hace gratis: <strong>valida al mismo tiempo que transporta</strong>. En Java necesitarías el DTO más una librería de validación aparte. En Python, Pydantic fusiona las dos cosas en una sola clase corta.</p>
+
+          <div class="definicion">
+            <p class="tecnica"><strong>DTO (Data Transfer Object):</strong> objeto cuyo propósito es transportar datos entre las capas de una aplicación. En FastAPI, tus schemas de Pydantic cumplen ese rol y además validan cada dato que entra.</p>
+            <p class="real">Es como el sobre de una carta con reglas impresas: "solo cabe una hoja tamaño carta, con remitente obligatorio". El sobre transporta el contenido y a la vez rechaza lo que no cumple.</p>
+          </div>
+
+          <div class="tip">
+            <div class="tip-label">La idea que ordena toda la clase</div>
+            <p>En Python los datos se protegen validando la entrada, no escondiendo el dato. Tu schema deja de ser un simple mensajero y se vuelve un guardián. Todo lo que sigue —Field, field_validator, model_validator— son formas de decirle a ese guardián qué debe revisar.</p>
+          </div>
+        </section>
+
+        <section class="seccion" id="sec-1">
+          <div class="seccion-numero">01 · VALIDACIÓN</div>
+          <h2>🚧 Validar formato y límites con Field</h2>
+
+          <p>Empecemos por el producto basura. Tu schema actual acepta cualquier cosa. Vamos a darle al guardián sus primeras reglas.</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">"El precio de un producto debe ser mayor que cero." ¿Eso es una regla del lenguaje Python, o una regla de tu negocio?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">Es una regla <strong>de tu negocio</strong>. Python felizmente guarda <code>-5000</code> en una variable; no le molesta. Eres tú, como dueño del sistema, quien decide que en tu tienda un precio negativo no tiene sentido. Y esas reglas se escriben en el schema, en la puerta de entrada, para que se apliquen solas cada vez que entra un dato.</div>
+            </div>
+          </div>
+
+          <div class="definicion">
+            <p class="tecnica"><strong>Field:</strong> herramienta de Pydantic para agregar restricciones a un campo, más allá de su tipo. Le dice no solo "esto es un número", sino "es un número que debe cumplir estas condiciones".</p>
+            <p class="real">Es la casilla de un formulario de papel bien diseñado: "Nombre (obligatorio, máx. 50 caracteres)", "Edad (número, mayor a 0)".</p>
+          </div>
+
+          <h3>Las restricciones que usaremos</h3>
+          <p>Estas son las reglas que le daremos a Field: <code>...</code> significa obligatorio (el campo no puede faltar); <code>gt=0</code> es mayor que cero; <code>ge=0</code> es mayor o igual a cero; <code>min_length</code> y <code>max_length</code> fijan el largo mínimo y máximo de un texto.</p>
+
+          <h3>El código</h3>
+          <p>Este es el schema de producto completo. Reemplaza todo el contenido del archivo por esto:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">app/schemas/producto_schema.py</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>from pydantic import BaseModel, Field
+
+
+class ProductoCreate(BaseModel):
+    nombre: str = Field(..., min_length=3, max_length=50)
+    precio: float = Field(..., gt=0)
+    stock: int = Field(..., ge=0)
+    categoria: str = Field(..., min_length=3)</code></pre>
+          </div>
+
+          <p>Línea por línea: importamos <code>Field</code> junto a <code>BaseModel</code>. El <strong>nombre</strong> es texto obligatorio de entre 3 y 50 caracteres. El <strong>precio</strong> es decimal obligatorio y mayor que cero. El <strong>stock</strong> es entero obligatorio y mayor o igual a cero. La <strong>categoría</strong> es texto obligatorio de mínimo 3 caracteres.</p>
+
+          <p>Sin escribir un solo <code>if</code>, tu API ya rechaza el producto basura. Pydantic aplica estas reglas automáticamente cada vez que llega un producto. Así se protegen los datos en Python: no con <code>private</code>, sino con reglas en la puerta de entrada.</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">El precio debe ser mayor que cero (gt=0) y el stock mayor o igual a cero (ge=0). ¿Por qué el stock sí puede ser cero pero el precio no?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">Porque un producto puede estar agotado (stock 0) pero seguir existiendo; en cambio, un producto que cuesta $0 normalmente es un error. Fíjate cómo la restricción técnica (gt vs ge) refleja una decisión de negocio. No elegiste gt=0 por capricho: lo elegiste porque entiendes el dominio. Esa es la diferencia entre copiar código y diseñarlo.</div>
+            </div>
+          </div>
+
+          <h3>Pruébalo en Swagger</h3>
+          <p>Levanta el servidor desde la carpeta <code>tienda_dev</code> (la que contiene a <code>app</code>), nunca desde dentro de <code>app</code>:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">PowerShell · desde tienda_dev</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>uvicorn app.main:app --reload</code></pre>
+          </div>
+
+          <p>Abre <code>http://127.0.0.1:8000/docs</code>. En <code>POST /productos</code>, prueba primero con el producto basura (nombre vacío, precio -5000, stock -3): debe responder <strong>422</strong>, listando cada campo que falló. Luego prueba con datos correctos: debe responder <strong>200 OK</strong>.</p>
+
+          <div class="tip">
+            <div class="tip-label">El error 422, léelo bien</div>
+            <p>422 significa "Unprocessable Entity": entendí tu petición, pero los datos no pasan las reglas. Es un error del cliente (4xx), no del servidor. Y tú no lo escribiste: Pydantic lo genera solo. La validación vino gratis con declarar las reglas.</p>
+          </div>
+        </section>
+
+        <section class="seccion" id="sec-2">
+          <div class="seccion-numero">02 · VALIDACIÓN</div>
+          <h2>🧹 Validar y limpiar con field_validator</h2>
+
+          <p>Field es potente, pero solo entiende reglas estándar: largos, mayores, menores. No sabe de las reglas particulares de tu negocio, ni puede transformar un dato. Si alguien registra el nombre <code>"   teclado   "</code>, para Field eso tiene 12 caracteres válidos: pasa. Pero tú quieres guardarlo limpio.</p>
+
+          <div class="definicion">
+            <p class="tecnica"><strong>field_validator:</strong> decorador de Pydantic para escribir tu propia función de validación sobre un campo. Puede revisar, rechazar (con ValueError) y transformar el dato.</p>
+            <p class="real">Es el revisor de un formulario que no solo dice "esto está mal", sino que también corrige lo que puede: te tacha el espacio de más y deja el nombre bien escrito.</p>
+          </div>
+
+          <div class="tip">
+            <div class="tip-label">No es solo para espacios</div>
+            <p>field_validator sirve para cualquier regla propia sobre un campo: limpiar un texto, normalizar un formato (pasar a minúsculas), restringir a una lista de valores permitidos, validar un formato como un email, o rechazar contenido no deseado. Lo verás en varios usos distintos hoy.</p>
+          </div>
+
+          <div class="tip">
+            <div class="tip-label">La regla de oro</div>
+            <p>Un field_validator siempre debe devolver el valor (corregido o tal cual). Si no lo devuelves, el campo se guarda vacío. Es el error número uno de todo principiante con Pydantic.</p>
+          </div>
+
+          <h3>Antes del código: ¿qué es cls?</h3>
+          <p>En el código que sigue verás un parámetro llamado <code>cls</code>. No es una función ni una palabra reservada: es simplemente el primer parámetro que recibe un método de clase, y por convención se llama así (viene de <em>class</em>).</p>
+
+          <p>Compáralo con lo que ya conoces: en tus métodos normales, el primer parámetro es <code>self</code>, que representa <strong>la instancia</strong> (un objeto concreto, "este producto"). En un método marcado con <code>@classmethod</code>, el primer parámetro es <code>cls</code>, que representa <strong>la clase misma</strong> (el molde, no un producto concreto).</p>
+
+          <p>¿Por qué aquí es <code>cls</code>? Porque la validación ocurre <strong>mientras el objeto se está construyendo</strong>. En ese instante el producto todavía no existe como objeto terminado, así que no hay un <code>self</code> al cual apuntar; solo existe el molde. Por eso Pydantic valida a nivel de clase.</p>
+
+          <div class="definicion">
+            <p class="tecnica"><strong>cls vs self:</strong> cls es la clase (el molde); self es la instancia (el objeto ya hecho). El decorador @classmethod obliga a que el primer parámetro sea cls.</p>
+            <p class="real">El molde de galletas es la clase (cls): la forma con la que se hacen todas. Una galleta horneada es la instancia (self). La regla "ninguna galleta sale con menos de 3 cm" vive en el molde, porque se aplica antes de que la galleta exista.</p>
+          </div>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">En tus métodos anteriores el primer parámetro era self, pero en el validador es cls. ¿Qué representa cada uno y por qué el cambio?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">No son lo mismo. self es la instancia (un producto concreto); cls es la clase (el molde). El cambio ocurre porque el @classmethod sobre el validador obliga a usar cls, y eso pasa porque la validación corre mientras el objeto se construye: todavía no hay instancia terminada, solo el molde. En la práctica casi nunca usas cls dentro del validador; está ahí por la sintaxis, igual que self aparece en tus métodos aunque a veces no lo toques.</div>
+            </div>
+          </div>
+
+          <h3>El código: limpiar el nombre</h3>
+          <p>Agregamos un validador que quita espacios sobrantes y rechaza nombres que sean solo espacios. Así queda el archivo:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">app/schemas/producto_schema.py</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>from pydantic import BaseModel, Field, field_validator
+
+
+class ProductoCreate(BaseModel):
+    nombre: str = Field(..., min_length=3, max_length=50)
+    precio: float = Field(..., gt=0)
+    stock: int = Field(..., ge=0)
+    categoria: str = Field(..., min_length=3)
+
+    @field_validator("nombre")
+    @classmethod
+    def limpiar_nombre(cls, valor: str) -> str:
+        valor_limpio = valor.strip()
+        if valor_limpio == "":
+            raise ValueError("El nombre no puede ser solo espacios")
+        return valor_limpio</code></pre>
+          </div>
+
+          <p>Línea por línea: el decorador <code>@field_validator("nombre")</code> le dice a Pydantic que la función de abajo valida el campo nombre. El <code>@classmethod</code> es obligatorio en Pydantic v2 y va debajo del decorador anterior (el orden importa). Dentro, <code>valor.strip()</code> quita los espacios de los extremos; si tras limpiar quedó vacío, lanzamos un <code>ValueError</code> con nuestro mensaje (Pydantic lo convierte en 422); y al final devolvemos el nombre limpio, que es lo que se guardará.</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">Field ya pedía min_length=3. Si alguien manda tres espacios "   ", ¿lo detiene el Field o el validador? ¿Por qué necesitamos los dos?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">Ahí está la trampa: "   " tiene 3 caracteres, así que min_length=3 lo deja pasar. Es nuestro field_validator quien lo atrapa, porque limpia primero y entonces ve que quedó vacío. Field y field_validator no compiten, se complementan: Field pone los límites gruesos, el validador afina lo que Field no puede ver. Un backend robusto usa capas de defensa, no una sola.</div>
+            </div>
+          </div>
+
+          <h3>Segundo uso: restringir a una lista</h3>
+          <p>Para ver que field_validator es mucho más que limpiar espacios, démosle otro uso: que la categoría solo pueda ser una de las que tu negocio maneja. Si tu tienda solo vende tecnología, papelería y hogar, no tiene sentido aceptar una categoría inventada. Agrega este validador dentro de la clase, debajo del anterior:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">app/schemas/producto_schema.py · dentro de la clase</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>    @field_validator("categoria")
+    @classmethod
+    def validar_categoria(cls, valor: str) -> str:
+        categorias_validas = ["tecnologia", "papeleria", "hogar"]
+        valor_limpio = valor.strip().lower()
+        if valor_limpio not in categorias_validas:
+            raise ValueError(f"Categoría inválida. Use una de: {categorias_validas}")
+        return valor_limpio</code></pre>
+          </div>
+
+          <p>Aquí <code>valor.strip().lower()</code> encadena dos transformaciones: limpia espacios y pasa a minúsculas, para que "Tecnologia", "TECNOLOGIA" y "  tecnologia " se traten igual. Si la categoría limpia no está en la lista blanca, la rechazamos con un mensaje que además le dice al usuario qué opciones son válidas. Un buen error no solo dice "está mal": dice "esto es lo correcto".</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">Este validador normaliza (lower) y restringe (la lista) a la vez. ¿Notas que un mismo field_validator puede transformar y rechazar en la misma función?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">Correcto. Un field_validator no está limitado a una sola tarea: puede limpiar, normalizar, comparar y rechazar, todo junto, siempre que al final devuelva el valor. Por eso es tan potente: es tu código, con toda la libertad de Python, corriendo dentro de la validación de Pydantic.</div>
+            </div>
+          </div>
+
+          <h3>Pruébalo en Swagger</h3>
+          <p>Manda un producto con nombre <code>"   Mouse inalámbrico   "</code>: responde 200 y el nombre queda limpio, sin espacios. Manda uno con <code>"categoria": "juguetes"</code>: responde 422 con la lista de categorías permitidas. Y con <code>"categoria": "TECNOLOGIA"</code>: responde 200 y la guarda en minúsculas. Validó y normalizó.</p>
+        </section>
+
+        <section class="seccion" id="sec-3">
+          <div class="seccion-numero">03 · VALIDACIÓN</div>
+          <h2>🔗 Reglas entre campos con model_validator</h2>
+
+          <p>Nuevo requerimiento: la tienda manejará ofertas. Un producto puede tener un precio de oferta, y hay una regla obvia: la oferta debe ser menor que el precio normal. Una "oferta" más cara que el precio real es un absurdo.</p>
+
+          <p>Aquí está el problema interesante: esta regla no la puede validar el precio solo, ni la oferta sola. Necesita ver los dos a la vez y compararlos.</p>
+
+          <div class="definicion">
+            <p class="tecnica"><strong>model_validator:</strong> valida el modelo completo, con todos sus campos ya cargados, para poder comparar unos contra otros. Es el paso que subes cuando una regla depende de la relación entre varios campos.</p>
+            <p class="real">Es como revisar un formulario de vuelo: la fecha de regreso no se valida sola, se valida contra la fecha de ida. Necesitas ver las dos casillas al tiempo.</p>
+          </div>
+
+          <div class="tip">
+            <div class="tip-label">No es solo para ofertas</div>
+            <p>model_validator sirve para cualquier regla entre campos: que una fecha de fin sea posterior a la de inicio, que si eliges "envío express" la dirección no esté vacía, que dos contraseñas coincidan, que un descuento no supere el total. Siempre que dos o más campos se relacionen, este es tu validador.</p>
+          </div>
+
+          <p>Usaremos <code>mode="after"</code>: significa que el validador corre después de que Pydantic ya validó cada campo por separado. Cuando llega, ya sabemos que precio y oferta son números válidos; solo falta compararlos.</p>
+
+          <h3>El código completo</h3>
+          <p>Así queda el schema con todo integrado. Fíjate cómo conviven los validadores de campo con el de modelo:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">app/schemas/producto_schema.py</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>from pydantic import BaseModel, Field, field_validator, model_validator
+
+
+class ProductoCreate(BaseModel):
+    nombre: str = Field(..., min_length=3, max_length=50)
+    precio: float = Field(..., gt=0)
+    precio_oferta: float | None = Field(default=None, gt=0)
+    stock: int = Field(..., ge=0)
+    categoria: str = Field(..., min_length=3)
+
+    @field_validator("nombre")
+    @classmethod
+    def limpiar_nombre(cls, valor: str) -> str:
+        valor_limpio = valor.strip()
+        if valor_limpio == "":
+            raise ValueError("El nombre no puede ser solo espacios")
+        return valor_limpio
+
+    @field_validator("categoria")
+    @classmethod
+    def validar_categoria(cls, valor: str) -> str:
+        categorias_validas = ["tecnologia", "papeleria", "hogar"]
+        valor_limpio = valor.strip().lower()
+        if valor_limpio not in categorias_validas:
+            raise ValueError(f"Categoría inválida. Use una de: {categorias_validas}")
+        return valor_limpio
+
+    @model_validator(mode="after")
+    def validar_oferta(self):
+        if self.precio_oferta is not None and self.precio_oferta >= self.precio:
+            raise ValueError("El precio de oferta debe ser menor al precio normal")
+        return self</code></pre>
+          </div>
+
+          <p>Lo nuevo: el campo <code>precio_oferta</code> es opcional. El <code>float | None</code> dice "es un decimal o puede ser nada"; el <code>default=None</code> lo hace omitible (es lo que permite no enviarlo). El validador <code>validar_oferta</code> usa <code>mode="after"</code> y recibe <code>self</code>, no cls: revisa que si hay oferta, no sea mayor o igual al precio, y devuelve el modelo completo (self), no un campo.</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">En el field_validator el primer parámetro era cls, pero en el model_validator es self. ¿Por qué el cambio?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">No es capricho, tiene lógica. El field_validator corre mientras se construye el objeto: aún no hay instancia, así que trabaja con el molde (cls). El model_validator(mode="after") corre después de que el objeto ya está armado con todos sus campos: ya existe la instancia, así que recibe self y puede acceder a self.precio y self.precio_oferta. En resumen: cls cuando el objeto aún no existe, self cuando ya existe.</div>
+            </div>
+          </div>
+
+          <h3>Pruébalo en Swagger</h3>
+          <p>Un producto con precio 600000 y oferta 480000: responde 200, la oferta es menor. Con oferta 750000: responde 422, la oferta supera el precio. Y sin enviar oferta: responde 200, porque el campo es opcional. Confirmamos que nada de lo anterior se rompió.</p>
+        </section>
+
+        <section class="seccion" id="sec-4">
+          <div class="seccion-numero">04 · ERRORES</div>
+          <h2>🏷️ Errores propios con excepciones personalizadas</h2>
+
+          <p>Hasta aquí validamos lo que entra. Pero hay otro tipo de error: cuando el cliente pide algo que no existe, como <code>GET /categorias/999</code> sin una categoría 999. Antes resolvíamos esto con un HTTPException escrito a mano en cada router. Funciona, pero tiene dos problemas.</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">Si tu API crece a 10 recursos y cada router repite el mismo raise HTTPException(404, "no encontrado"), ¿qué pasa el día que quieras cambiar el formato de ese error?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">Tendrías que cambiarlo en los 10 lugares, y seguro olvidas uno. Ese es el primer problema: el manejo del error está repetido y disperso. El segundo es de lenguaje: HTTPException habla de HTTP dentro de tu lógica, cuando el router debería hablar de negocio. La solución profesional: crear una excepción propia con nombre de negocio y manejarla en un solo lugar central.</div>
+            </div>
+          </div>
+
+          <div class="definicion">
+            <p class="tecnica"><strong>Excepción personalizada:</strong> una clase de error propia (que hereda de Exception) con un nombre que describe el problema en términos de tu negocio, no de HTTP.</p>
+            <p class="real">Es la diferencia entre un empleado que grita "¡error 404!" y uno que dice "no encontré esa categoría". El segundo comunica el problema real; traducirlo al lenguaje técnico es trabajo de otra persona.</p>
+          </div>
+
+          <h3>Paso 1 · El archivo de excepciones</h3>
+          <p>Crea un archivo nuevo <code>app/exceptions.py</code> (clic derecho sobre la carpeta app, New File), al mismo nivel que main.py:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">app/exceptions.py · archivo nuevo</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>class CategoriaNoEncontrada(Exception):
+    def __init__(self, categoria_id: int):
+        self.categoria_id = categoria_id
+        super().__init__(f"La categoría con id {categoria_id} no existe")</code></pre>
+          </div>
+
+          <p>La clase hereda de <code>Exception</code>, la base de todos los errores en Python: al heredar de ella, nuestra clase es un error que se puede lanzar con raise. El constructor recibe el id que no se encontró, lo guarda, y le pasa a la clase padre el mensaje de error. Nota clave: esta excepción no menciona HTTP en ningún lado. Es un error puramente de negocio.</p>
+
+          <h3>Paso 2 · El service lanza la excepción</h3>
+          <p>En lugar de devolver None cuando no encuentra la categoría, el service ahora lanza tu excepción:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">app/services/categoria_service.py</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>from app.exceptions import CategoriaNoEncontrada
+
+categorias = []
+
+
+def obtener_categoria(categoria_id: int):
+    for categoria in categorias:
+        if categoria["id"] == categoria_id:
+            return categoria
+    raise CategoriaNoEncontrada(categoria_id)</code></pre>
+          </div>
+
+          <p>Recorremos la lista; si encontramos la categoría, la devolvemos. Si el recorrido termina sin encontrarla, lanzamos la excepción. Ya no devolvemos None: declaramos el problema con nombre propio.</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">Antes el service devolvía None y el router lanzaba el 404. Ahora el service lanza la excepción. ¿No rompe esto la regla de que el service no sabe de HTTP?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">Buena sospecha, pero la respuesta es no. Mira la excepción: no menciona HTTP en ningún lado, no dice 404, no sabe de la web. Es un error puramente de negocio: "esa categoría no existe". El service solo grita "¡no la encontré!" en su propio idioma. Quién traduce ese grito a un 404 es el manejador global. La capa de datos declara el problema; la capa web lo traduce. Las capas siguen intactas.</div>
+            </div>
+          </div>
+
+          <h3>Paso 3 · El manejador global</h3>
+          <p>Aquí está la magia: un solo lugar que atrapa todas las CategoriaNoEncontrada que se lancen en cualquier parte de la app y las convierte en una respuesta HTTP limpia. Así queda main.py:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">app/main.py</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+
+from app.exceptions import CategoriaNoEncontrada
+from app.routers import producto_router, categoria_router
+
+app = FastAPI()
+
+
+@app.exception_handler(CategoriaNoEncontrada)
+def manejar_categoria_no_encontrada(request: Request, exc: CategoriaNoEncontrada):
+    return JSONResponse(
+        status_code=404,
+        content={"error": str(exc)},
+    )
+
+
+app.include_router(producto_router.router)
+app.include_router(categoria_router.router)</code></pre>
+          </div>
+
+          <p>El corazón es la línea <code>@app.exception_handler(CategoriaNoEncontrada)</code>: registra que cuando en cualquier lugar de la app se lance esa excepción, se ejecute la función de abajo, que devuelve una respuesta JSON con código 404 y el mensaje de la excepción.</p>
+
+          <h3>Y ahora, el router: antes y después</h3>
+          <p>Aquí se ve el cambio. <strong>Antes</strong>, el router tenía que revisar y lanzar el error él mismo:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">ANTES · router con la lógica del error</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>@router.get("/categorias/{categoria_id}")
+def obtener(categoria_id: int):
+    categoria = categoria_service.obtener_categoria(categoria_id)
+    if categoria is None:
+        raise HTTPException(status_code=404, detail="Categoría no encontrada")
+    return categoria</code></pre>
+          </div>
+
+          <p><strong>Después</strong>, el router solo pide; si no existe, el service lanza y el manejador global responde:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">DESPUÉS · router limpio</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>@router.get("/categorias/{categoria_id}")
+def obtener(categoria_id: int):
+    return categoria_service.obtener_categoria(categoria_id)</code></pre>
+          </div>
+
+          <p>El router pasó de 6 líneas a 3, y desapareció toda la lógica de error. Ya no necesita saber qué hacer cuando la categoría no existe: solo pide el dato. Su única responsabilidad volvió a ser conectar la petición con el service.</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">El router pasó de 6 líneas a 3, y no perdimos el manejo del error. ¿Dónde se fue ese manejo?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">No se eliminó: se movió a un solo lugar central. Antes vivía repetido en cada router; ahora vive una vez en main.py. Si mañana quieres que todos los "no encontrado" incluyan la fecha o un código interno, tocas un solo archivo y cambia en toda la app. Eso es manejo centralizado, no disperso.</div>
+            </div>
+          </div>
+
+          <h3>Pruébalo en Swagger</h3>
+          <p>Haz <code>GET /categorias/999</code> con un id que no exista: responde 404 con el mensaje "La categoría con id 999 no existe". Ese mensaje viajó desde tu excepción, sin que el router escribiera un solo raise. Todo lo manejó el handler central.</p>
+        </section>
+
+        <section class="seccion" id="sec-5">
+          <div class="seccion-numero">05 · ERRORES</div>
+          <h2>📐 Que todos los errores hablen igual</h2>
+
+          <p>Detente a mirar lo que tienes. Tu API responde errores de formas distintas: un error de validación (422) usa la estructura de Pydantic; tu error de categoría usa <code>{"error": "..."}</code>. Dos errores, dos formas. Para quien consume tu API, eso es una pesadilla: debe programar distinto para cada forma.</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">Si fueras quien desarrolla el front-end que consume esta API, ¿preferirías que cada error llegara con una forma distinta, o que todos llegaran con la misma estructura?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">La misma, siempre. Si todos los errores tienen la misma forma (por ejemplo, siempre un campo error y un campo detalle), el front escribe una sola función para manejarlos y sirve para todos. Esto se llama respuestas consistentes, y es marca de API profesional. Una API que responde distinto en cada error es como un formulario donde cada campo pide la fecha en un formato diferente: funciona, pero es un caos de consumir.</div>
+            </div>
+          </div>
+
+          <div class="definicion">
+            <p class="tecnica"><strong>Respuestas consistentes:</strong> todos los errores de la API comparten la misma estructura JSON, sin importar qué recurso o qué tipo de fallo los originó.</p>
+            <p class="real">Es como una empresa donde todas las facturas tienen el mismo formato: sin importar el departamento, sabes exactamente dónde buscar el total, la fecha y el concepto.</p>
+          </div>
+
+          <p>Vamos a crear la última entidad de hoy, <strong>Proveedor</strong>, que nos deja ver dos cosas nuevas a la vez: un field_validator que valida un formato (un email) y el formato de error unificado.</p>
+
+          <h3>Paso 1 · Schema de proveedor con validación de email</h3>
+          <p>Crea el archivo nuevo <code>app/schemas/proveedor_schema.py</code>:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">app/schemas/proveedor_schema.py · archivo nuevo</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>from pydantic import BaseModel, Field, field_validator
+
+
+class ProveedorCreate(BaseModel):
+    nombre: str = Field(..., min_length=3, max_length=80)
+    email: str = Field(..., min_length=5)
+
+    @field_validator("email")
+    @classmethod
+    def validar_email(cls, valor: str) -> str:
+        valor = valor.strip().lower()
+        if "@" not in valor or "." not in valor:
+            raise ValueError("El email no tiene un formato válido")
+        return valor</code></pre>
+          </div>
+
+          <p>Este es el cuarto uso distinto que le damos al field_validator hoy (limpiar, restringir a lista, y ahora validar un formato). Limpiamos y pasamos a minúsculas, revisamos que el email tenga una arroba y un punto, y si falta cualquiera lo rechazamos.</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">Nuestro validador solo revisa que el email tenga @ y punto. ¿Es una validación perfecta? ¿Aceptaría algo raro como a@b.c?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">No es perfecta, y está bien que lo sepas: a@b.c pasaría. Validar emails al 100% es sorprendentemente difícil, y para eso existen librerías dedicadas. Hoy hacemos una validación básica a propósito, para que entiendas cómo se valida un formato con tus propias manos, sin cajas negras. En un proyecto real usarías una herramienta especializada, pero jamás le temerás, porque entiendes qué hace por dentro. Primero la mecánica, después la comodidad.</div>
+            </div>
+          </div>
+
+          <h3>Paso 2 · Excepción del proveedor y formato unificado</h3>
+          <p>Agrega esta segunda excepción en <code>app/exceptions.py</code>, debajo de la de categoría:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">app/exceptions.py</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>class ProveedorNoEncontrado(Exception):
+    def __init__(self, proveedor_id: int):
+        self.proveedor_id = proveedor_id
+        super().__init__(f"El proveedor con id {proveedor_id} no existe")</code></pre>
+          </div>
+
+          <p>Ahora, para lograr consistencia, actualizamos los manejadores en main.py para que ambos errores respondan con la misma estructura:</p>
+
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-file">app/main.py · manejadores unificados</span>
+              <button class="copy-btn">Copiar</button>
+            </div>
+            <pre><code>from app.exceptions import CategoriaNoEncontrada, ProveedorNoEncontrado
+
+
+@app.exception_handler(CategoriaNoEncontrada)
+def manejar_categoria_no_encontrada(request: Request, exc: CategoriaNoEncontrada):
+    return JSONResponse(
+        status_code=404,
+        content={"error": "recurso_no_encontrado", "detalle": str(exc)},
+    )
+
+
+@app.exception_handler(ProveedorNoEncontrado)
+def manejar_proveedor_no_encontrado(request: Request, exc: ProveedorNoEncontrado):
+    return JSONResponse(
+        status_code=404,
+        content={"error": "recurso_no_encontrado", "detalle": str(exc)},
+    )</code></pre>
+          </div>
+
+          <p>Definimos un formato fijo para todo error de "no encontrado": un campo error con un código y un campo detalle con el mensaje. Ambos manejadores devuelven la misma estructura: da igual si falló una categoría o un proveedor, el cliente recibe siempre la misma forma.</p>
+
+          <div class="reflexion">
+            <div class="reflexion-pregunta">Los dos manejadores devuelven la misma estructura. Si mañana agregas 5 entidades más, ¿ves algún problema en repetir este bloque cada vez?</div>
+            <span class="ver-explicacion">▸ Ver explicación</span>
+            <div class="explicacion">
+              <div class="explicacion-inner">Sí, se repite mucho código, y detectar esa repetición es pensar como ingeniero. Hoy lo dejamos explícito (un manejador por entidad) porque estamos aprendiendo el patrón, y ver la repetición te hace sentir por qué molesta. Existe una forma de unificarlos usando una excepción base común, pero eso llega más adelante, cuando tenga sentido. Primero entender, después optimizar.</div>
+            </div>
+          </div>
+
+          <h3>Pruébalo en Swagger</h3>
+          <p>Manda un proveedor con email <code>"correo-sin-arroba"</code>: responde 422 con "El email no tiene un formato válido". Con <code>"  Ventas@Andina.COM  "</code>: responde 200 y lo guarda como <code>ventas@andina.com</code>, sin espacios y en minúsculas. Y haz fallar dos 404 distintos (categoría 999 y proveedor 999): ambos responden con la misma estructura. Sin importar el recurso, el error habla el mismo idioma.</p>
+        </section>
+
+        <section class="seccion" id="sec-6">
+          <div class="seccion-numero">06 · CIERRE</div>
+          <h2>🎓 Lo que lograste y lo que viene</h2>
+
+          <p>Al empezar, tu API aceptaba un producto sin nombre, con precio negativo. Repasemos cuántas murallas tendría que atravesar hoy ese producto basura para entrar:</p>
+
+          <div class="card">
+            <p><strong>El fundamento.</strong> En Python se protege validando la entrada, no escondiendo datos. Tu schema es un DTO que además hace de guardián.</p>
+            <p><strong>Field.</strong> Frena el precio negativo, el stock negativo y el nombre corto.</p>
+            <p><strong>field_validator.</strong> Frena el nombre de solo espacios, restringe la categoría a una lista y limpia los datos.</p>
+            <p><strong>model_validator.</strong> Frena ofertas ilógicas comparando campos entre sí.</p>
+            <p><strong>Excepciones propias.</strong> Convierten los "no encontrado" en errores de negocio manejados en un solo lugar, y dejan los routers limpios.</p>
+            <p><strong>Formato consistente.</strong> Hace que todos los errores hablen igual.</p>
+          </div>
+
+          <p>De una API ingenua que confiaba en todo, pasaste a una API que desconfía de todo dato que entra y responde con claridad cuando algo falla. Eso es calidad de backend.</p>
+
+          <h3>El puente hacia adelante</h3>
+          <p>Fíjate en algo pendiente: todas estas validaciones protegen los datos al entrar, pero los datos siguen viviendo en listas en memoria, que se borran al apagar el servidor. En el próximo módulo llega PostgreSQL, y esos datos por fin persisten en una base de datos real.</p>
+
+          <p>Y aquí está lo bonito: como pusiste toda la validación en los schemas, cuando lleguen las bases de datos tus reglas seguirán funcionando igual, porque viven en la capa de entrada, no en la de almacenamiento. Lo que blindaste hoy, te sirve mañana.</p>
+
+          <div class="tip">
+            <div class="tip-label">Cierre de módulo</div>
+            <p>Con esta clase cierras el Módulo 1: sabes construir una API RESTful, estructurarla en capas profesionales y protegerla con validaciones y manejo de errores. Ya no escribes APIs de tutorial. Escribes backend.</p>
+          </div>
+        </section>
+
+
+        <!-- FIN HUECO 4 -->
+
+        <!-- PIE DE PÁGINA (fijo) -->
+        <footer class="footer">
+          © 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · Todos los derechos reservados · linkedin.com/in/ana-alvarado-instructora-full-stack
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MARCA DE AGUA FIJA -->
+  <div class="watermark">© 2026 Ana Alvarado</div>
+
+  <!-- HINT MODO PRESENTACIÓN -->
+  <div class="slide-hint">← → para navegar · Esc para salir</div>
+
+  <script>
+  /* ══════════════════════════════════════════════════════════════════════
+     SCRIPT FIJO — no se regenera entre clases.
+     Toggle tema con memoria · navegación · presentación · copiar · consola.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* ── Mensajes de consola (protección de autoría) ── */
+  console.log('%c© 2026 Ana Alvarado', 'color:#A88CFF;font-weight:bold;font-size:16px');
+  console.log('Educadora Tech & Desarrolladora Full Stack — Todos los derechos reservados.');
+  console.log('Este material es de autoría exclusiva. Prohibida su reproducción o redistribución sin autorización.');
+
+  /* ── Toggle tema claro/oscuro con memoria ── */
+  const root = document.documentElement;
+  const temaBtn = document.getElementById('temaBtn');
+  const temaGuardado = localStorage.getItem('ana-tema');
+  if (temaGuardado === 'claro') { root.setAttribute('data-tema', 'claro'); temaBtn.textContent = '🌙'; }
+  temaBtn.addEventListener('click', () => {
+    const esClaro = root.getAttribute('data-tema') === 'claro';
+    if (esClaro) { root.removeAttribute('data-tema'); temaBtn.textContent = '☀️'; localStorage.setItem('ana-tema', 'oscuro'); }
+    else { root.setAttribute('data-tema', 'claro'); temaBtn.textContent = '🌙'; localStorage.setItem('ana-tema', 'claro'); }
+  });
+
+  /* ── Botones de copiar código ── */
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const code = btn.closest('.code-block').querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copiado';
+        setTimeout(() => { btn.textContent = orig; }, 1500);
+      });
+    });
+  });
+
+  /* ── Ver explicación (colapsable) ── */
+  document.querySelectorAll('.ver-explicacion').forEach(link => {
+    link.addEventListener('click', () => {
+      const exp = link.nextElementSibling;
+      const abierta = exp.classList.toggle('abierta');
+      link.innerHTML = (abierta ? '▾ Ocultar explicación' : '▸ Ver explicación');
+    });
+  });
+
+  /* ── Navegación: resaltar sección activa al hacer scroll ── */
+  const secciones = document.querySelectorAll('.seccion');
+  const navItems = document.querySelectorAll('.nav-item');
+  const progressBar = document.getElementById('progressBar');
+
+  window.addEventListener('scroll', () => {
+    let actual = '';
+    secciones.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 80) actual = sec.id;
+    });
+    navItems.forEach(item => {
+      item.classList.toggle('active', item.getAttribute('href') === '#' + actual);
+    });
+    const h = document.body.scrollHeight - window.innerHeight;
+    progressBar.style.width = (window.scrollY / h * 100) + '%';
+  });
+
+  /* ── Modo presentación ── */
+  const presentBtn = document.getElementById('presentBtn');
+  let slideActual = 0;
+  const slides = Array.from(secciones);
+
+  function entrarPresentacion() {
+    document.body.classList.add('presentacion');
+    slideActual = 0;
+    mostrarSlide();
+    if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{});
+  }
+  function salirPresentacion() {
+    document.body.classList.remove('presentacion');
+    slides.forEach(s => s.classList.remove('slide-activa'));
+    if (document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+  }
+  function mostrarSlide() {
+    slides.forEach((s, i) => s.classList.toggle('slide-activa', i === slideActual));
+    window.scrollTo(0, 0);
+  }
+  presentBtn.addEventListener('click', entrarPresentacion);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'p' && !document.body.classList.contains('presentacion')) { entrarPresentacion(); }
+    if (!document.body.classList.contains('presentacion')) return;
+    if (e.key === 'Escape') salirPresentacion();
+    if (e.key === 'ArrowRight' && slideActual < slides.length - 1) { slideActual++; mostrarSlide(); }
+    if (e.key === 'ArrowLeft' && slideActual > 0) { slideActual--; mostrarSlide(); }
+  });
+
+  /* ── Protección: clic derecho desactivado excepto en bloques de código ── */
+  document.addEventListener('contextmenu', (e) => {
+    if (!e.target.closest('.code-block')) e.preventDefault();
+  });
+  </script>
+</body>
+</html>
