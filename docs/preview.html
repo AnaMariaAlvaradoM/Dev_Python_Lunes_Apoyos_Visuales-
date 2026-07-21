@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<!DOCTYPE html>
+
+<!--
+============================================================================
+  © 2026 Ana Alvarado — Todos los derechos reservados.
+  Educadora Tech & Desarrolladora Full Stack.
+  Material de autoría exclusiva. Prohibida su reproducción, redistribución,
+  modificación o uso fuera del contexto de clase sin autorización escrita.
+  linkedin.com/in/ana-alvarado-instructora-full-stack
+============================================================================
+  ARCHIVOS QUE ACOMPAÑAN A ESTE HTML (deben estar en la misma carpeta):
+    · ana-estilos.css → identidad visual y acento por empresa
+    · ana-clase.js    → navegación, tema, presentación y código
+============================================================================
+-->
+<!-- ACENTO POR EMPRESA · cambia SOLO este atributo: "dev-senior" (morado) o "generation" (azul) -->
+<html data-empresa="dev-senior" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Ana Alvarado" name="author"/>
+<meta content="&copy; 2026 Ana Alvarado &mdash; Todos los derechos reservados" name="copyright"/>
+<meta content="noindex, nofollow, noarchive, noimageindex" name="robots"/>
+<!-- HUECO 1 · título de la clase -->
+<title>Clase 01 &middot; Persistencia con PostgreSQL y SQLAlchemy &middot; Ana Alvarado</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="ana-estilos.css" rel="stylesheet"/>
+</head>
+<body>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<div aria-hidden="true" class="progress-bar" id="progressBar"></div>
+<div aria-label="Controles de lectura" class="controls">
+<button aria-label="Activar tema claro" class="ctrl-btn" id="temaBtn" title="Cambiar tema" type="button">
+<span aria-hidden="true">☀</span>
+</button>
+<button aria-label="Iniciar modo presentaci&oacute;n" class="ctrl-btn" id="presentBtn" title="Presentaci&oacute;n (P)" type="button">
+<span aria-hidden="true">▣</span>
+</button>
+</div>
+<div class="layout">
+<aside aria-label="&Iacute;ndice de la clase" class="sidebar">
+<!-- HUECOS 1 y 3 · marca lateral + navegación -->
+<div class="sidebar-eyebrow">Libro de clase</div>
+<div class="sidebar-brand">JavaScript AI Backend Developer</div>
+<div class="sidebar-sub">Clase 01 &middot; M&oacute;dulo 02</div>
+<div class="sidebar-rule"></div>
+<nav id="nav">
+<a class="nav-item active" href="#sec-punto-de-partida">
+<span class="nav-index">01</span>
+<span class="nav-label">🎯 Punto de partida</span>
+</a>
+<a class="nav-item" href="#sec-nivelacion">
+<span class="nav-index">02</span>
+<span class="nav-label">🧭 Nivelaci&oacute;n</span>
+</a>
+<a class="nav-item" href="#sec-problema-real">
+<span class="nav-index">03</span>
+<span class="nav-label">💾 Problema real</span>
+</a>
+<a class="nav-item" href="#sec-base-relacional">
+<span class="nav-index">04</span>
+<span class="nav-label">🗃️ Base relacional</span>
+</a>
+<a class="nav-item" href="#sec-conexion-orm">
+<span class="nav-index">05</span>
+<span class="nav-label">🔌 Conexi&oacute;n ORM</span>
+</a>
+<a class="nav-item" href="#sec-modelo-producto">
+<span class="nav-index">06</span>
+<span class="nav-label">🧱 Modelo Producto</span>
+</a>
+<a class="nav-item" href="#sec-service-persistente">
+<span class="nav-index">07</span>
+<span class="nav-label">🔄 Service persistente</span>
+</a>
+<a class="nav-item" href="#sec-mas-entidades">
+<span class="nav-index">08</span>
+<span class="nav-label">📦 M&aacute;s entidades</span>
+</a>
+<a class="nav-item" href="#sec-relaciones">
+<span class="nav-index">09</span>
+<span class="nav-label">🔗 Relaciones</span>
+</a>
+<a class="nav-item" href="#sec-prueba-completa">
+<span class="nav-index">10</span>
+<span class="nav-label">✅ Prueba completa</span>
+</a>
+<a class="nav-item" href="#sec-siguiente-paso">
+<span class="nav-index">11</span>
+<span class="nav-label">🚀 Siguiente paso</span>
+</a>
+</nav>
+<div class="sidebar-footer">
+<span>ANA ALVARADO</span>
+<span>EDUCACI&Oacute;N TECH</span>
+</div>
+</aside>
+<main class="content-area" id="contenido">
+<article class="content-column">
+<header class="clase-header">
+<!-- HUECO 1 · kicker + título + bajada -->
+<div class="clase-kicker">JavaScript AI Backend Developer &middot; M&oacute;dulo 2 &middot; Clase 1</div>
+<h1 class="clase-titulo">De la memoria a la base de datos</h1>
+<p class="clase-bajada">Comprender&aacute;s c&oacute;mo una API conserva datos reales al conectar <em>tienda_dev</em> con PostgreSQL mediante SQLAlchemy.</p>
+</header>
+<div class="aviso-copyright" role="note">
+<div class="aviso-titulo">Material exclusivo de clase</div>
+<p>Este recurso es de <strong>autor&iacute;a de Ana Alvarado</strong> y est&aacute; destinado a estudiantes de la cohorte. No se autoriza su reproducci&oacute;n o redistribuci&oacute;n fuera del contexto formativo.</p>
+</div>
+<section class="seccion slide-activa" id="sec-punto-de-partida">
+<div class="seccion-meta"><span>01</span><span>CONTEXTO</span></div>
+<h2>🎯 Punto de partida</h2>
+<div class="apertura">
+<p class="apertura-label">Punto de partida</p>
+<p class="apertura-pregunta">Tu API recibe 200 productos durante el d&iacute;a. El servidor se reinicia en la noche. &iquest;Qu&eacute; debe ocurrir con esos datos al volver a encenderse?</p>
+</div>
+<p>Hasta ahora, <em>tienda_dev</em> ha guardado informaci&oacute;n en listas de Python. Esa soluci&oacute;n permite practicar rutas, validaciones y l&oacute;gica de negocio, pero no conserva los cambios cuando el proceso termina.</p>
+<p>En esta clase transformar&aacute;s esa arquitectura: los datos dejar&aacute;n de depender de la memoria de la aplicaci&oacute;n y pasar&aacute;n a almacenarse en PostgreSQL.</p>
+<div class="caso-negocio">
+<p class="componente-label">Caso de negocio</p>
+<h3>Una tienda que no puede empezar de cero</h3>
+<p>Productos, categor&iacute;as y proveedores forman parte de la operaci&oacute;n del negocio. Perderlos por un reinicio implicar&iacute;a reconstruir inventario, relaciones y disponibilidad. La persistencia convierte esa informaci&oacute;n en un activo estable del sistema.</p>
+</div>
+<div class="separador-editorial"><span>El recorrido</span></div>
+<div class="modelo-mental">
+<p class="componente-label">Lo que construir&aacute;s</p>
+<p>Conectar&aacute;s FastAPI con PostgreSQL, definir&aacute;s tablas mediante modelos de SQLAlchemy, reemplazar&aacute;s las listas en memoria por consultas reales y relacionar&aacute;s Producto con Categor&iacute;a y Proveedor.</p>
+</div>
+<div class="tip">
+<p class="componente-label">Antes de comenzar</p>
+<p>Necesitas PostgreSQL y pgAdmin instalados, adem&aacute;s del proyecto <code>tienda_dev</code> construido durante el M&oacute;dulo 1.</p>
+</div>
+<div class="reflexion">
+<p class="reflexion-label">Antes de continuar</p>
+<div class="reflexion-pregunta">&iquest;Por qu&eacute; guardar datos en una lista funciona para practicar, pero no para operar un negocio?</div>
+<button aria-expanded="false" class="ver-explicacion" type="button">Mostrar explicaci&oacute;n</button>
+<div aria-hidden="true" class="explicacion"><div class="explicacion-inner">Una lista existe dentro del proceso de Python. Permite manipular datos mientras la aplicaci&oacute;n est&aacute; encendida, pero desaparece al detenerse el proceso. Un negocio necesita almacenamiento independiente del ciclo de vida del servidor.</div></div>
+</div>
+</section>
+<section class="seccion" id="sec-nivelacion">
+<div class="seccion-meta"><span>02</span><span>NIVELACI&Oacute;N</span></div>
+<h2>🧭 Nivelaci&oacute;n: la foto del proyecto</h2>
+<h3>Por qu&eacute; empezamos aqu&iacute;</h3>
+<p>Antes de agregar persistencia, verifica que tu proyecto tenga una estructura estable. La conexi&oacute;n a la base de datos atravesar&aacute; modelos, servicios y routers; una pieza faltante dificultar&aacute; distinguir errores nuevos de problemas anteriores.</p>
+<h3>El proyecto tal como debe estar hoy</h3>
+<p>Este es el estado del proyecto <code>tienda_dev</code> al cerrar el M&oacute;dulo 1. Rev&iacute;salo carpeta por carpeta antes de continuar.</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Revisar la estructura actual del proyecto.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>La persistencia modificar&aacute; varias capas y necesitas una base coherente antes de continuar.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo identificar qu&eacute; carpetas y archivos participan en la migraci&oacute;n.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">EJECUTAR</span><span class="code-file">Estructura esperada &middot; tienda_dev/</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-markup">tienda_dev/
+&boxur;&boxh;&boxh; app/
+    &boxvr;&boxh;&boxh; config/                    &larr; vac&iacute;a por ahora (HOY la usamos)
+    &boxvr;&boxh;&boxh; models/                    &larr; vac&iacute;a por ahora (HOY la usamos)
+    &boxvr;&boxh;&boxh; routers/
+    &boxv;   &boxvr;&boxh;&boxh; __init__.py
+    &boxv;   &boxvr;&boxh;&boxh; producto_router.py
+    &boxv;   &boxur;&boxh;&boxh; categoria_router.py
+    &boxvr;&boxh;&boxh; schemas/
+    &boxv;   &boxvr;&boxh;&boxh; __init__.py
+    &boxv;   &boxvr;&boxh;&boxh; producto_schemas.py
+    &boxv;   &boxvr;&boxh;&boxh; categoria_schemas.py
+    &boxv;   &boxur;&boxh;&boxh; proveedor_schemas.py
+    &boxvr;&boxh;&boxh; services/
+    &boxv;   &boxvr;&boxh;&boxh; __init__.py
+    &boxv;   &boxvr;&boxh;&boxh; producto_service.py
+    &boxv;   &boxur;&boxh;&boxh; categoria_services.py
+    &boxvr;&boxh;&boxh; __init__.py
+    &boxvr;&boxh;&boxh; exceptions.py
+    &boxur;&boxh;&boxh; main.py</code></pre>
+</div>
+<h3>Lectura de la arquitectura actual</h3>
+<p>Ubica la responsabilidad de cada capa antes de modificarla:</p>
+<ul>
+<li><strong><code>schemas/</code></strong> &rarr; los <strong>contratos de entrada y salida</strong>. Validan lo que llega por la API (Pydantic). <em>No cambian con la base de datos.</em></li>
+<li><strong><code>services/</code></strong> &rarr; la <strong>l&oacute;gica de negocio</strong>. Hoy guardan datos en listas de Python. <strong>Esto es lo que m&aacute;s va a cambiar.</strong></li>
+<li><strong><code>routers/</code></strong> &rarr; los <strong>endpoints</strong>. Conectan la petici&oacute;n HTTP con el service. Cambian poco.</li>
+<li><strong><code>exceptions.py</code></strong> &rarr; las <strong>excepciones personalizadas</strong> y el manejo centralizado de errores.</li>
+<li><strong><code>config/</code></strong> y <strong><code>models/</code></strong> &rarr; hasta ahora estaban vac&iacute;as; desde este punto contendr&aacute;n la conexi&oacute;n y los modelos persistentes.</li>
+</ul>
+<h3>Verifica el punto de partida</h3>
+<p>Comprueba que Producto, Categor&iacute;a y Proveedor tengan sus contratos, servicios y routers correspondientes. Esa base permitir&aacute; migrar cada entidad sin mezclar responsabilidades.</p>
+<div class="reflexion">
+<p class="reflexion-label">Antes de continuar</p>
+<div class="reflexion-pregunta">Imagina que tu tienda <code>tienda_dev</code> ya est&aacute; en producci&oacute;n. Un cliente crea 200 productos durante el d&iacute;a. En la noche, el servidor se reinicia por una actualizaci&oacute;n. A la ma&ntilde;ana siguiente, el due&ntilde;o entra&hellip; &iquest;qu&eacute; encuentra?</div>
+<button aria-expanded="false" class="ver-explicacion" type="button">Mostrar explicaci&oacute;n</button>
+<div aria-hidden="true" class="explicacion"><div class="explicacion-inner">Una primera intuici&oacute;n podr&iacute;a ser: "Los 200 productos ah&iacute;, listos." Sin embargo, el criterio t&eacute;cnico es: Encuentra <strong>la lista vac&iacute;a</strong>. Todo lo que se cre&oacute; se <strong>perdi&oacute;</strong>. Hoy los datos viven en una lista de Python (<code>productos_db = []</code>), y esa lista vive en la <strong>memoria RAM</strong> del programa. Cuando el programa se apaga, la memoria se borra. <strong>Ese es el problema que resolvemos hoy.</strong> No es un detalle t&eacute;cnico: es la diferencia entre un juguete y un sistema real.</div></div>
+</div>
+</section>
+<section class="seccion" id="sec-problema-real">
+<div class="seccion-meta"><span>03</span><span>PROBLEMA</span></div>
+<h2>💾 El dolor: la memoria se borra</h2>
+<h3>Qu&eacute; problema resuelve</h3>
+<p>Primero comprobar&aacute;s el l&iacute;mite de la soluci&oacute;n actual: los datos creados durante la ejecuci&oacute;n desaparecen cuando el proceso de Python termina.</p>
+<h3>Comprueba la p&eacute;rdida de datos</h3>
+<ol>
+<li>Levanta la API: <code>uvicorn app.main:app --reload</code> (desde <code>tienda_dev</code>, no desde <code>app/</code>).</li>
+<li>En Swagger (<code>/docs</code>), crea <strong>2 o 3 productos nuevos</strong> con <code>POST /productos</code>.</li>
+<li>Conf&iacute;rmalos con <code>GET /productos</code>: ah&iacute; est&aacute;n.</li>
+<li><strong>Det&eacute;n el servidor</strong> (Ctrl + C) y vu&eacute;lvelo a levantar.</li>
+<li>Haz <code>GET /productos</code> otra vez.</li>
+</ol>
+<p><strong>Qu&eacute; van a ver:</strong> los productos que crearon <strong>desaparecieron</strong>. Solo quedan los 10 productos "de f&aacute;brica" que est&aacute;n escritos en el c&oacute;digo (<code>productos_db = [...]</code>). Los que los datos agregaron en caliente, no.</p>
+<h3>La lecci&oacute;n</h3>
+<p>Los datos en memoria son como escribir en un tablero: apenas apagas la luz (reinicias el programa), se borra. Necesitamos escribir en algo <strong>permanente</strong>: un cuaderno que siga ah&iacute; aunque cierres la oficina. Ese cuaderno es la <strong>base de datos</strong>.</p>
+<div class="reflexion">
+<p class="reflexion-label">Antes de continuar</p>
+<div class="reflexion-pregunta">&iquest;Por qu&eacute; los 10 productos de siempre s&iacute; sobreviven al reinicio, pero los que creamos en Swagger no?</div>
+<button aria-expanded="false" class="ver-explicacion" type="button">Mostrar explicaci&oacute;n</button>
+<div aria-hidden="true" class="explicacion"><div class="explicacion-inner">Una primera intuici&oacute;n podr&iacute;a ser: "Porque los 10 est&aacute;n guardados y los otros no." Sin embargo, el criterio t&eacute;cnico es: Los 10 sobreviven porque est&aacute;n <strong>escritos en el c&oacute;digo fuente</strong> (<code>productos_db = [...]</code>): cada vez que el programa arranca, Python vuelve a leer esa lista desde cero. Los productos nuevos solo se agregaron a la lista <strong>en memoria</strong>, nunca al c&oacute;digo. Al reiniciar, la memoria se limpia y la lista vuelve a su estado original. Esto demuestra algo clave: <strong>la memoria no es almacenamiento</strong>. Es temporal por naturaleza.</div></div>
+</div>
+</section>
+<section class="seccion" id="sec-base-relacional">
+<div class="seccion-meta"><span>04</span><span>FUNDAMENTO</span></div>
+<h2>🗃️ Qu&eacute; es una base de datos relacional</h2>
+<h3>Qu&eacute; problema resuelve</h3>
+<p>Ya sabemos que necesitamos algo permanente. Ahora entendemos <strong>qu&eacute;</strong> es ese algo, antes de tocar c&oacute;digo. Muchos escuchan "base de datos" por primera vez hoy: vamos desde cero.</p>
+<div class="definicion">
+<div class="definicion-bloque"><p class="componente-label">Definici&oacute;n t&eacute;cnica</p><div class="tecnica"><p>Una <strong>base de datos</strong> es un sistema organizado para <strong>almacenar, consultar y manipular</strong> informaci&oacute;n de forma permanente y eficiente. Una base de datos <strong>relacional</strong> organiza esa informaci&oacute;n en <strong>tablas</strong> que pueden <strong>relacionarse</strong> entre s&iacute;.</p>
+</div></div>
+<div class="definicion-bloque"><p class="componente-label">En palabras sencillas</p><p class="sencilla">Una base de datos es un sistema organizado para almacenar, consultar y manipular informaci&oacute;n de forma permanente y eficiente. Una base de datos relacional organiza esa informaci&oacute;n en tablas que pueden relacionarse entre s&iacute;.</p></div>
+<div class="definicion-bloque"><p class="componente-label">Ejemplo real</p><div class="real"><p>Piensa en una <strong>hoja de c&aacute;lculo de Excel</strong>, pero con superpoderes:</p>
+<ul>
+<li>Cada <strong>hoja</strong> es una <strong>tabla</strong> (una para productos, otra para categor&iacute;as).</li>
+<li>Cada <strong>fila</strong> es un <strong>registro</strong> (un producto espec&iacute;fico: "Laptop Dell").</li>
+<li>Cada <strong>columna</strong> es un <strong>campo</strong> (nombre, precio, stock&hellip;).</li>
+<li>Y lo relacional: una tabla puede <strong>apuntar</strong> a otra (un producto pertenece a una categor&iacute;a).</li>
+</ul>
+</div></div>
+</div><h3>Tres conceptos esenciales</h3><table>
+<thead>
+<tr>
+<th>Concepto</th>
+<th>Qu&eacute; es</th>
+<th>En <em>tienda_dev</em></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Tabla</strong></td>
+<td>Una colecci&oacute;n de datos del mismo tipo</td>
+<td>La tabla <code>productos</code></td>
+</tr>
+<tr>
+<td><strong>Fila</strong> (registro)</td>
+<td>Una entrada individual</td>
+<td>El producto "Mouse", id 2</td>
+</tr>
+<tr>
+<td><strong>Columna</strong> (campo)</td>
+<td>Una caracter&iacute;stica de cada entrada</td>
+<td><code>precio</code>, <code>stock</code>, <code>nombre</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Qu&eacute; es PostgreSQL</h3>
+<p><strong>PostgreSQL</strong>  es el <strong>programa que administra</strong> nuestra base de datos relacional. Es uno de los motores de bases de datos m&aacute;s usados y respetados de la industria: gratis, robusto y profesional. Ya lo instalaron de tarea. Es el "cuaderno permanente" donde almacenar&aacute;s la informaci&oacute;n.</p>
+<h3>Qu&eacute; es pgAdmin</h3>
+<p><strong>pgAdmin</strong> es una interfaz visual para administrar PostgreSQL. En este recorrido lo usar&aacute;s como visor para comprobar bases, tablas, columnas y registros. La estructura de las tablas se definir&aacute; desde el c&oacute;digo.</p>
+<div class="reflexion">
+<p class="reflexion-label">Antes de continuar</p>
+<div class="reflexion-pregunta">Si PostgreSQL es el programa que guarda los datos, y tu API en Python es otro programa aparte&hellip; &iquest;c&oacute;mo se hablan dos programas distintos que ni siquiera est&aacute;n escritos en el mismo lenguaje?</div>
+<button aria-expanded="false" class="ver-explicacion" type="button">Mostrar explicaci&oacute;n</button>
+<div aria-hidden="true" class="explicacion"><div class="explicacion-inner">Una primera intuici&oacute;n podr&iacute;a ser: "Se conectan de alguna forma / con internet." Sin embargo, el criterio t&eacute;cnico es: Necesitan un <strong>traductor</strong> y un <strong>cable</strong>. PostgreSQL habla <strong>SQL</strong>; nuestra app habla <strong>Python</strong>. Para que se entiendan usamos dos piezas: un <strong>driver</strong> (<code>psycopg</code>, el cable f&iacute;sico que transporta los mensajes) y un <strong>ORM</strong> (<code>SQLAlchemy</code>, el traductor que convierte objetos de Python en SQL y viceversa). Eso es exactamente lo que montamos en el siguiente bloque.</div></div>
+</div>
+</section>
+<section class="seccion" id="sec-conexion-orm">
+<div class="seccion-meta"><span>05</span><span>CONEXI&Oacute;N</span></div>
+<h2>🔌 El ORM y la conexi&oacute;n (database.py)</h2>
+<h3>Qu&eacute; problema resuelve</h3>
+<p>Aqu&iacute; construimos el <strong>cimiento de todo el m&oacute;dulo</strong>: el archivo de conexi&oacute;n. Todo lo que a partir de hoy hable con PostgreSQL pasar&aacute; por aqu&iacute;. Es la pieza que reutilizaremos en cada clase que sigue.</p>
+<div class="definicion">
+<div class="definicion-bloque"><p class="componente-label">Definici&oacute;n t&eacute;cnica</p><div class="tecnica"><p>Un <strong>ORM</strong> (Object-Relational Mapping) es una capa que traduce entre <strong>objetos de Python</strong> y <strong>tablas de una base de datos relacional</strong>. En lugar de escribir SQL a mano, escribimos Python, y el ORM genera el SQL por nosotros.</p>
+</div></div>
+<div class="definicion-bloque"><p class="componente-label">En palabras sencillas</p><p class="sencilla">Un ORM (Object-Relational Mapping) es una capa que traduce entre objetos de Python y tablas de una base de datos relacional. En lugar de escribir SQL a mano, escribimos Python, y el ORM genera el SQL por nosotros.</p></div>
+<div class="definicion-bloque"><p class="componente-label">Ejemplo real</p><div class="real"><p>Imagina que vas a un pa&iacute;s donde no hablas el idioma. El <strong>ORM es tu int&eacute;rprete</strong>: t&uacute; hablas en Python ("dame todos los productos"), el int&eacute;rprete lo dice en SQL (<code>SELECT * FROM productos</code>), la base responde en SQL, y el int&eacute;rprete te lo devuelve como objetos de Python que s&iacute; entiendes. <strong>Nunca hablas SQL directamente</strong>: el int&eacute;rprete lo hace por ti.</p>
+</div></div>
+</div><h3>Las tres piezas de la conexi&oacute;n</h3><p>Antes de escribir c&oacute;digo, para dejar claro qui&eacute;n es qui&eacute;n:</p>
+<ul>
+<li><strong>PostgreSQL</strong> &rarr; la base de datos (el cuaderno permanente).</li>
+<li><strong>psycopg</strong> &rarr; el <strong>driver</strong>: el cable que transporta los datos entre Python y PostgreSQL.</li>
+<li><strong>SQLAlchemy</strong> &rarr; el <strong>ORM</strong>: el traductor que centraliza todo y nos da una sola puerta de entrada, el <strong>engine</strong>.</li>
+</ul>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>Analog&iacute;a del tablero el&eacute;ctrico:</strong> el driver (<code>psycopg</code>) es el enchufe que encaja en la pared. SQLAlchemy es el tablero el&eacute;ctrico de la casa: centraliza la corriente y la reparte ordenada. Hoy instalamos el tablero y comprobamos que llega la luz.</p></div>
+<h3>Paso 1 &mdash; Instalar las librer&iacute;as</h3>
+<h4>En una frase</h4>
+<p>Instalamos el traductor (SQLAlchemy) y el cable (psycopg) en nuestro entorno.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>Instalamos dos paquetes de una vez. <code>sqlalchemy</code> es la capa de acceso a datos (el ORM). <code>psycopg</code> con la opci&oacute;n <code>[binary]</code> trae todo precompilado, lo que evita tener que instalar librer&iacute;as extra del sistema operativo. Ambos entran en el entorno virtual del proyecto, junto a FastAPI y Uvicorn que ya ten&iacute;an.</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde se ejecuta:</strong> en la <strong>terminal</strong> (PowerShell), dentro de <code>tienda_dev</code>, con el entorno virtual <strong>activo</strong>. Esto es Python, <strong>no</strong> es SQL, as&iacute; que <strong>no</strong> va en pgAdmin.</p></div><h3>Comando</h3><div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Instalar SQLAlchemy y el driver psycopg.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>La aplicaci&oacute;n necesita una capa ORM y un controlador compatible con PostgreSQL.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo preparar las dependencias necesarias para abrir conexiones reales.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">EJECUTAR</span><span class="code-file">Terminal &middot; ra&iacute;z de tienda_dev</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-bash">pip install sqlalchemy "psycopg[binary]"</code></pre>
+</div>
+<div class="tip"><p class="componente-label">Buena pr&aacute;ctica</p><p>Si quieres dejarlo registrado para el futuro: <code>pip freeze &gt; requirements.txt</code> actualiza la lista de dependencias del proyecto.</p></div>
+<h3>Paso 2 &mdash; Crear el archivo de conexi&oacute;n</h3>
+<h4>En una frase</h4>
+<p>Creamos el archivo que define <strong>c&oacute;mo</strong> se conecta todo el proyecto a PostgreSQL.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>Este es el archivo m&aacute;s importante del m&oacute;dulo. Aqu&iacute; definimos tres cosas: el <strong>engine</strong> (la puerta &uacute;nica a la base), el <strong>sessionmaker</strong> (la f&aacute;brica que produce sesiones de trabajo), y la <strong>Base</strong> (la clase madre de la que heredar&aacute;n todos los modelos). De aqu&iacute; en adelante, cada modelo y cada consulta parten de este archivo.</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde va:</strong> crea un archivo nuevo llamado <code>database.py</code> <strong>dentro de <code>app/config/</code></strong>. Esa carpeta la dejamos vac&iacute;a en el M&oacute;dulo 1 esperando justo este momento.</p></div>
+Antes del c&oacute;digo, hay que entender la **cadena de conexi&oacute;n** (la URL). L&eacute;ela por partes:
+
+<ul>
+<li><code>postgresql+psycopg</code> &rarr; motor PostgreSQL usando el driver psycopg 3.</li>
+<li><code>postgres:tu_contrase&ntilde;a</code> &rarr; el usuario (<code>postgres</code>) y su contrase&ntilde;a.</li>
+<li><code>localhost:5432</code> &rarr; d&oacute;nde vive la base: tu propia m&aacute;quina (<code>localhost</code>), puerto <code>5432</code> (el puerto por defecto de PostgreSQL).</li>
+<li><code>tienda_dev</code> &rarr; el nombre de la base de datos que usar&aacute;s.</li>
+</ul>
+<h4>C&oacute;digo completo</h4>
+<p>📍 <strong>Archivo:</strong> <code>app/config/database.py</code></p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Crear el m&oacute;dulo central de conexi&oacute;n.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Toda la aplicaci&oacute;n debe compartir una configuraci&oacute;n &uacute;nica para el engine, las sesiones y la base declarativa.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo configurar SQLAlchemy sin mezclar la conexi&oacute;n con la l&oacute;gica de negocio.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/config/database.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+
+<p>URL_CONEXION = "postgresql+psycopg://postgres:tu_contrase&ntilde;a@localhost:5432/tienda_dev"</p>
+<p>engine = create_engine(URL_CONEXION)</p>
+<p>SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)</p>
+<p>Base = declarative_base()</p></code></pre>
+</div>
+<h4>Desglose l&iacute;nea por l&iacute;nea</h4>
+<ul>
+<li><strong><code>from sqlalchemy import create_engine</code></strong> &rarr; traemos la funci&oacute;n que crea el engine, la puerta a la base.</li>
+<li><strong><code>from sqlalchemy.orm import sessionmaker, declarative_base</code></strong> &rarr; traemos dos herramientas del ORM: <code>sessionmaker</code> (f&aacute;brica de sesiones) y <code>declarative_base</code> (la base para los modelos).</li>
+<li><strong><code>URL_CONEXION = "..."</code></strong> &rarr; la direcci&oacute;n completa de la base, en una sola l&iacute;nea. Es el "domicilio" de PostgreSQL.</li>
+<li><strong><code>engine = create_engine(URL_CONEXION)</code></strong> &rarr; crea el <strong>engine</strong>. Ojo: <strong>todav&iacute;a no se conecta</strong>. Solo queda listo para cuando alguien lo use. Es como tener el n&uacute;mero de tel&eacute;fono guardado: a&uacute;n no has llamado.</li>
+<li><strong><code>SessionLocal = sessionmaker(...)</code></strong> &rarr; crea una <strong>f&aacute;brica de sesiones</strong>. Cada vez que necesitemos hablar con la base, esta f&aacute;brica nos entrega una "sesi&oacute;n" nueva.<ul>
+<li><strong><code>autocommit=False</code></strong> &rarr; no guardamos cambios autom&aacute;ticamente; nosotros decidimos cu&aacute;ndo con <code>commit()</code>. M&aacute;s control, m&aacute;s seguro.</li>
+<li><strong><code>autoflush=False</code></strong> &rarr; no enviamos cambios a medias sin pedirlo. Evita sorpresas.</li>
+<li><strong><code>bind=engine</code></strong> &rarr; conectamos la f&aacute;brica al engine que creamos arriba.</li>
+</ul>
+</li>
+<li><strong><code>Base = declarative_base()</code></strong> &rarr; crea la <strong>clase madre</strong>. Todos los modelos (Producto, Categor&iacute;a, Proveedor) van a <strong>heredar</strong> de esta <code>Base</code>. As&iacute; SQLAlchemy sabe que son tablas.</li>
+</ul>
+<div class="tip"><p class="componente-label">Buena pr&aacute;ctica</p><p>Cambia <code>tu_contrase&ntilde;a</code> por la contrase&ntilde;a real del usuario <code>postgres</code> que definieron al instalar PostgreSQL. Si la contrase&ntilde;a tiene s&iacute;mbolos como <code>@</code> o <code>/</code>, ten presente que hay que escribirlos de forma especial.</p></div>
+<div class="reflexion">
+<p class="reflexion-label">Antes de continuar</p>
+<div class="reflexion-pregunta">Creamos el <code>engine</code> pero dije que 'todav&iacute;a no se conecta'. &iquest;Por qu&eacute; SQLAlchemy no se conecta de una vez al crear el engine?</div>
+<button aria-expanded="false" class="ver-explicacion" type="button">Mostrar explicaci&oacute;n</button>
+<div aria-hidden="true" class="explicacion"><div class="explicacion-inner">Una primera intuici&oacute;n podr&iacute;a ser: "Para ahorrar / porque no se necesita a&uacute;n." Sin embargo, el criterio t&eacute;cnico es: Por <strong>eficiencia</strong>. Abrir una conexi&oacute;n a una base de datos cuesta recursos. Si SQLAlchemy se conectara al arrancar y nadie usara la base, ser&iacute;a desperdicio. En vez de eso, el engine espera: se conecta <strong>solo cuando de verdad se necesita</strong> (cuando pedimos datos). Es "conexi&oacute;n perezosa" (lazy), y es una buena pr&aacute;ctica: no gastes hasta que haga falta.</div></div>
+</div>
+<h3>Paso 3 &mdash; Crear la dependencia <code>get_db</code></h3>
+<h4>En una frase</h4>
+<p>Creamos una funci&oacute;n que <strong>entrega una sesi&oacute;n</strong> a quien la necesite y la <strong>cierra sola</strong> al terminar.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>Cada vez que un endpoint necesite hablar con la base, va a pedir una <strong>sesi&oacute;n</strong> de trabajo. Pero abrir una sesi&oacute;n y olvidar cerrarla causa <strong>fugas de conexi&oacute;n</strong> (se acumulan sesiones abiertas hasta que la base colapsa). Para evitarlo, creamos una funci&oacute;n especial: abre la sesi&oacute;n, se la presta al endpoint, y <strong>garantiza</strong> que se cierre al final, pase lo que pase. FastAPI sabe usar este tipo de funci&oacute;n a trav&eacute;s de su sistema de <strong>inyecci&oacute;n de dependencias</strong> (<code>Depends</code>).</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde va:</strong> al <strong>final</strong> del mismo <code>app/config/database.py</code>.</p></div><h3>C&oacute;digo</h3><p>📍 <strong>Archivo:</strong> <code>app/config/database.py</code> (agregar al final)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Agregar la dependencia <code>get_db</code>.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Cada petici&oacute;n necesita una sesi&oacute;n que se cierre incluso cuando ocurre un error.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo usar <code>yield</code> para administrar el ciclo de vida de una sesi&oacute;n.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/config/database.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()</code></pre>
+</div>
+<h4>Desglose l&iacute;nea por l&iacute;nea</h4>
+<ul>
+<li><strong><code>def get_db():</code></strong> &rarr; definimos la funci&oacute;n que provee sesiones.</li>
+<li><strong><code>db = SessionLocal()</code></strong> &rarr; pedimos una sesi&oacute;n nueva a la f&aacute;brica.</li>
+<li><strong><code>try:</code></strong> &rarr; empezamos un bloque protegido.</li>
+<li><strong><code>yield db</code></strong> &rarr; <strong>entregamos</strong> la sesi&oacute;n a quien la pidi&oacute; (el endpoint). <code>yield</code> en vez de <code>return</code> es la clave: la funci&oacute;n se <strong>pausa</strong> aqu&iacute;, deja trabajar al endpoint, y <strong>retoma</strong> despu&eacute;s para limpiar.</li>
+<li><strong><code>finally:</code></strong> &rarr; este bloque se ejecuta <strong>siempre</strong>, haya &eacute;xito o error.</li>
+<li><strong><code>db.close()</code></strong> &rarr; cerramos la sesi&oacute;n. Garantizado. Sin fugas.</li>
+</ul>
+<div class="tip"><p class="componente-label">Buena pr&aacute;ctica</p><p><strong>La conexi&oacute;n con lo que ya saben:</strong> <code>Depends()</code> es el mismo mecanismo que FastAPI usa para inyectar cosas en los endpoints. Aqu&iacute; lo usamos para inyectar la sesi&oacute;n de base de datos. Lo van a ver en acci&oacute;n en los routers, m&aacute;s adelante en esta misma clase.</p></div>
+<h3>Paso 4 &mdash; Verificar la conexi&oacute;n</h3>
+<h4>En una frase</h4>
+<p>Comprobamos que el engine <strong>s&iacute; alcanza</strong> la base de datos antes de seguir.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>Antes de construir modelos sobre esta conexi&oacute;n, confirmemos que funciona. Le pedimos a PostgreSQL su versi&oacute;n: si responde, la conexi&oacute;n sirve. Este es un chequeo temporal &mdash; una vez confirmado, se puede borrar.</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde:</strong> crea un archivo temporal <code>probar_conexion.py</code> en la <strong>ra&iacute;z</strong> de <code>tienda_dev</code> (al lado de <code>app/</code>), y ejec&uacute;talo con <code>python probar_conexion.py</code>.</p></div><h3>C&oacute;digo</h3><p>📍 <strong>Archivo:</strong> <code>probar_conexion.py</code> (temporal, en la ra&iacute;z)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Crear una comprobaci&oacute;n temporal de conexi&oacute;n.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Conviene validar credenciales, puerto y nombre de base antes de construir modelos sobre una conexi&oacute;n defectuosa.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo ejecutar una consulta SQL m&iacute;nima mediante el engine.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">probar_conexion.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from sqlalchemy import text
+from app.config.database import engine
+
+<p>with engine.connect() as conexion:
+resultado = conexion.execute(text("SELECT version();"))
+print("✅ Conexi&oacute;n exitosa:")
+print(resultado.fetchone()[0])</p></code></pre>
+</div>
+<h4>C&oacute;mo leerlo</h4>
+<ul>
+<li><strong><code>from sqlalchemy import text</code></strong> &rarr; <code>text()</code> nos deja escribir SQL crudo de forma segura.</li>
+<li><strong><code>from app.config.database import engine</code></strong> &rarr; traemos el engine que acabamos de crear.</li>
+<li><strong><code>with engine.connect() as conexion:</code></strong> &rarr; <strong>aqu&iacute; s&iacute;</strong> se abre la conexi&oacute;n real (la primera vez).</li>
+<li><strong><code>conexion.execute(text("SELECT version();"))</code></strong> &rarr; le preguntamos a PostgreSQL su versi&oacute;n.</li>
+<li><strong><code>print(...)</code></strong> &rarr; si imprime la versi&oacute;n, &iexcl;la conexi&oacute;n funciona!</li>
+</ul>
+<div class="advertencia"><p class="componente-label">Error frecuente</p><p><strong>Error posible:</strong> si sale un error que menciona <code>password authentication failed</code>, la contrase&ntilde;a de la URL est&aacute; mal. Si menciona <code>database "tienda_dev" does not exist</code>, hay que crear la base en pgAdmin primero (siguiente paso).</p></div>
+<h3>Paso 5 &mdash; Crear la base de datos en pgAdmin</h3>
+<h4>En una frase</h4>
+<p>Creamos el "espacio vac&iacute;o" (la base <code>tienda_dev</code>) donde vivir&aacute;n nuestras tablas.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>La cadena de conexi&oacute;n apunta a una base llamada <code>tienda_dev</code>, pero esa base <strong>todav&iacute;a no existe</strong>. Hay que crearla una vez. Esto s&iacute; lo hacemos en pgAdmin, porque crear la <em>base</em> (el contenedor) es una tarea de administraci&oacute;n, distinta de crear las <em>tablas</em> (que s&iacute; har&aacute; el c&oacute;digo de la aplicaci&oacute;n).</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde:</strong> en <strong>pgAdmin</strong>, con el mouse.</p></div>
+**Pasos en pgAdmin:**
+1. Abre pgAdmin y con&eacute;ctate a tu servidor local (te pedir&aacute; la contrase&ntilde;a de `postgres`).
+2. Clic derecho sobre **Databases** &rarr; **Create** &rarr; **Database&hellip;**
+3. En **Database**, escribe `tienda_dev`.
+4. Clic en **Save**.
+
+<p>Listo: la base existe, vac&iacute;a, esperando sus tablas.</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>Diferencia clave que hay que dejar sentada:</strong> crear la <strong>base de datos</strong> (el contenedor) lo hacemos aqu&iacute; una vez en pgAdmin. Crear las <strong>tablas</strong> (productos, categor&iacute;as, proveedores) lo har&aacute; nuestro <strong>c&oacute;digo</strong> en el siguiente bloque. pgAdmin no crea tablas a mano en este curso: solo mira.</p></div>
+</section>
+<section class="seccion" id="sec-modelo-producto">
+<div class="seccion-meta"><span>06</span><span>MODELO</span></div>
+<h2>🧱 El primer modelo: Producto (explicaci&oacute;n total)</h2>
+<h3>Qu&eacute; problema resuelve</h3>
+<p>Este es <strong>el bloque m&aacute;s importante de la clase</strong>. Aqu&iacute; aparece el concepto que m&aacute;s confunde a quien viene de otros lenguajes o ve bases de datos por primera vez: la diferencia entre un <strong>modelo</strong> y un <strong>schema</strong>. Lo explicamos a fondo con Producto. Las otras dos entidades solo lo repetir&aacute;n.</p>
+<h3>El concepto que debe quedar claro: modelo &ne; schema</h3>
+<p>Ya tenemos <code>producto_schemas.py</code> desde el M&oacute;dulo 1. Entonces, &iquest;por qu&eacute; ahora creamos <strong>otro</strong> archivo para Producto en <code>models/</code>? &iquest;No es repetir?</p>
+<p><strong>No. Son dos cosas distintas con dos trabajos distintos:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Schema</strong> (Pydantic)</th>
+<th><strong>Modelo</strong> (SQLAlchemy)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Vive en</strong></td>
+<td><code>schemas/</code></td>
+<td><code>models/</code></td>
+</tr>
+<tr>
+<td><strong>Hereda de</strong></td>
+<td><code>BaseModel</code></td>
+<td><code>Base</code></td>
+</tr>
+<tr>
+<td><strong>Su trabajo</strong></td>
+<td>Validar lo que <strong>entra y sale</strong> por la API</td>
+<td>Representar la <strong>tabla</strong> en la base de datos</td>
+</tr>
+<tr>
+<td><strong>Analog&iacute;a</strong></td>
+<td>El <strong>formulario</strong> que el cliente llena</td>
+<td>La <strong>ficha archivada</strong> en el caj&oacute;n</td>
+</tr>
+</tbody>
+</table>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>Analog&iacute;a completa:</strong> el <strong>schema</strong> es el formulario que llenas en la recepci&oacute;n de un hospital (valida que pusiste bien tu edad, tu nombre). El <strong>modelo</strong> es la ficha m&eacute;dica que queda <strong>archivada</strong> en el sistema. Son parecidos, pero uno controla la entrada y el otro es el registro permanente. Necesitamos <strong>los dos</strong>.</p></div>
+<h3>Crear el modelo Producto</h3>
+<h4>En una frase</h4>
+<p>Definimos, en c&oacute;digo, la <strong>tabla</strong> <code>productos</code> con todas sus columnas y tipos.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>Un modelo de SQLAlchemy es una clase de Python que hereda de <code>Base</code>. Cada <strong>atributo</strong> de la clase se convierte en una <strong>columna</strong> de la tabla. SQLAlchemy lee esta clase y sabe exactamente qu&eacute; tabla crear, con qu&eacute; columnas y de qu&eacute; tipo. Aqu&iacute; definimos Producto con los mismos campos que ya manejaban en memoria: nombre, precio, stock, categor&iacute;a &mdash; m&aacute;s el <code>id</code> que ahora generar&aacute; la base sola.</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde va:</strong> crea un archivo nuevo <code>producto_model.py</code> <strong>dentro de <code>app/models/</code></strong>.</p></div><h3>C&oacute;digo completo</h3><p>📍 <strong>Archivo:</strong> <code>app/models/producto_model.py</code></p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Definir la tabla <code>productos</code> como un modelo ORM.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>SQLAlchemy necesita una clase que describa el nombre de la tabla, sus columnas y restricciones.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo traducir una entidad de negocio a una tabla relacional.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/models/producto_model.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String, Float
+from app.config.database import Base
+
+<p>class Producto(Base):
+<strong>tablename</strong> = "productos"</p>
+<pre><code>id = Column(Integer, primary_key=True, index=True)
+nombre = Column(String, nullable=False)
+precio = Column(Float, nullable=False)
+stock = Column(Integer, nullable=False)
+categoria = Column(String, nullable=False)&lt;/code&gt;&lt;/pre&gt;</code></pre>
+</code></pre></div>
+<h4>Desglose l&iacute;nea por l&iacute;nea</h4>
+<ul>
+<li><strong><code>from sqlalchemy import Column, Integer, String, Float</code></strong> &rarr; traemos las herramientas para definir columnas y sus tipos de dato.</li>
+<li><strong><code>from app.config.database import Base</code></strong> &rarr; traemos la <strong>clase madre</strong> que creamos en <code>database.py</code>. El modelo debe heredar de ella.</li>
+<li><strong><code>class Producto(Base):</code></strong> &rarr; definimos la clase <code>Producto</code> que <strong>hereda de <code>Base</code></strong>. Esa herencia es lo que le dice a SQLAlchemy "esto es una tabla".</li>
+<li><strong><code>__tablename__ = "productos"</code></strong> &rarr; el <strong>nombre real</strong> de la tabla dentro de PostgreSQL. Convenci&oacute;n: plural y en min&uacute;sculas.</li>
+<li><strong><code>id = Column(Integer, primary_key=True, index=True)</code></strong> &rarr; la columna <code>id</code>.<ul>
+<li><strong><code>Integer</code></strong> &rarr; es un n&uacute;mero entero.</li>
+<li><strong><code>primary_key=True</code></strong> &rarr; es la <strong>llave primaria</strong>: identifica de forma &uacute;nica a cada fila. <strong>La base la genera y la incrementa sola</strong> (1, 2, 3&hellip;). Aqu&iacute; muere el <code>contador_id</code> y el <code>global</code> que us&aacute;bamos en memoria.</li>
+<li><strong><code>index=True</code></strong> &rarr; crea un &iacute;ndice para buscar por id m&aacute;s r&aacute;pido.</li>
+</ul>
+</li>
+<li><strong><code>nombre = Column(String, nullable=False)</code></strong> &rarr; columna de texto. <code>nullable=False</code> significa <strong>obligatoria</strong> (no puede quedar vac&iacute;a).</li>
+<li><strong><code>precio = Column(Float, nullable=False)</code></strong> &rarr; n&uacute;mero con decimales, obligatorio.</li>
+<li><strong><code>stock = Column(Integer, nullable=False)</code></strong> &rarr; n&uacute;mero entero, obligatorio.</li>
+<li><strong><code>categoria = Column(String, nullable=False)</code></strong> &rarr; texto, obligatorio.</li>
+</ul>
+<div class="tip"><p class="componente-label">Buena pr&aacute;ctica</p><p>La base de datos genera el identificador al insertar cada fila. Por eso ya no necesitas <code>contador_id</code> ni variables globales para mantener una secuencia manual.</p></div>
+<div class="reflexion">
+<p class="reflexion-label">Antes de continuar</p>
+<div class="reflexion-pregunta">Ya ten&iacute;amos <code>producto_schemas.py</code> desde el M&oacute;dulo 1. &iquest;Por qu&eacute; no borramos el schema y usamos solo este modelo nuevo? &iquest;Para qu&eacute; queremos los dos?</div>
+<button aria-expanded="false" class="ver-explicacion" type="button">Mostrar explicaci&oacute;n</button>
+<div aria-hidden="true" class="explicacion"><div class="explicacion-inner">Una primera intuici&oacute;n podr&iacute;a ser: "Porque el modelo ya tiene los campos, el schema sobra." Sin embargo, el criterio t&eacute;cnico es: Porque hacen trabajos <strong>distintos</strong>. El <strong>schema</strong> valida lo que entra por la API (que el precio sea positivo, que el nombre no est&eacute; vac&iacute;o) y define lo que sale como respuesta. El <strong>modelo</strong> representa la tabla f&iacute;sica. Si mezcl&aacute;ramos ambos, la validaci&oacute;n de la API quedar&iacute;a atada a la estructura de la base, y perder&iacute;amos flexibilidad: por ejemplo, el cliente no debe enviar el <code>id</code> (lo pone la base), pero s&iacute; debe recibirlo en la respuesta. Separar schema y modelo nos deja controlar <strong>entrada</strong>, <strong>salida</strong> y <strong>almacenamiento</strong> por separado. Es una de las buenas pr&aacute;cticas m&aacute;s importantes del backend profesional.</div></div>
+</div>
+<h3>Crear las tablas desde el c&oacute;digo (<code>create_all</code>)</h3>
+<h4>En una frase</h4>
+<p>Le ordenamos a SQLAlchemy que lea los modelos y <strong>cree las tablas reales</strong> en PostgreSQL.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>Tenemos el modelo (la definici&oacute;n de la tabla en c&oacute;digo), pero la tabla <strong>a&uacute;n no existe</strong> dentro de PostgreSQL. <code>Base.metadata.create_all(engine)</code> recorre <strong>todos</strong> los modelos que heredan de <code>Base</code>, y por cada uno crea su tabla en la base &mdash; si no existe ya. Esto lo ponemos en <code>main.py</code> para que ocurra al arrancar la app. Es "la tabla nace del c&oacute;digo", la pr&aacute;ctica profesional: el c&oacute;digo es la fuente de verdad, no picamos tablas a mano.</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde va:</strong> en <code>app/main.py</code>. Necesitamos importar <code>Base</code>, <code>engine</code> y <strong>todos los modelos</strong>, y luego llamar <code>create_all</code>.</p></div><h3>C&oacute;digo</h3><p>📍 <strong>Archivo:</strong> <code>app/main.py</code> (agregar cerca del inicio, despu&eacute;s de los imports de FastAPI)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Registrar el modelo y crear las tablas faltantes.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p><code>Base.metadata</code> solo conoce los modelos que fueron importados por la aplicaci&oacute;n.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo materializar en PostgreSQL la estructura declarada en Python.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/main.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from app.config.database import Base, engine
+from app.models import producto_model  # importa el modelo para que Base lo "vea"
+
+<p>Base.metadata.create_all(bind=engine)</p></code></pre>
+</div>
+<h4>C&oacute;mo leerlo</h4>
+<ul>
+<li><strong><code>from app.config.database import Base, engine</code></strong> &rarr; traemos la clase madre y la puerta a la base.</li>
+<li><strong><code>from app.models import producto_model</code></strong> &rarr; <strong>importante</strong>: hay que importar el archivo del modelo aunque no lo usemos directo aqu&iacute;. Si no se importa, <code>Base</code> no se entera de que Producto existe, y no crea su tabla.</li>
+<li><strong><code>Base.metadata.create_all(bind=engine)</code></strong> &rarr; recorre todos los modelos conocidos por <code>Base</code> y crea sus tablas en la base conectada por <code>engine</code>. Si la tabla ya existe, no hace nada (no borra datos).</li>
+</ul>
+<div class="advertencia"><p class="componente-label">Error frecuente</p><p><strong>Comportamiento clave:</strong> <code>create_all</code> <strong>crea</strong> tablas que faltan, pero <strong>no modifica</strong> tablas que ya existen. Si m&aacute;s adelante le agregas una columna a un modelo, <code>create_all</code> <strong>no</strong> actualiza la tabla vieja. Para eso existen las "migraciones" (Alembic), un tema de m&aacute;s adelante. Por ahora, si necesitas rehacer una tabla en clase, se borra en pgAdmin y <code>create_all</code> la vuelve a crear limpia.</p></div>
+<h3>Verlo nacer en pgAdmin</h3>
+<h4>En una frase</h4>
+<p>Abrimos pgAdmin para <strong>ver con nuestros ojos</strong> la tabla que el c&oacute;digo acaba de crear.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>Al iniciar la aplicaci&oacute;n, <code>create_all</code> procesa los modelos conocidos y crea las tablas faltantes. Abre pgAdmin para comprobar que <code>productos</code> existe y que sus columnas coinciden con el modelo.</p>
+<p><strong>Pasos:</strong></p>
+<ol>
+<li>Levanta la API: <code>uvicorn app.main:app --reload</code> desde <code>tienda_dev</code>.</li>
+<li>En pgAdmin, navega: <strong>Servers &rarr; PostgreSQL &rarr; Databases &rarr; tienda_dev &rarr; Schemas &rarr; public &rarr; Tables</strong>.</li>
+<li>Si no aparece, clic derecho en <strong>Tables &rarr; Refresh</strong>.</li>
+<li>Ah&iacute; est&aacute; <strong><code>productos</code></strong>. Despli&eacute;gala y mira sus <strong>Columns</strong>: <code>id</code>, <code>nombre</code>, <code>precio</code>, <code>stock</code>, <code>categoria</code>.</li>
+</ol>
+<p><strong>Qu&eacute; deben ver:</strong> la tabla <code>productos</code> con exactamente las columnas que definimos en el modelo. Los tipos coinciden: <code>id</code> como <code>integer</code>, <code>precio</code> como <code>double precision</code> (el Float), etc.</p>
+<div class="reflexion">
+<p class="reflexion-label">Antes de continuar</p>
+<div class="reflexion-pregunta">La tabla <code>productos</code> ya existe en PostgreSQL y tiene sus columnas&hellip; pero si hago <code>SELECT</code> no hay ni una fila. &iquest;Por qu&eacute; la tabla est&aacute; vac&iacute;a si en el c&oacute;digo tengo una lista con 10 productos?</div>
+<button aria-expanded="false" class="ver-explicacion" type="button">Mostrar explicaci&oacute;n</button>
+<div aria-hidden="true" class="explicacion"><div class="explicacion-inner">Una primera intuici&oacute;n podr&iacute;a ser: "Deber&iacute;an estar los 10 productos ah&iacute;." Sin embargo, el criterio t&eacute;cnico es: Porque el modelo define la <strong>estructura</strong> (las columnas), no los <strong>datos</strong>. Los 10 productos de <code>productos_db</code> siguen viviendo en memoria, en el service viejo &mdash; nunca se escribieron en la tabla. Crear la tabla y llenarla son <strong>dos cosas distintas</strong>. En el siguiente bloque migramos el service para que de verdad <strong>inserte y lea</strong> datos en esta tabla. La estructura ya est&aacute;; ahora le metemos vida.</div></div>
+</div>
+</section>
+<section class="seccion" id="sec-service-persistente">
+<div class="seccion-meta"><span>07</span><span>PERSISTENCIA</span></div>
+<h2>🔄 Migrar el service de Producto a la base de datos</h2>
+<h3>Qu&eacute; problema resuelve</h3>
+<p>Aqu&iacute; ocurre el cambio de fondo. El service de Producto deja de recorrer una lista de Python y empieza a <strong>hablar con PostgreSQL</strong> a trav&eacute;s de la sesi&oacute;n. Este bloque es explicaci&oacute;n total: cada m&eacute;todo nuevo, l&iacute;nea por l&iacute;nea. Es el patr&oacute;n que Categor&iacute;a y Proveedor van a copiar.</p>
+<h3>El antes y el despu&eacute;s (visi&oacute;n general)</h3>
+<p>Antes, un m&eacute;todo del service se ve&iacute;a as&iacute; (memoria):</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Comparar la b&uacute;squeda en memoria con la consulta persistente.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>La migraci&oacute;n cambia el origen de los datos, no la responsabilidad del servicio.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo pasar de recorrer una lista a delegar la b&uacute;squeda en SQLAlchemy.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">REEMPLAZAR</span><span class="code-file">app/services/producto_service.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">def obtener_producto(producto_id):
+    for p in productos_db:
+        if p["id"] == producto_id:
+            return p
+    return None</code></pre>
+</div>
+<p>Recorr&iacute;a una lista con un <code>for</code>. Ahora le va a <strong>pedir a la base</strong> que busque por nosotros. Menos c&oacute;digo, y lo hace un motor optimizado para buscar.</p>
+<div class="tip"><p class="componente-label">Buena pr&aacute;ctica</p><p><strong>Buena noticia:</strong> ese <code>for ... if</code> que tanto usaron en el M&oacute;dulo 1 se parece much&iacute;simo a lo que har&aacute; la base. La diferencia es que ahora <strong>la base hace el trabajo pesado</strong>, no Python a mano.</p></div>
+<h3>Ajustar el schema para leer desde el ORM</h3>
+<h4>En una frase</h4>
+<p>Le decimos a Pydantic que tambi&eacute;n sabe <strong>leer</strong> objetos del modelo SQLAlchemy, no solo diccionarios.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>Hasta ahora el schema validaba lo que <strong>entra</strong>. Pero cuando el service devuelva un objeto <code>Producto</code> (del modelo SQLAlchemy), FastAPI necesita convertirlo a JSON para la respuesta. Por defecto, Pydantic solo sabe leer diccionarios. Con <code>from_attributes = True</code> le ense&ntilde;amos a leer tambi&eacute;n los <strong>atributos</strong> de un objeto (como <code>producto.nombre</code>). Adem&aacute;s, creamos un schema de <strong>respuesta</strong> que s&iacute; incluye el <code>id</code> (que la base genera).</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde va:</strong> en <code>app/schemas/producto_schemas.py</code>. Mantenemos el <code>ProductoCreate</code> que ya existe (entrada) y agregamos un <code>ProductoRespuesta</code> (salida).</p></div><h3>C&oacute;digo</h3><p>📍 <strong>Archivo:</strong> <code>app/schemas/producto_schemas.py</code> (agregar este schema de salida)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Habilitar la lectura de objetos ORM en el schema de respuesta.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Pydantic debe transformar instancias de SQLAlchemy en respuestas JSON v&aacute;lidas.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo separar el modelo de persistencia del contrato de salida.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/schemas/producto_schemas.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">class ProductoRespuesta(BaseModel):
+    id: int
+    nombre: str
+    precio: float
+    stock: int
+    categoria_id: int
+    proveedor_id: int | None = None
+
+<pre><code>class Config:
+    from_attributes = True&lt;/code&gt;&lt;/pre&gt;</code></pre>
+</code></pre></div>
+<h4>C&oacute;mo leerlo</h4>
+<ul>
+<li><strong><code>class ProductoRespuesta(BaseModel):</code></strong> &rarr; un schema nuevo, solo para <strong>respuestas</strong>. Incluye el <code>id</code> (que <code>ProductoCreate</code> no tiene, porque el cliente no lo env&iacute;a).</li>
+<li><strong>Los campos</strong> &rarr; los mismos datos que devolvemos al cliente.</li>
+<li><strong><code>class Config: from_attributes = True</code></strong> &rarr; la l&iacute;nea clave. Le permite a Pydantic construir la respuesta leyendo los <strong>atributos</strong> de un objeto SQLAlchemy (<code>producto.nombre</code>, <code>producto.precio</code>&hellip;), no solo diccionarios.</li>
+</ul>
+<div class="tip"><p class="componente-label">Buena pr&aacute;ctica</p><p><strong>Por qu&eacute; separamos entrada y salida:</strong> <code>ProductoCreate</code> (entrada) <strong>no</strong> lleva <code>id</code> porque el cliente no lo manda. <code>ProductoRespuesta</code> (salida) <strong>s&iacute;</strong> lo lleva porque la base ya lo gener&oacute;. Entrada y salida son contratos distintos: eso es dise&ntilde;o profesional de APIs.</p></div>
+<h3>Actualizar el schema de entrada <code>ProductoCreate</code></h3>
+<h4>En una frase</h4>
+<p>Cambiamos la categor&iacute;a-como-texto por <code>categoria_id</code> (y agregamos <code>proveedor_id</code>), para que la entrada hable el idioma de las relaciones.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>En el M&oacute;dulo 1, <code>ProductoCreate</code> recib&iacute;a <code>categoria: str</code> (un texto como <code>"tecnologia"</code>). Como ahora el producto se <strong>relaciona</strong> con la tabla de categor&iacute;as por su <code>id</code>, la entrada debe pedir <code>categoria_id: int</code>. Igual con proveedor. Las validaciones de Pydantic que ya ten&iacute;an (precio positivo, nombre no vac&iacute;o) <strong>se conservan</strong>: solo cambiamos los campos de relaci&oacute;n.</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde va:</strong> en <code>app/schemas/producto_schemas.py</code>, dentro de <code>ProductoCreate</code>. Reemplaza el campo <code>categoria</code> por estos dos.</p></div><h3>C&oacute;digo</h3><p>📍 <strong>Archivo:</strong> <code>app/schemas/producto_schemas.py</code> (dentro de <code>ProductoCreate</code>)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Ajustar el contrato de creaci&oacute;n de productos.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>El cliente env&iacute;a datos de negocio, mientras la base genera el identificador y conserva las relaciones.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo definir una entrada independiente del registro persistido.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/schemas/producto_schemas.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">    categoria_id: int
+    proveedor_id: int | None = None</code></pre>
+</div>
+<h4>C&oacute;mo leerlo</h4>
+<ul>
+<li><strong><code>categoria_id: int</code></strong> &rarr; ahora el cliente env&iacute;a el <strong>id</strong> de una categor&iacute;a existente, no su nombre. Obligatorio.</li>
+<li><strong><code>proveedor_id: int | None = None</code></strong> &rarr; el proveedor es opcional (<code>None</code> por defecto), igual que en el modelo (<code>nullable=True</code>).</li>
+</ul>
+<div class="tip"><p class="componente-label">Buena pr&aacute;ctica</p><p><strong>El schema de respuesta tambi&eacute;n:</strong> ajusta <code>ProductoRespuesta</code> para devolver <code>categoria_id</code> y <code>proveedor_id</code> en vez de <code>categoria</code>, as&iacute; la salida es coherente con lo que guardamos.</p></div>
+<h3>Reescribir el service completo</h3>
+<h4>En una frase</h4>
+<p>Reemplazamos toda la l&oacute;gica de listas por operaciones reales contra la base, usando la sesi&oacute;n.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>Este es el coraz&oacute;n del bloque. Cada m&eacute;todo ahora recibe la <strong>sesi&oacute;n</strong> (<code>db</code>) como primer par&aacute;metro &mdash; esa sesi&oacute;n llega desde el router v&iacute;a <code>Depends(get_db)</code>. Con ella hacemos las cuatro operaciones que hoy nos interesan: <strong>insertar</strong> (<code>add</code> + <code>commit</code>) y <strong>leer</strong> (<code>query</code>). Reescribimos el archivo completo porque casi todo cambia. De paso, corregimos el bug heredado de <code>precio_oferta</code> que ten&iacute;amos en el service viejo (ese campo nunca existi&oacute; en el schema).</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde va:</strong> reemplaza <strong>todo</strong> el contenido de <code>app/services/producto_service.py</code> por lo siguiente.</p></div><h3>C&oacute;digo completo</h3><p>📍 <strong>Archivo:</strong> <code>app/services/producto_service.py</code> (reemplazar todo)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Reescribir el servicio para usar una sesi&oacute;n de base de datos.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Las operaciones CRUD deben ejecutar consultas, confirmar transacciones y actualizar los objetos persistidos.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo usar <code>add</code>, <code>commit</code>, <code>refresh</code> y <code>query</code>.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">REEMPLAZAR</span><span class="code-file">app/services/producto_service.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from app.models.producto_model import Producto
+from app.schemas.producto_schemas import ProductoCreate
+
+<p>def crear_producto(db: Session, datos: ProductoCreate):
+nuevo = Producto(
+nombre=datos.nombre,
+precio=datos.precio,
+stock=datos.stock,
+categoria_id=datos.categoria_id,
+proveedor_id=datos.proveedor_id,
+)
+db.add(nuevo)
+db.commit()
+db.refresh(nuevo)
+return nuevo</p>
+<p>def listar_productos(db: Session, categoria_id=None, precio_max=None):
+consulta = db.query(Producto)
+if categoria_id is not None:
+consulta = consulta.filter(Producto.categoria_id == categoria_id)
+if precio_max is not None:
+consulta = consulta.filter(Producto.precio &lt;= precio_max)
+return consulta.all()</p>
+<p>def obtener_producto(db: Session, producto_id: int):
+return db.query(Producto).filter(Producto.id == producto_id).first()</p></code></pre>
+</div>
+<div class="advertencia"><p class="componente-label">Error frecuente</p><p><strong>Nota de secuencia importante:</strong> este service usa <code>datos.categoria_id</code> y <code>datos.proveedor_id</code>. Eso obliga a <strong>actualizar el schema de entrada <code>ProductoCreate</code></strong>: en el M&oacute;dulo 1 ten&iacute;a <code>categoria: str</code> (texto). Ahora debe tener <code>categoria_id: int</code> y <code>proveedor_id: int | None = None</code>, coherente con las llaves for&aacute;neas del Bloque 7. Lo ajustamos justo abajo. 📝 <strong>Decisi&oacute;n pedag&oacute;gica (di esto en clase):</strong> el filtro de listar pas&oacute; de <code>categoria</code> (texto) a <code>categoria_id</code> (n&uacute;mero). Es un cambio honesto que trae la relaci&oacute;n: ahora filtras por el id real de la categor&iacute;a. En la pr&oacute;xima clase, con los JOINs, podremos volver a filtrar por <em>nombre</em> de categor&iacute;a cruzando tablas &mdash; mejor a&uacute;n. Hoy sembramos, la pr&oacute;xima cosechamos.</p></div><h3>Desglose de `crear_producto`</h3><ul>
+<li><strong><code>def crear_producto(db: Session, datos: ProductoCreate):</code></strong> &rarr; recibe la <strong>sesi&oacute;n</strong> (<code>db</code>) y los datos validados (<code>datos</code>). La sesi&oacute;n es nueva: antes no la ten&iacute;amos.</li>
+<li><strong><code>nuevo = Producto(...)</code></strong> &rarr; creamos un <strong>objeto del modelo</strong> (no un diccionario). Le pasamos los campos desde <code>datos</code>. <strong>F&iacute;jense: no ponemos <code>id</code></strong> &mdash; la base lo genera.</li>
+<li><strong><code>db.add(nuevo)</code></strong> &rarr; <strong>marcamos</strong> el objeto para insertar. Todav&iacute;a no est&aacute; en la base: est&aacute; "en cola".</li>
+<li><strong><code>db.commit()</code></strong> &rarr; <strong>confirmas</strong>. Aqu&iacute; s&iacute; se escribe de verdad en PostgreSQL. Sin <code>commit</code>, no se guarda nada.</li>
+<li><strong><code>db.refresh(nuevo)</code></strong> &rarr; recargamos el objeto desde la base para traer el <code>id</code> que ella acaba de generar. Sin esto, <code>nuevo.id</code> estar&iacute;a vac&iacute;o.</li>
+<li><strong><code>return nuevo</code></strong> &rarr; devolvemos el producto ya con su <code>id</code> real.</li>
+</ul>
+<h4>Desglose de <code>listar_productos</code></h4>
+<ul>
+<li><strong><code>consulta = db.query(Producto)</code></strong> &rarr; arrancamos una consulta sobre la tabla de productos. A&uacute;n no traemos nada.</li>
+<li><strong><code>consulta = consulta.filter(Producto.categoria == categoria)</code></strong> &rarr; si mandaron categor&iacute;a, filtramos. <strong>Comp&aacute;renlo con el M&oacute;dulo 1:</strong> antes era <code>[p for p in productos_db if p["categoria"] == categoria]</code>. Es la misma idea, pero ahora lo hace la base.</li>
+<li><strong><code>consulta = consulta.filter(Producto.precio &lt;= precio_max)</code></strong> &rarr; segundo filtro combinable, igual que los filtros de la Clase 2.</li>
+<li><strong><code>return consulta.all()</code></strong> &rarr; <code>.all()</code> <strong>ejecuta</strong> la consulta y trae todas las filas que cumplen. Reci&eacute;n aqu&iacute; se habla con la base.</li>
+</ul>
+<h4>Desglose de <code>obtener_producto</code></h4>
+<ul>
+<li><strong><code>db.query(Producto).filter(Producto.id == producto_id).first()</code></strong> &rarr; busca por id y trae <strong>el primero</strong> (o <code>None</code> si no existe). Reemplaza todo el <code>for ... if ... return</code> del M&oacute;dulo 1 en <strong>una l&iacute;nea</strong>.</li>
+</ul>
+<div class="tip"><p class="componente-label">Buena pr&aacute;ctica</p><p><strong>La regla de oro de SQLAlchemy:</strong> los cambios que <strong>escriben</strong> (crear, editar, borrar) no son reales hasta el <strong><code>commit()</code></strong>. Las <strong>lecturas</strong> (<code>.all()</code>, <code>.first()</code>) se ejecutan al pedir el resultado. Gr&aacute;bense el <code>commit</code>: el olvido m&aacute;s com&uacute;n de la clase es agregar y no confirmar.</p></div>
+<div class="reflexion">
+<p class="reflexion-label">Antes de continuar</p>
+<div class="reflexion-pregunta">En <code>crear_producto</code> hacemos <code>db.add(nuevo)</code> y luego <code>db.commit()</code>. &iquest;Por qu&eacute; dos pasos? &iquest;Por qu&eacute; <code>add</code> no guarda de una vez?</div>
+<button aria-expanded="false" class="ver-explicacion" type="button">Mostrar explicaci&oacute;n</button>
+<div aria-hidden="true" class="explicacion"><div class="explicacion-inner">Una primera intuici&oacute;n podr&iacute;a ser: "Es un paso de m&aacute;s / deber&iacute;a guardar directo." Sin embargo, el criterio t&eacute;cnico es: Porque separar <code>add</code> de <code>commit</code> permite <strong>agrupar</strong> varios cambios en una sola transacci&oacute;n. Imagina que necesitas crear un producto y descontar stock de otro <strong>a la vez</strong>: si algo falla a la mitad, quieres que <strong>nada</strong> se guarde. <code>add</code> prepara los cambios; <code>commit</code> los confirma todos juntos. Si algo sale mal antes del <code>commit</code>, se puede hacer <code>rollback</code> y deshacer todo. Es el mismo principio de un cajero: la transferencia no es real hasta que confirmas; si se cae la se&ntilde;al antes, no se movi&oacute; el dinero.</div></div>
+</div>
+<h3>Actualizar el router de Producto</h3>
+<h4>En una frase</h4>
+<p>El router ahora <strong>pide la sesi&oacute;n</strong> con <code>Depends(get_db)</code> y se la pasa al service.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>El router cambia poco, pero de forma importante: cada endpoint recibe ahora un par&aacute;metro <code>db</code> inyectado por FastAPI a trav&eacute;s de <code>Depends(get_db)</code>. Ese <code>db</code> es la sesi&oacute;n que la funci&oacute;n <code>get_db</code> prepara y cierra sola. El router se la entrega al service. Tambi&eacute;n cambiamos el <code>response_model</code> para usar el schema de respuesta con <code>id</code>.</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde va:</strong> en <code>app/routers/producto_router.py</code>. Muestro los endpoints de crear, listar y obtener (los que hoy migramos).</p></div><h3>C&oacute;digo</h3><p>📍 <strong>Archivo:</strong> <code>app/routers/producto_router.py</code></p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Inyectar la sesi&oacute;n en los endpoints de Producto.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>El router debe obtener una sesi&oacute;n por petici&oacute;n y entregarla al servicio sin crear conexiones manualmente.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo conectar FastAPI, la dependencia <code>get_db</code> y el servicio persistente.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/routers/producto_router.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.schemas.producto_schemas import ProductoCreate, ProductoRespuesta
+from app.services import producto_service
+
+<p>router = APIRouter()</p>
+<p>@router.post("/productos", response_model=ProductoRespuesta)
+def crear(datos: ProductoCreate, db: Session = Depends(get_db)):
+return producto_service.crear_producto(db, datos)</p>
+<p>@router.get("/productos", response_model=list[ProductoRespuesta])
+def listar(categoria_id: int | None = None, precio_max: float | None = None,
+db: Session = Depends(get_db)):
+return producto_service.listar_productos(db, categoria_id, precio_max)</p>
+<p>@router.get("/productos/{producto_id}", response_model=ProductoRespuesta)
+def obtener(producto_id: int, db: Session = Depends(get_db)):
+return producto_service.obtener_producto(db, producto_id)</p></code></pre>
+</div>
+<h4>C&oacute;mo leerlo</h4>
+<ul>
+<li><strong><code>from app.config.database import get_db</code></strong> &rarr; traemos la dependencia que provee la sesi&oacute;n.</li>
+<li><strong><code>db: Session = Depends(get_db)</code></strong> &rarr; <strong>la l&iacute;nea clave</strong>, repetida en cada endpoint. FastAPI llama a <code>get_db</code>, obtiene la sesi&oacute;n, la inyecta como <code>db</code>, y la cierra al terminar. El endpoint no se preocupa de abrir ni cerrar nada.</li>
+<li><strong><code>response_model=ProductoRespuesta</code></strong> &rarr; la respuesta se arma con el schema de salida (con <code>id</code>). Gracias al <code>from_attributes = True</code>, FastAPI convierte el objeto SQLAlchemy a JSON solo.</li>
+<li><strong><code>producto_service.crear_producto(db, datos)</code></strong> &rarr; el router le pasa <strong>la sesi&oacute;n</strong> y los datos al service. El service hace el trabajo con la base.</li>
+</ul>
+<div class="tip"><p class="componente-label">Buena pr&aacute;ctica</p><p><strong>Continuidad:</strong> los filtros <code>categoria</code> y <code>precio_max</code> como query params son <strong>los mismos</strong> de la Clase 2. No cambi&oacute; la interfaz para el cliente: cambi&oacute; el motor por debajo. Esa es la belleza de tener capas bien separadas.</p></div>
+<div class="reflexion">
+<p class="reflexion-label">Antes de continuar</p>
+<div class="reflexion-pregunta">El router escribe <code>db: Session = Depends(get_db)</code> pero nunca llama a <code>get_db()</code> con par&eacute;ntesis, ni cierra la sesi&oacute;n. &iquest;Qui&eacute;n abre y cierra la sesi&oacute;n entonces?</div>
+<button aria-expanded="false" class="ver-explicacion" type="button">Mostrar explicaci&oacute;n</button>
+<div aria-hidden="true" class="explicacion"><div class="explicacion-inner">Una primera intuici&oacute;n podr&iacute;a ser: "El service / nosotros en el c&oacute;digo." Sin embargo, el criterio t&eacute;cnico es: <strong>FastAPI</strong>, a trav&eacute;s de <code>Depends</code>. Cuando llega una petici&oacute;n, FastAPI ve el <code>Depends(get_db)</code>, ejecuta <code>get_db</code> hasta el <code>yield</code> (abre la sesi&oacute;n y la entrega), deja correr el endpoint, y cuando termina retoma <code>get_db</code> en el <code>finally</code> para cerrarla. Nosotros <strong>nunca</strong> abrimos ni cerramos a mano: el sistema de dependencias lo garantiza. Por eso <code>get_db</code> usaba <code>yield</code> y no <code>return</code>: para poder "volver" a cerrar despu&eacute;s.</div></div>
+</div>
+</section>
+<section class="seccion" id="sec-mas-entidades">
+<div class="seccion-meta"><span>08</span><span>CONSOLIDACI&Oacute;N</span></div>
+<h2>📦 Consolidaci&oacute;n: Categor&iacute;a y Proveedor</h2>
+<h3>Qu&eacute; problema resuelve</h3>
+<p>Ya explicamos <strong>todo</strong> el patr&oacute;n con Producto: modelo, <code>create_all</code>, service con <code>add</code>/<code>commit</code>/<code>query</code>, schema de respuesta, router con <code>Depends</code>. Categor&iacute;a y Proveedor son <strong>el mismo patr&oacute;n</strong>. Aqu&iacute; no re-explicamos l&iacute;nea por l&iacute;nea: damos los archivos completos, listos para copiar, con su encabezado de qu&eacute; hace y d&oacute;nde va. Si entendieron Producto, esto es aplicar la receta.</p>
+<div class="modelo-mental"><p class="componente-label">Patr&oacute;n que se repite</p><p>Categor&iacute;a y Proveedor conservan la misma separaci&oacute;n aplicada a Producto: un modelo representa la tabla, un schema controla la entrada y la salida, un service ejecuta consultas y un router expone los endpoints.</p></div>
+<h2>📦 Categor&iacute;a</h2>
+<h3>Modelo Categor&iacute;a</h3>
+<p>Define la tabla <code>categorias</code>. Mismo patr&oacute;n que Producto, con sus propios campos.</p>
+<p>📍 <strong>Archivo:</strong> <code>app/models/categoria_model.py</code></p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Definir el modelo persistente de Categor&iacute;a.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Categor&iacute;a necesita una tabla propia para evitar repetir nombres dentro de cada producto.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo aplicar el patr&oacute;n del modelo Producto a una segunda entidad.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/models/categoria_model.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String
+from app.config.database import Base
+
+<p>class Categoria(Base):
+<strong>tablename</strong> = "categorias"</p>
+<pre><code>id = Column(Integer, primary_key=True, index=True)
+nombre = Column(String, nullable=False)
+descripcion = Column(String, nullable=True)&lt;/code&gt;&lt;/pre&gt;</code></pre>
+</code></pre></div>
+<h3>Schema de respuesta de Categor&iacute;a</h3>
+<p>Schema de salida que incluye el <code>id</code> generado por la base.</p>
+<p>📍 <strong>Archivo:</strong> <code>app/schemas/categoria_schemas.py</code> (agregar)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Preparar el schema de Categor&iacute;a para objetos ORM.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Las respuestas deben conservar validaci&oacute;n y serializaci&oacute;n aunque el origen sea PostgreSQL.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo reutilizar la separaci&oacute;n entre contratos y persistencia.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/schemas/categoria_schemas.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">class CategoriaRespuesta(BaseModel):
+    id: int
+    nombre: str
+    descripcion: str | None = None
+
+<pre><code>class Config:
+    from_attributes = True&lt;/code&gt;&lt;/pre&gt;</code></pre>
+</code></pre></div>
+<h3>Service de Categor&iacute;a</h3>
+<p>Mismo patr&oacute;n de Producto: crear con <code>add</code>/<code>commit</code>/<code>refresh</code>, listar y obtener con <code>query</code>.</p>
+<p>📍 <strong>Archivo:</strong> <code>app/services/categoria_services.py</code> (reemplazar todo)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Migrar el servicio de Categor&iacute;a a PostgreSQL.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>La entidad debe dejar de depender de listas y operar mediante una sesi&oacute;n.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo repetir el patr&oacute;n CRUD sin duplicar responsabilidades entre capas.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">REEMPLAZAR</span><span class="code-file">app/services/categoria_services.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from app.models.categoria_model import Categoria
+from app.schemas.categoria_schemas import CategoriaCreate
+
+<p>def crear_categoria(db: Session, datos: CategoriaCreate):
+nueva = Categoria(
+nombre=datos.nombre,
+descripcion=datos.descripcion,
+)
+db.add(nueva)
+db.commit()
+db.refresh(nueva)
+return nueva</p>
+<p>def listar_categorias(db: Session):
+return db.query(Categoria).all()</p>
+<p>def obtener_categoria(db: Session, categoria_id: int):
+return db.query(Categoria).filter(Categoria.id == categoria_id).first()</p></code></pre>
+</div>
+<h3>Router de Categor&iacute;a</h3>
+<p>Cada endpoint pide la sesi&oacute;n con <code>Depends(get_db)</code> y se la pasa al service.</p>
+<p>📍 <strong>Archivo:</strong> <code>app/routers/categoria_router.py</code></p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Conectar el router de Categor&iacute;a con <code>get_db</code>.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Cada endpoint necesita acceso controlado a la sesi&oacute;n usada por el servicio.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo mantener el router enfocado en HTTP mientras el servicio consulta datos.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">REEMPLAZAR</span><span class="code-file">app/routers/categoria_router.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.schemas.categoria_schemas import CategoriaCreate, CategoriaRespuesta
+from app.services import categoria_services
+
+<p>router = APIRouter()</p>
+<p>@router.post("/categorias", response_model=CategoriaRespuesta)
+def crear(datos: CategoriaCreate, db: Session = Depends(get_db)):
+return categoria_services.crear_categoria(db, datos)</p>
+<p>@router.get("/categorias", response_model=list[CategoriaRespuesta])
+def listar(db: Session = Depends(get_db)):
+return categoria_services.listar_categorias(db)</p>
+<p>@router.get("/categorias/{categoria_id}", response_model=CategoriaRespuesta)
+def obtener(categoria_id: int, db: Session = Depends(get_db)):
+return categoria_services.obtener_categoria(db, categoria_id)</p></code></pre>
+</div>
+<h2>🏭 Proveedor</h2>
+<h3>Modelo Proveedor</h3>
+<p>Define la tabla <code>proveedores</code>. Mismo patr&oacute;n, con los campos de proveedor.</p>
+<p>📍 <strong>Archivo:</strong> <code>app/models/proveedor_model.py</code></p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Definir el modelo persistente de Proveedor.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Proveedor tendr&aacute; registros independientes que despu&eacute;s podr&aacute;n relacionarse con muchos productos.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo preparar una entidad para una relaci&oacute;n uno a muchos.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/models/proveedor_model.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String
+from app.config.database import Base
+
+<p>class Proveedor(Base):
+<strong>tablename</strong> = "proveedores"</p>
+<pre><code>id = Column(Integer, primary_key=True, index=True)
+nombre = Column(String, nullable=False)
+email = Column(String, nullable=False)
+telefono = Column(String, nullable=True)&lt;/code&gt;&lt;/pre&gt;</code></pre>
+</code></pre></div>
+<h3>Schema de respuesta de Proveedor</h3>
+<p>Schema de salida con el <code>id</code>.</p>
+<p>📍 <strong>Archivo:</strong> <code>app/schemas/proveedor_schemas.py</code> (agregar)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Preparar los schemas de Proveedor para persistencia.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Los contratos de entrada y salida deben seguir separados del modelo ORM.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo serializar proveedores sin exponer detalles internos de SQLAlchemy.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/schemas/proveedor_schemas.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">class ProveedorRespuesta(BaseModel):
+    id: int
+    nombre: str
+    email: str
+    telefono: str | None = None
+
+<pre><code>class Config:
+    from_attributes = True&lt;/code&gt;&lt;/pre&gt;</code></pre>
+</code></pre></div>
+<h3>Service de Proveedor</h3>
+<p>Mismo patr&oacute;n. (En el M&oacute;dulo 1 Proveedor no ten&iacute;a service propio; aqu&iacute; lo creamos.)</p>
+<p>📍 <strong>Archivo:</strong> <code>app/services/proveedor_service.py</code> (crear nuevo)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Crear el servicio persistente de Proveedor.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Las operaciones de proveedor necesitan consultas y transacciones reales.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo aplicar el mismo patr&oacute;n de sesi&oacute;n a una tercera entidad.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/services/proveedor_service.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from app.models.proveedor_model import Proveedor
+from app.schemas.proveedor_schemas import ProveedorCreate
+
+<p>def crear_proveedor(db: Session, datos: ProveedorCreate):
+nuevo = Proveedor(
+nombre=datos.nombre,
+email=datos.email,
+telefono=datos.telefono,
+)
+db.add(nuevo)
+db.commit()
+db.refresh(nuevo)
+return nuevo</p>
+<p>def listar_proveedores(db: Session):
+return db.query(Proveedor).all()</p>
+<p>def obtener_proveedor(db: Session, proveedor_id: int):
+return db.query(Proveedor).filter(Proveedor.id == proveedor_id).first()</p></code></pre>
+</div>
+<h3>Router de Proveedor</h3>
+<p>Igual que los otros. (En el M&oacute;dulo 1 Proveedor no ten&iacute;a router; aqu&iacute; lo creamos.)</p>
+<p>📍 <strong>Archivo:</strong> <code>app/routers/proveedor_router.py</code> (crear nuevo)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Crear el router de Proveedor conectado a la base de datos.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>La API necesita exponer las operaciones del servicio mediante endpoints coherentes.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo inyectar la sesi&oacute;n sin acoplar el router al engine.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/routers/proveedor_router.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.schemas.proveedor_schemas import ProveedorCreate, ProveedorRespuesta
+from app.services import proveedor_service
+
+<p>router = APIRouter()</p>
+<p>@router.post("/proveedores", response_model=ProveedorRespuesta)
+def crear(datos: ProveedorCreate, db: Session = Depends(get_db)):
+return proveedor_service.crear_proveedor(db, datos)</p>
+<p>@router.get("/proveedores", response_model=list[ProveedorRespuesta])
+def listar(db: Session = Depends(get_db)):
+return proveedor_service.listar_proveedores(db)</p>
+<p>@router.get("/proveedores/{proveedor_id}", response_model=ProveedorRespuesta)
+def obtener(proveedor_id: int, db: Session = Depends(get_db)):
+return proveedor_service.obtener_proveedor(db, proveedor_id)</p></code></pre>
+</div>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p>📝 <strong>Nota:</strong> los schemas de entrada (<code>CategoriaCreate</code>, <code>ProveedorCreate</code>) ya existen desde el M&oacute;dulo 1 con sus validaciones. Aqu&iacute; solo agregamos los de <strong>respuesta</strong>. Sus validaciones de Pydantic siguen intactas: la base de datos no las reemplaza, las complementa.</p></div>
+</section>
+<section class="seccion" id="sec-relaciones">
+<div class="seccion-meta"><span>09</span><span>RELACIONES</span></div>
+<h2>🔗 Relaciones: conectar las tablas</h2>
+<h3>Qu&eacute; problema resuelve</h3>
+<p>Tenemos tres tablas, pero <strong>aisladas</strong>. Un producto tiene una categor&iacute;a escrita como texto (<code>"tecnologia"</code>) y no est&aacute; de verdad <strong>conectado</strong> a la tabla de categor&iacute;as. Aqu&iacute; aparece lo <strong>relacional</strong> de "base de datos relacional": conectamos las tablas con <strong>llaves for&aacute;neas</strong>.</p>
+<h3>El problema, en negocio</h3>
+<p>Hoy, en la tabla <code>productos</code>, la categor&iacute;a es solo un texto suelto. Nada impide escribir <code>"tecnولogia"</code> mal escrito, o una categor&iacute;a que no existe. Y si el due&ntilde;o renombra una categor&iacute;a, tendr&iacute;a que editar producto por producto. <strong>Eso no escala.</strong> La soluci&oacute;n: que cada producto <strong>apunte</strong> a una fila real de la tabla <code>categorias</code>, por su <code>id</code>.</p>
+<div class="definicion">
+<div class="definicion-bloque"><p class="componente-label">Definici&oacute;n t&eacute;cnica</p><div class="tecnica"><p>Una <strong>llave for&aacute;nea</strong> (foreign key) es una columna que <strong>apunta</strong> a la llave primaria de <strong>otra</strong> tabla. Crea una relaci&oacute;n formal y verificada entre dos tablas: la base <strong>garantiza</strong> que el valor apuntado existe de verdad.</p>
+</div></div>
+<div class="definicion-bloque"><p class="componente-label">En palabras sencillas</p><p class="sencilla">Una llave for&aacute;nea (foreign key) es una columna que apunta a la llave primaria de otra tabla. Crea una relaci&oacute;n formal y verificada entre dos tablas: la base garantiza que el valor apuntado existe de verdad.</p></div>
+<div class="definicion-bloque"><p class="componente-label">Ejemplo real</p><div class="real"><p>Es como el <strong>n&uacute;mero de c&eacute;dula</strong> en un formulario. En vez de reescribir todos tus datos en cada tr&aacute;mite, pones tu c&eacute;dula, y esa c&eacute;dula <strong>apunta</strong> a tu registro &uacute;nico en la base del gobierno. La llave for&aacute;nea es esa c&eacute;dula: un producto no repite los datos de su categor&iacute;a, solo guarda el <code>id</code> que apunta a ella.</p>
+</div></div>
+</div><h3>Relaci&oacute;n 1:N (uno a muchos)</h3><p>La relaci&oacute;n que usamos hoy es <strong>uno a muchos</strong>: <strong>una</strong> categor&iacute;a tiene <strong>muchos</strong> productos; <strong>un</strong> proveedor surte <strong>muchos</strong> productos. Del lado del producto, es "muchos a uno": muchos productos pertenecen a una categor&iacute;a.</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Visualizar las relaciones entre las tres tablas.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Antes de declarar llaves for&aacute;neas conviene entender qu&eacute; tabla conserva cada identificador.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo leer una relaci&oacute;n uno a muchos desde ambos lados.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">EJECUTAR</span><span class="code-file">Modelo relacional &middot; tienda_dev</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-markup">   categorias                      productos
+   &boxdr;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxdl;                    &boxdr;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxdl;
+   &boxv; id (PK)  &boxv;◄&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxdl;           &boxv; id (PK)                &boxv;
+   &boxv; nombre   &boxv;        &boxur;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxv; categoria_id (FK)      &boxv;
+   &boxur;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxul;                    &boxv; proveedor_id (FK)  &boxh;&boxh;&boxh;&boxh;&boxvh;&boxh;&boxh;&boxdl;
+                                    &boxv; nombre, precio, stock  &boxv;  &boxv;
+   proveedores                     &boxur;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxul;  &boxv;
+   &boxdr;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxdl;                                                 &boxv;
+   &boxv; id (PK)  &boxv;◄&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxul;
+   &boxv; nombre   &boxv;
+   &boxur;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxul;</code></pre>
+</div>
+<p>PK = llave primaria (identifica la fila). FK = llave for&aacute;nea (apunta a otra tabla).</p>
+<h3>Agregar las llaves for&aacute;neas al modelo Producto</h3>
+<h4>En una frase</h4>
+<p>Agregamos al modelo Producto dos columnas que <strong>apuntan</strong> a categor&iacute;a y a proveedor.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>Reemplazamos (conceptualmente) la categor&iacute;a-como-texto por una <strong>llave for&aacute;nea</strong> que apunta al <code>id</code> de la tabla <code>categorias</code>, y agregamos otra que apunta a <code>proveedores</code>. Usamos <code>ForeignKey</code> para declarar el v&iacute;nculo, y <code>relationship</code> para poder navegar la relaci&oacute;n c&oacute;modamente desde Python (por ejemplo, <code>producto.categoria</code> nos dar&iacute;a el objeto categor&iacute;a completo).</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde va:</strong> en <code>app/models/producto_model.py</code>. Actualizamos el modelo.</p></div><h3>C&oacute;digo</h3><p>📍 <strong>Archivo:</strong> <code>app/models/producto_model.py</code> (versi&oacute;n con relaciones)</p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Agregar las llaves for&aacute;neas y relaciones de Producto.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>Un producto debe referenciar categor&iacute;as y proveedores v&aacute;lidos en lugar de guardar texto repetido.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo usar <code>ForeignKey</code> y <code>relationship</code> para conectar modelos.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">REEMPLAZAR</span><span class="code-file">app/models/producto_model.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy.orm import relationship
+from app.config.database import Base
+
+<p>class Producto(Base):
+<strong>tablename</strong> = "productos"</p>
+<pre><code>id = Column(Integer, primary_key=True, index=True)
+nombre = Column(String, nullable=False)
+precio = Column(Float, nullable=False)
+stock = Column(Integer, nullable=False)
+
+categoria_id = Column(Integer, ForeignKey(&amp;quot;categorias.id&amp;quot;), nullable=False)
+proveedor_id = Column(Integer, ForeignKey(&amp;quot;proveedores.id&amp;quot;), nullable=True)
+
+categoria = relationship(&amp;quot;Categoria&amp;quot;)
+proveedor = relationship(&amp;quot;Proveedor&amp;quot;)&lt;/code&gt;&lt;/pre&gt;</code></pre>
+</code></pre></div>
+<h4>Desglose de lo nuevo</h4>
+<ul>
+<li><strong><code>ForeignKey</code></strong> y <strong><code>relationship</code></strong> &rarr; dos importaciones nuevas de SQLAlchemy.</li>
+<li><strong><code>categoria_id = Column(Integer, ForeignKey("categorias.id"), nullable=False)</code></strong> &rarr; una columna entera que <strong>apunta</strong> a la columna <code>id</code> de la tabla <code>categorias</code>. <code>nullable=False</code>: todo producto <strong>debe</strong> tener categor&iacute;a.<ul>
+<li>F&iacute;jense: apunta a <strong><code>"categorias.id"</code></strong> (nombre de tabla + columna), no al modelo.</li>
+</ul>
+</li>
+<li><strong><code>proveedor_id = Column(..., ForeignKey("proveedores.id"), nullable=True)</code></strong> &rarr; apunta a <code>proveedores</code>. <code>nullable=True</code>: el proveedor es opcional (un producto podr&iacute;a no tener proveedor asignado a&uacute;n).</li>
+<li><strong><code>categoria = relationship("Categoria")</code></strong> &rarr; <strong>no es una columna</strong>. Es un "atajo" de Python: nos deja escribir <code>producto.categoria</code> y obtener el objeto <code>Categoria</code> completo, sin hacer la consulta a mano. SQLAlchemy la resuelve por nosotros.</li>
+<li><strong><code>proveedor = relationship("Proveedor")</code></strong> &rarr; lo mismo para proveedor.</li>
+</ul>
+<div class="advertencia"><p class="componente-label">Error frecuente</p><p><strong>Importante para la clase:</strong> como cambiamos la columna <code>categoria</code> (texto) por <code>categoria_id</code> (llave for&aacute;nea), la tabla vieja ya no sirve. En clase: b&oacute;rrala en pgAdmin y deja que <code>create_all</code> la vuelva a crear con la nueva estructura. (Recuerden: <code>create_all</code> no modifica tablas existentes.)</p></div>
+<div class="reflexion">
+<p class="reflexion-label">Antes de continuar</p>
+<div class="reflexion-pregunta">Antes la categor&iacute;a era un texto: <code>\"tecnologia\"</code>. Ahora es un n&uacute;mero que apunta a otra tabla: <code>categoria_id = 3</code>. &iquest;Qu&eacute; ganamos al cambiar un texto legible por un n&uacute;mero?</div>
+<button aria-expanded="false" class="ver-explicacion" type="button">Mostrar explicaci&oacute;n</button>
+<div aria-hidden="true" class="explicacion"><div class="explicacion-inner">Una primera intuici&oacute;n podr&iacute;a ser: "Nada, el texto se entend&iacute;a mejor." Sin embargo, el criterio t&eacute;cnico es: Ganamos <strong>integridad</strong> y <strong>mantenibilidad</strong>. Con el n&uacute;mero apuntando a la tabla real: (1) la base <strong>impide</strong> asignar una categor&iacute;a que no existe &mdash; no m&aacute;s <code>"tecnولogia"</code> mal escrito; (2) si el due&ntilde;o renombra "tecnolog&iacute;a" a "electr&oacute;nica", cambia <strong>una</strong> fila en <code>categorias</code> y <strong>todos</strong> los productos reflejan el cambio, sin tocarlos uno por uno; (3) no repetimos el texto de la categor&iacute;a en miles de productos. El n&uacute;mero se ve menos legible, pero para eso est&aacute; <code>relationship</code>: nos devuelve el objeto completo cuando lo necesitamos. <strong>Legibilidad para el humano, eficiencia para la base.</strong></div></div>
+</div>
+<h3>El <code>main.py</code> completo y final</h3>
+<h4>En una frase</h4>
+<p>Dejamos el <code>main.py</code> reuniendo todo: crea las tablas, registra las excepciones y monta los tres routers.</p>
+<h4>Explicaci&oacute;n a detalle</h4>
+<p>Este es el archivo que amarra la aplicaci&oacute;n. Importa <code>Base</code> y <code>engine</code>, importa <strong>los tres modelos</strong> (para que <code>create_all</code> los vea a todos), llama a <code>create_all</code>, conserva el manejador de excepciones de la Clase 4, e incluye los routers de las tres entidades. Al levantar la app, las tres tablas con sus relaciones nacen solas.</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>D&oacute;nde va:</strong> reemplaza el contenido de <code>app/main.py</code> por esta versi&oacute;n final.</p></div><h3>C&oacute;digo completo</h3><p>📍 <strong>Archivo:</strong> <code>app/main.py</code></p>
+<div class="antes-codigo">
+<p class="componente-label">Qu&eacute; vas a hacer</p><p>Integrar todos los modelos, routers y la creaci&oacute;n de tablas.</p>
+<p class="componente-label">Por qu&eacute; lo hacemos</p><p>La aplicaci&oacute;n principal debe importar la metadata completa y registrar cada conjunto de endpoints.</p>
+<p class="componente-label">Qu&eacute; aprender&aacute;s</p><p>C&oacute;mo cerrar la arquitectura de persistencia en el punto de entrada de FastAPI.</p>
+</div>
+<div class="code-block">
+<div class="code-head"><div><span class="code-context">REEMPLAZAR</span><span class="code-file">app/main.py</span></div><button class="copy-btn" type="button">Copiar c&oacute;digo</button></div>
+<pre class="line-numbers"><code class="language-python">from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+
+<p>from app.config.database import Base, engine
+from app.models import producto_model, categoria_model, proveedor_model
+from app.exceptions import CategoriaNoEncontrada
+from app.routers import producto_router, categoria_router, proveedor_router</p>
+<p>Base.metadata.create_all(bind=engine)</p>
+<p>app = FastAPI(title="Tienda Dev API")</p>
+<p>@app.exception_handler(CategoriaNoEncontrada)
+def manejar_categoria_no_encontrada(request: Request, exc: CategoriaNoEncontrada):
+return JSONResponse(status_code=404, content={"error": str(exc)})</p>
+<p>app.include_router(producto_router.router)
+app.include_router(categoria_router.router)
+app.include_router(proveedor_router.router)</p></code></pre>
+</div>
+<h4>C&oacute;mo leerlo</h4>
+<ul>
+<li><strong><code>from app.models import producto_model, categoria_model, proveedor_model</code></strong> &rarr; importamos <strong>los tres</strong> modelos. Si falta uno, su tabla no se crea.</li>
+<li><strong><code>Base.metadata.create_all(bind=engine)</code></strong> &rarr; crea las tres tablas (si no existen) al arrancar.</li>
+<li><strong><code>@app.exception_handler(CategoriaNoEncontrada)</code></strong> &rarr; conservamos el manejador global de la Clase 4. La persistencia <strong>no</strong> rompe el manejo de errores que ya ten&iacute;an.</li>
+<li><strong><code>app.include_router(...)</code></strong> &rarr; montamos los tres routers. Proveedor ahora tiene el suyo.</li>
+</ul>
+<div class="tip"><p class="componente-label">Buena pr&aacute;ctica</p><p><strong>Nada se bot&oacute;:</strong> el <code>exceptions.py</code> y su handler de la Clase 4 siguen vivos y funcionando. Solo cambiamos de d&oacute;nde salen los datos.</p></div>
+</section>
+<section class="seccion" id="sec-prueba-completa">
+<div class="seccion-meta"><span>10</span><span>VERIFICACI&Oacute;N</span></div>
+<h2>✅ Insertar y leer de verdad (el pago)</h2>
+<h3>Qu&eacute; problema resuelve</h3>
+<p>El momento que da sentido a todo. Vamos a insertar datos desde la API, verlos persistir, <strong>reiniciar el servidor</strong>, y comprobar que <strong>siguen ah&iacute;</strong>. El dolor del Bloque 1 se cura aqu&iacute;.</p>
+<div class="modelo-mental"><p class="componente-label">C&oacute;mo imaginarlo</p><p><strong>Recordatorio de decisi&oacute;n:</strong> insertamos y leemos <strong>desde el c&oacute;digo</strong> (por la API). pgAdmin solo lo usamos para <strong>verificar</strong> que los datos llegaron. La base la escribe el c&oacute;digo de la aplicaci&oacute;n, no el mouse.</p></div><h3>Orden de inserci&oacute;n (importa por las relaciones)</h3><p>Como Producto <strong>apunta</strong> a Categor&iacute;a y Proveedor con llaves for&aacute;neas, esos deben existir <strong>primero</strong>. No puedes asignarle a un producto la categor&iacute;a 3 si la categor&iacute;a 3 no existe a&uacute;n.</p>
+<p><strong>Secuencia en Swagger (<code>/docs</code>):</strong></p>
+<ol>
+<li><p><strong>Crea una categor&iacute;a</strong> &mdash; <code>POST /categorias</code></p>
+<pre><code class="language-json">{ "nombre": "Tecnolog&iacute;a", "descripcion": "Equipos y electr&oacute;nica" }
+</code></pre>
+<p><strong>Qu&eacute; ves:</strong> respuesta <code>200</code> con la categor&iacute;a creada, <strong>con su <code>id</code></strong> (por ejemplo, <code>1</code>). Ese id lo puso la base.</p>
+</li>
+<li><p><strong>Crea un proveedor</strong> &mdash; <code>POST /proveedores</code></p>
+<pre><code class="language-json">{ "nombre": "TechDistribuidora", "email": "ventas@techdist.com", "telefono": "3001234567" }
+</code></pre>
+<p><strong>Qu&eacute; ves:</strong> <code>200</code> con el proveedor y su <code>id</code> (por ejemplo, <code>1</code>).</p>
+</li>
+<li><p><strong>Crea un producto</strong> apuntando a esos ids &mdash; <code>POST /productos</code></p>
+<pre><code class="language-json">{ "nombre": "Laptop Dell", "precio": 1299.99, "stock": 15, "categoria_id": 1, "proveedor_id": 1 }
+</code></pre>
+<p><strong>Qu&eacute; ves:</strong> <code>200</code> con el producto creado y su <code>id</code>. Ahora s&iacute; est&aacute; <strong>en la base</strong>.</p>
+</li>
+<li><p><strong>L&eacute;elo</strong> &mdash; <code>GET /productos</code>
+<strong>Qu&eacute; ves:</strong> una lista con tu producto real, tra&iacute;do de PostgreSQL.</p>
+</li>
+</ol>
+<h3>La prueba de fuego</h3>
+<ol start="5">
+<li><strong>Det&eacute;n el servidor</strong> (Ctrl + C) y <strong>lev&aacute;ntalo de nuevo</strong>.</li>
+<li><code>GET /productos</code> otra vez.</li>
+</ol>
+<p><strong>Qu&eacute; ven:</strong> el producto <strong>sigue ah&iacute;</strong>. No se borr&oacute;. <strong>Eso</strong> es persistencia. Comp&aacute;renlo con el Bloque 1, donde todo desaparec&iacute;a. Ese contraste es la clase entera resumida en un momento.</p>
+<h3>Verificar en pgAdmin (como visor)</h3>
+<p>En pgAdmin: <strong>tienda_dev &rarr; Schemas &rarr; public &rarr; Tables &rarr; productos</strong>, clic derecho &rarr; <strong>View/Edit Data &rarr; All Rows</strong>. Ah&iacute; est&aacute; la fila, con su <code>categoria_id</code> y <code>proveedor_id</code> apuntando a las otras tablas. Los datos existen fuera de Python. Son reales.</p>
+<div class="reflexion">
+<p class="reflexion-label">Antes de continuar</p>
+<div class="reflexion-pregunta">Reiniciamos el servidor y los productos siguieron ah&iacute;. En el M&oacute;dulo 1 se borraban. No cambiamos el endpoint, ni el schema, ni la forma de pedir datos. &iquest;Qu&eacute; cambi&oacute; realmente?</div>
+<button aria-expanded="false" class="ver-explicacion" type="button">Mostrar explicaci&oacute;n</button>
+<div aria-hidden="true" class="explicacion"><div class="explicacion-inner">Una primera intuici&oacute;n podr&iacute;a ser: "Cambiamos todo el c&oacute;digo." Sin embargo, el criterio t&eacute;cnico es: Cambi&oacute; <strong>d&oacute;nde viven los datos</strong>. Antes viv&iacute;an en la <strong>memoria</strong> del programa (se borra al apagar). Ahora viven en <strong>PostgreSQL</strong> (permanente). La API por fuera se ve casi igual &mdash; mismos endpoints, mismo Swagger &mdash; pero por dentro cambiamos el motor de almacenamiento. Eso demuestra el valor de la <strong>arquitectura por capas</strong>: pudimos cambiar el fondo (memoria &rarr; base de datos) sin romper la cara (los endpoints). Esa separaci&oacute;n que aprendieron en la Clase 3 es justo lo que hizo esta migraci&oacute;n posible.</div></div>
+</div>
+</section>
+<section class="seccion" id="sec-siguiente-paso">
+<div class="seccion-meta"><span>11</span><span>PROYECCI&Oacute;N</span></div>
+<h2>🚀 Hacia d&oacute;nde vamos</h2>
+<h3>C&oacute;mo contin&uacute;a la arquitectura</h3>
+<ul>
+<li><strong>Hoy</strong> creamos las tablas, las conectamos con relaciones, e <strong>insertamos y le&iacute;mos</strong> datos reales.</li>
+<li><strong>Pr&oacute;xima clase (CRUD completo):</strong> cerramos el ciclo con <strong>actualizar</strong> (<code>UPDATE</code>) y <strong>eliminar</strong> (<code>DELETE</code>) contra la base. Ya tienen la mitad del CRUD; falta la otra mitad.</li>
+<li><strong>M&aacute;s adelante (consultas avanzadas):</strong> usaremos las relaciones que montamos hoy para hacer <strong>consultas que cruzan tablas</strong> (JOINs): "dame todos los productos de la categor&iacute;a Tecnolog&iacute;a con su proveedor". Ah&iacute; las llaves for&aacute;neas de hoy brillan.</li>
+<li><strong>M&oacute;dulo 3:</strong> aparece la entidad <strong>Usuario</strong> y la <strong>seguridad</strong> (JWT). Por eso hoy <strong>no</strong> la creamos: merece su m&oacute;dulo completo.</li>
+<li><strong>M&oacute;dulo 4:</strong> el proyecto final suma <strong>Ventas/Pedidos</strong>, uniendo todo.</li>
+</ul>
+<h3>El hilo conductor</h3>
+<p>Nada de lo que hicimos hoy se bota. <code>database.py</code>, los modelos, los services con SQLAlchemy, las relaciones &mdash; <strong>todo</strong> es el cimiento del resto del programa. Construimos sobre esto de aqu&iacute; en adelante.</p>
+<div class="practica">
+<p class="componente-label">Pr&aacute;ctica integradora</p>
+<h3>Comprueba la persistencia de extremo a extremo</h3>
+<p>Extiende y verifica la soluci&oacute;n construida para demostrar que la informaci&oacute;n ya no depende de la memoria del proceso.</p>
+<ol class="pasos">
+<li><span>01</span><p>Crea una categor&iacute;a, un proveedor y un producto desde Swagger usando datos nuevos.</p></li>
+<li><span>02</span><p>Det&eacute;n y reinicia Uvicorn; luego consulta nuevamente los datos.</p></li>
+<li><span>03</span><p>Confirma en pgAdmin que las filas existen y que las llaves for&aacute;neas apuntan a registros v&aacute;lidos.</p></li>
+<li><span>04</span><p>Explica por qu&eacute; el reinicio ya no elimina los datos y qu&eacute; responsabilidad cumple cada capa.</p></li>
+</ol>
+</div>
+</section>
+<footer class="footer">
+          &copy; 2026 Ana Alvarado &middot; Educadora Tech &amp; Desarrolladora Full Stack &middot; Todos los derechos reservados &middot; linkedin.com/in/ana-alvarado-instructora-full-stack
+        </footer>
+</article>
+</main>
+</div>
+<div aria-hidden="true" class="watermark">&copy; 2026 ANA ALVARADO</div>
+<div aria-live="polite" class="slide-status" id="slideStatus"></div>
+<div class="slide-hint">&larr; &rarr; navegar &middot; Esc salir &middot; espacio avanzar</div>
+<!-- Prism.js · resaltado de sintaxis y números de línea -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+<script src="ana-clase.js"></script>
+</body>
+</html>
