@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<!--
+============================================================================
+  © 2026 Ana Alvarado — Todos los derechos reservados.
+  Educadora Tech & Desarrolladora Full Stack.
+  Material de autoría exclusiva. Prohibida su reproducción, redistribución,
+  modificación o uso fuera del contexto de clase sin autorización escrita.
+  linkedin.com/in/ana-alvarado-instructora-full-stack
+============================================================================
+  ARCHIVOS QUE ACOMPAÑAN A ESTE HTML (deben estar en la misma carpeta):
+    · ana-estilos.css → identidad visual y acento por empresa
+    · ana-clase.js    → navegación, tema, presentación y código
+============================================================================
+-->
+<html lang="es" data-empresa="dev-senior">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Ana Alvarado">
+  <meta name="copyright" content="© 2026 Ana Alvarado — Todos los derechos reservados">
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+  <title>Clase 02 · Relaciones y CRUD completo · Ana Alvarado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ana-estilos.css">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <div class="progress-bar" id="progressBar" aria-hidden="true"></div>
+  <div class="controls" aria-label="Controles de lectura">
+    <button class="ctrl-btn" id="temaBtn" type="button" aria-label="Activar tema claro" title="Cambiar tema"><span aria-hidden="true">☀</span></button>
+    <button class="ctrl-btn" id="presentBtn" type="button" aria-label="Iniciar modo presentación" title="Presentación (P)"><span aria-hidden="true">▣</span></button>
+  </div>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Índice de la clase">
+      <div class="sidebar-eyebrow">Libro de clase</div>
+      <div class="sidebar-brand">Backend con Python</div>
+      <div class="sidebar-sub">Clase 02 · Módulo 02</div>
+      <div class="sidebar-rule"></div>
+      <nav id="nav">
+        <a class="nav-item active" href="#punto-partida"><span class="nav-index">01</span><span class="nav-label">🧭 Punto de partida</span></a>
+        <a class="nav-item" href="#modelo-relacional"><span class="nav-index">02</span><span class="nav-label">🔗 Modelo relacional</span></a>
+        <a class="nav-item" href="#implementar-relaciones"><span class="nav-index">03</span><span class="nav-label">🧱 Implementar relaciones</span></a>
+        <a class="nav-item" href="#probar-integridad"><span class="nav-index">04</span><span class="nav-label">🧪 Probar integridad</span></a>
+        <a class="nav-item" href="#actualizar-productos"><span class="nav-index">05</span><span class="nav-label">✏️ Actualizar producto</span></a>
+        <a class="nav-item" href="#eliminar-productos"><span class="nav-index">06</span><span class="nav-label">🗑️ Eliminar producto</span></a>
+        <a class="nav-item" href="#replicar-patron"><span class="nav-index">07</span><span class="nav-label">♻️ Replicar patrón</span></a>
+        <a class="nav-item" href="#cierre"><span class="nav-index">08</span><span class="nav-label">🚀 Siguiente nivel</span></a>
+      </nav>
+      <div class="sidebar-footer"><span>ANA ALVARADO</span><span>EDUCACIÓN TECH</span></div>
+    </aside>
+    <main class="content-area" id="contenido"><article class="content-column">
+      <header class="clase-header">
+        <div class="clase-kicker">Backend con Python · Módulo 2 · Clase 2</div>
+        <h1 class="clase-titulo">Relaciones y CRUD completo</h1>
+        <p class="clase-bajada">Conectarás las tablas de la tienda, protegerás la integridad de sus datos y completarás las operaciones de actualización y eliminación.</p>
+      </header>
+      <div class="aviso-copyright" role="note"><div class="aviso-titulo">Material exclusivo de clase</div><p>Este recurso es de <strong>autoría de Ana Alvarado</strong> y está destinado a estudiantes de la cohorte. No se autoriza su reproducción o redistribución fuera del contexto formativo.</p></div>
+
+      <section class="seccion slide-activa" id="punto-partida">
+        <div class="seccion-meta"><span>01</span><span>CONTEXTO</span></div><h2>🧭 Punto de partida</h2>
+        <div class="apertura"><p class="apertura-label">Punto de partida</p><p class="apertura-pregunta">¿Qué riesgo tendría una tienda si cada producto guardara su categoría como texto libre, sin conectarse con la tabla real de categorías?</p></div>
+        <p>La API ya puede crear y consultar productos, categorías y proveedores. Sin embargo, esas entidades todavía funcionan como islas: existen en la misma base, pero no se reconocen entre sí.</p>
+        <div class="caso-negocio"><p class="componente-label">Caso de negocio</p><h3>Tienda con datos que se contradicen</h3><p>Un producto podría guardar <em>tecnologia</em>, otro <em>Tecnología</em> y otro una categoría inexistente. La aplicación tendría datos aparentemente válidos, pero imposibles de confiar.</p></div>
+        <div class="modelo-mental"><p class="componente-label">Mapa del proyecto</p><p>La conexión administra la sesión; los modelos representan tablas; los schemas validan entrada y salida; los services ejecutan reglas y persistencia; los routers exponen las operaciones HTTP.</p></div>
+        <div class="practica"><p class="componente-label">Comprobación inicial</p><h3>Verifica una base sana</h3><p>Antes de modificar la estructura, confirma que el proyecto puede levantarse y persistir datos.</p><ol class="pasos"><li><span>01</span><p>Ejecuta <em>uvicorn app.main:app --reload</em> desde la raíz <em>tienda_dev</em>.</p></li><li><span>02</span><p>Abre <em>http://127.0.0.1:8000/docs</em> y revisa los endpoints existentes.</p></li><li><span>03</span><p>Confirma en pgAdmin las tablas <em>productos</em>, <em>categorias</em> y <em>proveedores</em>.</p></li><li><span>04</span><p>Crea y consulta una categoría de prueba.</p></li></ol></div>
+        <div class="advertencia"><p class="componente-label">Error frecuente</p><p><strong>Qué ocurre:</strong> aparece <em>ModuleNotFoundError: No module named 'app'</em>.</p><p><strong>Cómo leerlo:</strong> Python no encuentra el paquete raíz.</p><p><strong>Cómo resolverlo:</strong> vuelve a la carpeta <em>tienda_dev</em> y ejecuta Uvicorn desde allí, no desde <em>app/</em>.</p></div>
+      </section>
+
+      <section class="seccion" id="modelo-relacional">
+        <div class="seccion-meta"><span>02</span><span>FUNDAMENTO</span></div><h2>🔗 Modelo relacional</h2>
+        <div class="definicion"><div class="definicion-bloque"><p class="componente-label">Definición técnica</p><p class="tecnica">Una <em>foreign key</em> es una columna que referencia la llave primaria de otra tabla y establece una restricción de integridad referencial.</p></div><div class="definicion-bloque"><p class="componente-label">En palabras sencillas</p><p class="sencilla">El producto no copia la categoría: guarda el identificador de una categoría que ya existe.</p></div><div class="definicion-bloque"><p class="componente-label">Ejemplo real</p><p class="real">Es como usar el número de cédula para apuntar al registro de una persona, en lugar de reescribir todos sus datos en cada trámite.</p></div></div>
+        <div class="separador-editorial"><span>Cardinalidad</span></div>
+        <div class="modelo-mental"><p class="componente-label">Cómo imaginarlo</p><p>Una categoría puede agrupar muchos productos y un proveedor puede surtir muchos productos. Cada producto pertenece a una categoría y, opcionalmente, a un proveedor: dos relaciones <em>uno a muchos</em>.</p></div>
+<div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>diagrama-relacional</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">EJECUTAR</span><span class="code-file">diagrama-relacional</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-sql">categorias                  productos                  proveedores
+┌──────────────┐           ┌────────────────────┐      ┌──────────────┐
+│ id (PK)      │◄──────────│ categoria_id (FK)  │      │ id (PK)      │
+│ nombre       │      1:N  │ proveedor_id (FK)  │─────►│ nombre       │
+└──────────────┘           │ nombre             │  N:1 └──────────────┘
+                           │ precio · stock      │
+                           └────────────────────┘</code></pre></div>
+        <div class="reflexion"><p class="reflexion-label">Antes de continuar</p><div class="reflexion-pregunta">¿Una restricción que rechaza datos inválidos limita el sistema o lo protege?</div><button class="ver-explicacion" type="button" aria-expanded="false">Mostrar explicación</button><div class="explicacion" aria-hidden="true"><div class="explicacion-inner">Puede sentirse como una limitación porque la base ya no acepta cualquier valor. En realidad, esa negativa es una garantía: evita categorías fantasma y conserva la coherencia del sistema.</div></div></div>
+      </section>
+
+      <section class="seccion" id="implementar-relaciones">
+        <div class="seccion-meta"><span>03</span><span>IMPLEMENTACIÓN</span></div><h2>🧱 Implementar relaciones</h2>
+        <p>La relación debe aparecer en tres capas: el modelo declara las llaves foráneas, el schema recibe sus identificadores y el service comprueba que los registros relacionados existan.</p>
+<div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>app/models/producto_model.py</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">REEMPLAZAR</span><span class="code-file">app/models/producto_model.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy.orm import relationship
+from app.config.database import Base
+
+
+class Producto(Base):
+    __tablename__ = &quot;productos&quot;
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, nullable=False)
+    precio = Column(Float, nullable=False)
+    stock = Column(Integer, nullable=False)
+    categoria_id = Column(Integer, ForeignKey(&quot;categorias.id&quot;), nullable=False)
+    proveedor_id = Column(Integer, ForeignKey(&quot;proveedores.id&quot;), nullable=True)
+
+    categoria = relationship(&quot;Categoria&quot;)
+    proveedor = relationship(&quot;Proveedor&quot;)</code></pre></div>
+        <div class="tip"><p class="componente-label">Decisión de diseño</p><p><em>categoria_id</em> es obligatoria porque todo producto debe clasificarse. <em>proveedor_id</em> permite <em>NULL</em> porque un producto puede registrarse antes de asignar proveedor.</p></div>
+<div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>app/schemas/producto_schemas.py</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/schemas/producto_schemas.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">class ProductoCreate(BaseModel):
+    nombre: str
+    precio: float
+    stock: int
+    categoria_id: int
+    proveedor_id: int | None = None
+
+
+class ProductoRespuesta(BaseModel):
+    id: int
+    nombre: str
+    precio: float
+    stock: int
+    categoria_id: int
+    proveedor_id: int | None = None
+
+    class Config:
+        from_attributes = True</code></pre></div>
+        <div class="advertencia"><p class="componente-label">Código que debe retirarse</p><p><strong>Qué ocurre:</strong> una lista fija de categorías en el schema compite con la tabla <em>categorias</em>.</p><p><strong>Cómo leerlo:</strong> existen dos fuentes de verdad que pueden contradecirse.</p><p><strong>Cómo resolverlo:</strong> elimina el validador de lista fija; ahora las categorías válidas son las filas existentes en la base.</p></div>
+<div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>app/services/producto_service.py</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/services/producto_service.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from app.models.categoria_model import Categoria
+from app.models.proveedor_model import Proveedor
+from app.exceptions import CategoriaNoEncontrada, ProveedorNoEncontrado
+
+
+def crear_producto(db: Session, datos: ProductoCreate):
+    categoria = db.query(Categoria).filter(Categoria.id == datos.categoria_id).first()
+    if categoria is None:
+        raise CategoriaNoEncontrada(datos.categoria_id)
+
+    if datos.proveedor_id is not None:
+        proveedor = db.query(Proveedor).filter(Proveedor.id == datos.proveedor_id).first()
+        if proveedor is None:
+            raise ProveedorNoEncontrado(datos.proveedor_id)
+
+    nuevo = Producto(
+        nombre=datos.nombre,
+        precio=datos.precio,
+        stock=datos.stock,
+        categoria_id=datos.categoria_id,
+        proveedor_id=datos.proveedor_id,
+    )
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+    return nuevo</code></pre></div>
+        <div class="modelo-mental"><p class="componente-label">Dos niveles de protección</p><p>El service devuelve errores comprensibles antes de llegar a PostgreSQL. La llave foránea permanece como última barrera y protege la integridad incluso si otra ruta de escritura omite la validación.</p></div>
+        <div class="practica"><p class="componente-label">Cambio estructural</p><h3>Recrea la tabla de desarrollo</h3><p><em>create_all</em> crea tablas faltantes, pero no modifica una tabla existente.</p><ol class="pasos"><li><span>01</span><p>Elimina únicamente la tabla <em>productos</em> desde pgAdmin.</p></li><li><span>02</span><p>Reinicia el servidor.</p></li><li><span>03</span><p>Verifica que la tabla renació con <em>categoria_id</em> y <em>proveedor_id</em>.</p></li></ol></div>
+        <div class="tip"><p class="componente-label">Entorno real</p><p>Borrar y recrear es aceptable con datos de práctica. En producción se usan migraciones, por ejemplo con Alembic, para evolucionar el esquema sin perder información.</p></div>
+      </section>
+
+      <section class="seccion" id="probar-integridad">
+        <div class="seccion-meta"><span>04</span><span>VALIDACIÓN</span></div><h2>🧪 Probar integridad</h2>
+        <p>Las relaciones no se consideran terminadas hasta probar tanto el camino válido como el inválido. La segunda prueba demuestra que el sistema realmente protege sus datos.</p>
+        <div class="practica"><p class="componente-label">Secuencia de prueba</p><h3>Crea datos en el orden correcto</h3><p>Primero deben existir los registros que serán referenciados.</p><ol class="pasos"><li><span>01</span><p>Crea una categoría con <em>POST /categorias</em> y conserva su id.</p></li><li><span>02</span><p>Crea un proveedor con <em>POST /proveedores</em> y conserva su id.</p></li><li><span>03</span><p>Crea un producto apuntando a ambos identificadores.</p></li><li><span>04</span><p>Repite la petición con <em>categoria_id: 999</em>.</p></li></ol></div>
+<div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>Swagger · POST /productos</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">EJECUTAR</span><span class="code-file">Swagger · POST /productos</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-json">{
+  &quot;nombre&quot;: &quot;Laptop Dell&quot;,
+  &quot;precio&quot;: 1299.99,
+  &quot;stock&quot;: 15,
+  &quot;categoria_id&quot;: 1,
+  &quot;proveedor_id&quot;: 1
+}</code></pre></div><div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>Swagger · prueba inválida</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">EJECUTAR</span><span class="code-file">Swagger · prueba inválida</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-json">{
+  &quot;nombre&quot;: &quot;Producto Fantasma&quot;,
+  &quot;precio&quot;: 10.0,
+  &quot;stock&quot;: 5,
+  &quot;categoria_id&quot;: 999
+}</code></pre></div>
+        <div class="modelo-mental"><p class="componente-label">Resultado esperado</p><p>La primera petición devuelve el producto creado. La segunda responde <em>404</em> con un detalle comprensible porque la categoría 999 no existe.</p></div>
+      </section>
+
+      <section class="seccion" id="actualizar-productos">
+        <div class="seccion-meta"><span>05</span><span>CRUD · UPDATE</span></div><h2>✏️ Actualizar producto</h2>
+        <div class="definicion"><div class="definicion-bloque"><p class="componente-label">Definición técnica</p><p class="tecnica"><em>Update</em> modifica el estado persistido de un recurso existente.</p></div><div class="definicion-bloque"><p class="componente-label">En palabras sencillas</p><p class="sencilla">Buscas una fila, cambias sus atributos y confirmas la transacción.</p></div><div class="definicion-bloque"><p class="componente-label">Ejemplo real</p><p class="real">Editar el precio y el inventario de un producto sin crear un registro nuevo.</p></div></div>
+<div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>app/services/producto_service.py</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/services/producto_service.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">def actualizar_producto(db: Session, producto_id: int, datos: ProductoCreate):
+    producto = db.query(Producto).filter(Producto.id == producto_id).first()
+    if producto is None:
+        return None
+
+    categoria = db.query(Categoria).filter(Categoria.id == datos.categoria_id).first()
+    if categoria is None:
+        raise CategoriaNoEncontrada(datos.categoria_id)
+
+    if datos.proveedor_id is not None:
+        proveedor = db.query(Proveedor).filter(Proveedor.id == datos.proveedor_id).first()
+        if proveedor is None:
+            raise ProveedorNoEncontrado(datos.proveedor_id)
+
+    producto.nombre = datos.nombre
+    producto.precio = datos.precio
+    producto.stock = datos.stock
+    producto.categoria_id = datos.categoria_id
+    producto.proveedor_id = datos.proveedor_id
+    db.commit()
+    db.refresh(producto)
+    return producto</code></pre></div><div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>app/routers/producto_router.py</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/routers/producto_router.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from fastapi import HTTPException
+
+
+@router.put(&quot;/productos/{producto_id}&quot;, response_model=ProductoRespuesta)
+def actualizar(producto_id: int, datos: ProductoCreate, db: Session = Depends(get_db)):
+    producto = producto_service.actualizar_producto(db, producto_id, datos)
+    if producto is None:
+        raise HTTPException(status_code=404, detail=&quot;Producto no encontrado&quot;)
+    return producto</code></pre></div>
+        <div class="reflexion"><p class="reflexion-label">Antes de continuar</p><div class="reflexion-pregunta">¿Por qué actualizar no necesita <em>db.add()</em>?</div><button class="ver-explicacion" type="button" aria-expanded="false">Mostrar explicación</button><div class="explicacion" aria-hidden="true"><div class="explicacion-inner">El producto ya fue consultado y la sesión de SQLAlchemy lo está siguiendo. Al cambiar sus atributos, la unidad de trabajo detecta las modificaciones; <em>commit()</em> las persiste. <em>add()</em> se necesita principalmente para incorporar un objeto nuevo.</div></div></div>
+        <div class="practica"><p class="componente-label">Prueba verificable</p><h3>Actualiza sin cambiar identidad</h3><p>Ejecuta <em>PUT /productos/{producto_id}</em>, cambia precio y stock, y luego consulta el mismo id. El contenido debe cambiar, pero el identificador debe conservarse.</p></div>
+      </section>
+
+      <section class="seccion" id="eliminar-productos">
+        <div class="seccion-meta"><span>06</span><span>CRUD · DELETE</span></div><h2>🗑️ Eliminar producto</h2>
+        <div class="modelo-mental"><p class="componente-label">Secuencia de la operación</p><p>Buscar evita borrar a ciegas; <em>delete()</em> marca el objeto; <em>commit()</em> confirma la eliminación. El service devuelve un resultado simple para que el router decida la respuesta HTTP.</p></div>
+<div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>app/services/producto_service.py</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/services/producto_service.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">def eliminar_producto(db: Session, producto_id: int):
+    producto = db.query(Producto).filter(Producto.id == producto_id).first()
+    if producto is None:
+        return False
+    db.delete(producto)
+    db.commit()
+    return True</code></pre></div><div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>app/routers/producto_router.py</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/routers/producto_router.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">@router.delete(&quot;/productos/{producto_id}&quot;)
+def eliminar(producto_id: int, db: Session = Depends(get_db)):
+    eliminado = producto_service.eliminar_producto(db, producto_id)
+    if not eliminado:
+        raise HTTPException(status_code=404, detail=&quot;Producto no encontrado&quot;)
+    return {&quot;mensaje&quot;: f&quot;Producto {producto_id} eliminado&quot;}</code></pre></div>
+        <div class="tip"><p class="componente-label">Respuesta coherente</p><p>El endpoint no usa <em>ProductoRespuesta</em>: después de borrar, el recurso ya no existe. Una confirmación describe mejor el resultado de la operación.</p></div>
+        <div class="reflexion"><p class="reflexion-label">Antes de continuar</p><div class="reflexion-pregunta">¿Qué demuestra recibir 404 al intentar borrar por segunda vez el mismo id?</div><button class="ver-explicacion" type="button" aria-expanded="false">Mostrar explicación</button><div class="explicacion" aria-hidden="true"><div class="explicacion-inner">Demuestra que la primera eliminación persistió y que el endpoint diferencia entre una operación realizada y un recurso inexistente. No se puede eliminar lo que ya no está.</div></div></div>
+      </section>
+
+      <section class="seccion" id="replicar-patron">
+        <div class="seccion-meta"><span>07</span><span>TRANSFERENCIA</span></div><h2>♻️ Replicar patrón</h2>
+        <p>Después de comprender Producto, puedes reutilizar la misma estructura en Categoría y Proveedor. Cambian la entidad y sus campos; permanece el flujo buscar, validar, modificar o eliminar, confirmar y responder.</p>
+<div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>app/services/categoria_services.py</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/services/categoria_services.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">def actualizar_categoria(db: Session, categoria_id: int, datos: CategoriaCreate):
+    categoria = db.query(Categoria).filter(Categoria.id == categoria_id).first()
+    if categoria is None:
+        return None
+    categoria.nombre = datos.nombre
+    categoria.descripcion = datos.descripcion
+    db.commit()
+    db.refresh(categoria)
+    return categoria
+
+
+def eliminar_categoria(db: Session, categoria_id: int):
+    categoria = db.query(Categoria).filter(Categoria.id == categoria_id).first()
+    if categoria is None:
+        return False
+    db.delete(categoria)
+    db.commit()
+    return True</code></pre></div><div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>app/routers/categoria_router.py</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/routers/categoria_router.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from fastapi import HTTPException
+
+
+@router.put(&quot;/categorias/{categoria_id}&quot;, response_model=CategoriaRespuesta)
+def actualizar(categoria_id: int, datos: CategoriaCreate, db: Session = Depends(get_db)):
+    categoria = categoria_services.actualizar_categoria(db, categoria_id, datos)
+    if categoria is None:
+        raise HTTPException(status_code=404, detail=&quot;Categoría no encontrada&quot;)
+    return categoria
+
+
+@router.delete(&quot;/categorias/{categoria_id}&quot;)
+def eliminar(categoria_id: int, db: Session = Depends(get_db)):
+    eliminado = categoria_services.eliminar_categoria(db, categoria_id)
+    if not eliminado:
+        raise HTTPException(status_code=404, detail=&quot;Categoría no encontrada&quot;)
+    return {&quot;mensaje&quot;: f&quot;Categoría {categoria_id} eliminada&quot;}</code></pre></div><div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>app/services/proveedor_service.py</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/services/proveedor_service.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">def actualizar_proveedor(db: Session, proveedor_id: int, datos: ProveedorCreate):
+    proveedor = db.query(Proveedor).filter(Proveedor.id == proveedor_id).first()
+    if proveedor is None:
+        return None
+    proveedor.nombre = datos.nombre
+    proveedor.email = datos.email
+    proveedor.telefono = datos.telefono
+    db.commit()
+    db.refresh(proveedor)
+    return proveedor
+
+
+def eliminar_proveedor(db: Session, proveedor_id: int):
+    proveedor = db.query(Proveedor).filter(Proveedor.id == proveedor_id).first()
+    if proveedor is None:
+        return False
+    db.delete(proveedor)
+    db.commit()
+    return True</code></pre></div><div class="antes-codigo">
+  <p class="componente-label">Qué vamos a hacer</p><p>Trabajaremos sobre <em>app/routers/proveedor_router.py</em> para avanzar en esta parte del sistema.</p>
+  <p class="componente-label">Por qué lo hacemos</p><p>Este cambio traduce el modelo relacional y el comportamiento CRUD a código ejecutable.</p>
+  <p class="componente-label">Qué aprenderás</p><p>Cómo reconocer la responsabilidad del archivo y comprobar el efecto del cambio.</p>
+</div>
+<div class="code-block"><div class="code-head"><div><span class="code-context">MODIFICAR</span><span class="code-file">app/routers/proveedor_router.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from fastapi import HTTPException
+
+
+@router.put(&quot;/proveedores/{proveedor_id}&quot;, response_model=ProveedorRespuesta)
+def actualizar(proveedor_id: int, datos: ProveedorCreate, db: Session = Depends(get_db)):
+    proveedor = proveedor_service.actualizar_proveedor(db, proveedor_id, datos)
+    if proveedor is None:
+        raise HTTPException(status_code=404, detail=&quot;Proveedor no encontrado&quot;)
+    return proveedor
+
+
+@router.delete(&quot;/proveedores/{proveedor_id}&quot;)
+def eliminar(proveedor_id: int, db: Session = Depends(get_db)):
+    eliminado = proveedor_service.eliminar_proveedor(db, proveedor_id)
+    if not eliminado:
+        raise HTTPException(status_code=404, detail=&quot;Proveedor no encontrado&quot;)
+    return {&quot;mensaje&quot;: f&quot;Proveedor {proveedor_id} eliminado&quot;}</code></pre></div>
+        <div class="reflexion"><p class="reflexion-label">Antes de continuar</p><div class="reflexion-pregunta">¿La repetición indica únicamente copiar y pegar o revela una estructura reutilizable?</div><button class="ver-explicacion" type="button" aria-expanded="false">Mostrar explicación</button><div class="explicacion" aria-hidden="true"><div class="explicacion-inner">Revela un patrón. Cuando una entidad nueva aparece, ya puedes anticipar qué responsabilidades pertenecen al service, cuáles al router y cómo se representan los resultados HTTP. Primero se domina manualmente; después puede abstraerse con criterio.</div></div></div>
+      </section>
+
+      <section class="seccion" id="cierre">
+        <div class="seccion-meta"><span>08</span><span>CIERRE</span></div><h2>🚀 Siguiente nivel</h2>
+        <div class="caso-negocio"><p class="componente-label">Sistema alcanzado</p><h3>Una API conectada y operable</h3><p>La tienda ya no guarda entidades aisladas: Producto referencia categorías y proveedores reales, y las tres entidades disponen del ciclo CRUD completo.</p></div>
+        <div class="practica"><p class="componente-label">Reto integrador</p><h3>Demuestra el ciclo completo</h3><p>Construye una secuencia de pruebas que evidencie integridad y persistencia.</p><ol class="pasos"><li><span>01</span><p>Crea categoría, proveedor y producto relacionados.</p></li><li><span>02</span><p>Actualiza el producto y verifica que conserve su id.</p></li><li><span>03</span><p>Elimina el producto y confirma el 404 posterior.</p></li><li><span>04</span><p>Repite Update y Delete para Categoría y Proveedor.</p></li></ol></div>
+        <div class="modelo-mental"><p class="componente-label">Lo que sigue</p><p>Las llaves foráneas permiten el siguiente salto: cruzar tablas con consultas y <em>JOINs</em> para responder preguntas de negocio como “qué productos pertenecen a Tecnología y quién los provee”.</p></div>
+        <div class="tip"><p class="componente-label">Criterio técnico</p><p>No memorices cada bloque. Reconoce la secuencia, la responsabilidad de cada capa y las garantías que aporta la base de datos. Ese modelo mental se transfiere a cualquier entidad.</p></div>
+      </section>
+
+      <footer class="footer">© 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · Todos los derechos reservados · linkedin.com/in/ana-alvarado-instructora-full-stack</footer>
+    </article></main>
+  </div>
+  <div class="watermark" aria-hidden="true">© 2026 ANA ALVARADO</div>
+  <div class="slide-status" id="slideStatus" aria-live="polite"></div>
+  <div class="slide-hint">← → navegar · Esc salir · espacio avanzar</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="ana-clase.js"></script>
+</body>
+</html>
