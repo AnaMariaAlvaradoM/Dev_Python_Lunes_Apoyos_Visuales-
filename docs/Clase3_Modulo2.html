@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<!-- © 2026 Ana Alvarado · Material educativo exclusivo -->
+<html lang="es" data-empresa="dev-senior"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="author" content="Ana Alvarado"><meta name="copyright" content="© 2026 Ana Alvarado — Todos los derechos reservados"><meta name="robots" content="noindex, nofollow, noarchive, noimageindex"><title>Clase 1 · Diseñar un sistema desde cero · Ana Alvarado</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><link rel="stylesheet" href="ana-estilos.css"></head><body><a class="skip-link" href="#contenido">Saltar al contenido</a><div class="progress-bar" id="progressBar" aria-hidden="true"></div><div class="controls" aria-label="Controles de lectura"><button class="ctrl-btn" id="temaBtn" type="button" aria-label="Activar tema claro" title="Cambiar tema"><span aria-hidden="true">☀</span></button><button class="ctrl-btn" id="presentBtn" type="button" aria-label="Iniciar modo presentación" title="Presentación (P)"><span aria-hidden="true">▣</span></button></div><div class="layout"><aside class="sidebar" aria-label="Índice de la clase"><div class="sidebar-eyebrow">Libro de clase</div><div class="sidebar-brand">Python Backend</div><div class="sidebar-sub">Taller integrador · Clase 01</div><div class="sidebar-rule"></div><nav id="nav"><a class="nav-item active" href="#sec-1"><span class="nav-index">01</span><span class="nav-label">Del negocio al sistema</span></a>
+<a class="nav-item" href="#sec-2"><span class="nav-index">02</span><span class="nav-label">Entidades y relaciones</span></a>
+<a class="nav-item" href="#sec-3"><span class="nav-index">03</span><span class="nav-label">Arquitectura por capas</span></a>
+<a class="nav-item" href="#sec-4"><span class="nav-index">04</span><span class="nav-label">Montaje del proyecto</span></a>
+<a class="nav-item" href="#sec-5"><span class="nav-index">05</span><span class="nav-label">Conexión PostgreSQL</span></a>
+<a class="nav-item" href="#sec-6"><span class="nav-index">06</span><span class="nav-label">Entidad Dueño</span></a>
+<a class="nav-item" href="#sec-7"><span class="nav-index">07</span><span class="nav-label">CRUD de Dueño</span></a>
+<a class="nav-item" href="#sec-8"><span class="nav-index">08</span><span class="nav-label">Relación Dueño–Mascota</span></a>
+<a class="nav-item" href="#sec-9"><span class="nav-index">09</span><span class="nav-label">Entidad Veterinario</span></a>
+<a class="nav-item" href="#sec-10"><span class="nav-index">10</span><span class="nav-label">Flujo completo</span></a>
+<a class="nav-item" href="#sec-11"><span class="nav-index">11</span><span class="nav-label">Mapa del sistema</span></a></nav><div class="sidebar-footer"><span>ANA ALVARADO</span><span>DEV SENIOR</span></div></aside><main class="content-area" id="contenido"><article class="content-column"><header class="clase-header"><div class="clase-kicker">Python Backend · Taller integrador · Clase 01</div><h1 class="clase-titulo">Diseñar un sistema desde cero</h1><p class="clase-bajada">Del problema de una veterinaria a una arquitectura FastAPI con capas, CRUD y la primera relación uno a muchos.</p></header><div class="aviso-copyright" role="note"><div class="aviso-titulo">Material exclusivo de clase</div><p>Este recurso es de <strong>autoría de Ana Alvarado</strong> y está destinado a estudiantes de la cohorte. No se autoriza su reproducción o redistribución fuera del contexto formativo.</p></div><section class="seccion slide-activa" id="sec-1"><div class="seccion-meta"><span>01</span><span>CONTEXTO</span></div><h2>Antes del código existe una decisión de negocio</h2><div class="apertura"><p class="apertura-label">Punto de partida</p><p class="apertura-pregunta">¿Cómo convertir una veterinaria que trabaja con cuadernos en un sistema confiable?</p></div><p>Patitas Felices necesita registrar familias, mascotas, citas, veterinarios, tratamientos e insumos. El reto no es empezar a programar: es descubrir qué información importa, cómo se relaciona y qué reglas deben protegerse.</p><div class="caso-negocio"><p class="componente-label">Caso de negocio</p><h3>Patitas Felices</h3><p>Un dueño puede registrar varias mascotas. Cada cita corresponde a una mascota y la atiende un veterinario. Los tratamientos consumen insumos del inventario y solo pueden aplicarse cuando existe stock suficiente para completar todo el procedimiento.</p></div><div class="modelo-mental"><p class="componente-label">Modelo mental</p><p>Piensa en el sistema como un mapa de responsabilidades: las entidades representan protagonistas del negocio; las relaciones explican cómo colaboran; las reglas impiden que los datos contradigan la operación real.</p></div></section><section class="seccion" id="sec-2"><div class="seccion-meta"><span>02</span><span>MODELADO</span></div><h2>Entidades, atributos y relaciones</h2><div class="definicion"><div class="definicion-bloque"><p class="componente-label">Entidad</p><p class="tecnica">Concepto del negocio con identidad y datos propios: Dueño, Mascota, Cita, Veterinario, Tratamiento e Insumo.</p></div><div class="definicion-bloque"><p class="componente-label">Atributo</p><p class="sencilla">Característica que describe una entidad. Por ejemplo, especie describe a Mascota; no necesita una tabla propia en este alcance.</p></div><div class="definicion-bloque"><p class="componente-label">Relación</p><p class="real">Regla que conecta entidades: un Dueño tiene muchas Mascotas; una Mascota pertenece a un Dueño.</p></div></div><div class="modelo-mental"><p class="componente-label">Cómo leer las relaciones</p><p><strong>1:N:</strong> un dueño puede tener muchas mascotas. <strong>N:M:</strong> muchos tratamientos usan muchos insumos. Cuando la relación N:M necesita guardar la cantidad utilizada, aparece una tabla intermedia: la receta del tratamiento.</p></div><div class="tip"><p class="componente-label">Criterio técnico</p><p>Las relaciones salen de las reglas del negocio, no de la tecnología. No conectes entidades “por si acaso” ni dupliques relaciones que ya pueden recorrerse indirectamente.</p></div><div class="reflexion"><p class="reflexion-label">Comprueba tu criterio</p><div class="reflexion-pregunta">¿Dónde debería vivir la cantidad de guantes que usa una vacuna?</div><button class="ver-explicacion" type="button" aria-expanded="false">Mostrar explicación</button><div class="explicacion" aria-hidden="true"><div class="explicacion-inner">En la tabla intermedia entre Tratamiento e Insumo, porque la cantidad pertenece a esa combinación específica, no a una entidad aislada.</div></div></div></section><section class="seccion" id="sec-3"><div class="seccion-meta"><span>03</span><span>ARQUITECTURA</span></div><h2>Cuatro capas, cuatro responsabilidades</h2><div class="definicion"><div class="definicion-bloque"><p class="componente-label">Model</p><p class="tecnica">Representa tablas, columnas y llaves foráneas con SQLAlchemy.</p></div><div class="definicion-bloque"><p class="componente-label">Schema</p><p class="sencilla">Define el contrato de entrada y salida, incluyendo validaciones con Pydantic.</p></div><div class="definicion-bloque"><p class="componente-label">Service</p><p class="real">Concentra la lógica de negocio y las operaciones sobre la base de datos.</p></div><div class="definicion-bloque"><p class="componente-label">Router</p><p class="real">Expone endpoints HTTP y delega la operación al service.</p></div></div><div class="modelo-mental"><p class="componente-label">Flujo de una petición</p><p>Cliente → Router → Schema valida → Service decide → Model persiste → respuesta validada. La separación permite cambiar una parte sin mezclar responsabilidades.</p></div><div class="advertencia"><p class="componente-label">Error frecuente</p><p><strong>Qué ocurre:</strong> el router termina lleno de consultas, validaciones y reglas.</p><p><strong>Cómo leerlo:</strong> si el endpoint hace más que recibir, delegar y responder, probablemente tiene lógica que pertenece al service.</p><p><strong>Cómo resolverlo:</strong> mueve la lógica de negocio al service y conserva el router como puerta HTTP.</p></div></section><section class="seccion" id="sec-4"><div class="seccion-meta"><span>04</span><span>PREPARACIÓN</span></div><h2>Montar el proyecto desde cero</h2><p>La estructura materializa las capas que acabamos de razonar. Ejecuta los comandos desde la carpeta donde guardas tus proyectos.</p><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>La carpeta raíz del proyecto y su apertura en Visual Studio Code.</p><p class="componente-label">Por qué</p><p>Necesitamos un punto de entrada claro para ejecutar Uvicorn y organizar el código.</p><p class="componente-label">Qué aprenderás</p><p>Qué significa cada comando y por qué la raíz importa.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">EJECUTAR</span><span class="code-file">Terminal · raíz de proyectos</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-bash">mkdir patitas_vet
+cd patitas_vet
+code .</code></pre></div><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>Un entorno virtual aislado.</p><p class="componente-label">Por qué</p><p>Cada proyecto debe controlar sus propias dependencias.</p><p class="componente-label">Qué aprenderás</p><p>Cómo crear y reconocer un entorno activo en Windows.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">EJECUTAR</span><span class="code-file">Terminal · patitas_vet</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-bash">py -m venv venv
+venv\Scripts\activate</code></pre></div><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>Las dependencias esenciales del backend.</p><p class="componente-label">Por qué</p><p>FastAPI, Uvicorn, SQLAlchemy y Psycopg cumplen responsabilidades diferentes.</p><p class="componente-label">Qué aprenderás</p><p>Cómo distinguir framework, servidor, ORM y driver.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">EJECUTAR</span><span class="code-file">Terminal · patitas_vet</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-bash">pip install fastapi uvicorn sqlalchemy &quot;psycopg[binary]&quot;</code></pre></div><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>La organización inicial por capas.</p><p class="componente-label">Por qué</p><p>La estructura debe reflejar responsabilidades y facilitar mantenimiento.</p><p class="componente-label">Qué aprenderás</p><p>Dónde vivirá cada tipo de código.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">Estructura del proyecto</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-text">patitas_vet/
+└── app/
+    ├── config/
+    │   └── database.py
+    ├── models/
+    ├── schemas/
+    ├── services/
+    ├── routers/
+    └── main.py</code></pre></div></section><section class="seccion" id="sec-5"><div class="seccion-meta"><span>05</span><span>DATOS</span></div><h2>Conectar FastAPI con PostgreSQL</h2><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>La configuración central de SQLAlchemy.</p><p class="componente-label">Por qué</p><p>Todas las capas necesitan una forma segura y reutilizable de abrir y cerrar sesiones.</p><p class="componente-label">Qué aprenderás</p><p>Cómo trabajan engine, SessionLocal, Base y get_db.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/config/database.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+
+URL_CONEXION = &quot;postgresql+psycopg://postgres:TU_CONTRASENA@localhost:5432/patitas_vet&quot;
+
+engine = create_engine(URL_CONEXION)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()</code></pre></div><div class="definicion"><div class="definicion-bloque"><p class="componente-label">Engine</p><p class="tecnica">Punto de acceso de SQLAlchemy hacia PostgreSQL.</p></div><div class="definicion-bloque"><p class="componente-label">SessionLocal</p><p class="sencilla">Fábrica que crea sesiones de trabajo para consultar y modificar datos.</p></div><div class="definicion-bloque"><p class="componente-label">yield</p><p class="real">Entrega temporalmente la sesión y permite retomarla después para cerrarla, incluso si ocurre un error.</p></div></div><div class="advertencia"><p class="componente-label">Configuración necesaria</p><p>Reemplaza <code>TU_CONTRASENA</code> por la contraseña local de PostgreSQL y crea previamente la base <code>patitas_vet</code> en pgAdmin.</p></div></section><section class="seccion" id="sec-6"><div class="seccion-meta"><span>06</span><span>PRIMERA ENTIDAD</span></div><h2>Dueño: tabla y contrato</h2><p>Dueño es una entidad independiente. Por eso sirve como referencia para aprender el patrón completo antes de introducir llaves foráneas.</p><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>La tabla duenos con datos de contacto.</p><p class="componente-label">Por qué</p><p>El model define cómo se almacenan los datos en PostgreSQL.</p><p class="componente-label">Qué aprenderás</p><p>Cómo declarar columnas obligatorias y una llave primaria.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/models/dueno_model.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String
+from app.config.database import Base
+
+
+class Dueno(Base):
+    __tablename__ = &quot;duenos&quot;
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, nullable=False)
+    telefono = Column(String, nullable=False)
+    email = Column(String, nullable=False)</code></pre></div><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>Los contratos de entrada y salida para Dueño.</p><p class="componente-label">Por qué</p><p>La API debe rechazar datos inválidos antes de intentar guardarlos.</p><p class="componente-label">Qué aprenderás</p><p>Cómo combinar Field, EmailStr y un validador personalizado.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/schemas/dueno_schemas.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from pydantic import BaseModel, Field, EmailStr, field_validator
+
+
+class DuenoCreate(BaseModel):
+    nombre: str = Field(..., min_length=2, max_length=60)
+    telefono: str = Field(..., min_length=7, max_length=15)
+    email: EmailStr
+
+    @field_validator(&quot;nombre&quot;)
+    @classmethod
+    def nombre_no_vacio(cls, valor: str) -&gt; str:
+        limpio = valor.strip()
+        if limpio == &quot;&quot;:
+            raise ValueError(&quot;El nombre no puede estar vacío&quot;)
+        return limpio
+
+
+class DuenoRespuesta(BaseModel):
+    id: int
+    nombre: str
+    telefono: str
+    email: str
+
+    class Config:
+        from_attributes = True</code></pre></div><div class="tip"><p class="componente-label">Separación clave</p><p>El model almacena el email como texto; el schema valida que realmente tenga formato de correo. Persistencia y validación no son la misma responsabilidad.</p></div><div class="advertencia"><p class="componente-label">Dependencia adicional</p><p>Si aparece un error relacionado con <code>email-validator</code>, ejecuta <code>pip install "pydantic[email]"</code>.</p></div></section><section class="seccion" id="sec-7"><div class="seccion-meta"><span>07</span><span>CRUD</span></div><h2>Dueño: lógica y endpoints</h2><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>El CRUD completo de Dueño.</p><p class="componente-label">Por qué</p><p>La lógica de persistencia debe vivir fuera de los endpoints.</p><p class="componente-label">Qué aprenderás</p><p>Cómo funcionan add, commit, refresh, query, filter y delete.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/services/dueno_service.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from app.models.dueno_model import Dueno
+from app.schemas.dueno_schemas import DuenoCreate
+
+
+def crear_dueno(db: Session, datos: DuenoCreate):
+    nuevo = Dueno(
+        nombre=datos.nombre,
+        telefono=datos.telefono,
+        email=datos.email,
+    )
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+    return nuevo
+
+
+def listar_duenos(db: Session):
+    return db.query(Dueno).all()
+
+
+def obtener_dueno(db: Session, dueno_id: int):
+    return db.query(Dueno).filter(Dueno.id == dueno_id).first()
+
+
+def actualizar_dueno(db: Session, dueno_id: int, datos: DuenoCreate):
+    dueno = db.query(Dueno).filter(Dueno.id == dueno_id).first()
+    if dueno is None:
+        return None
+    dueno.nombre = datos.nombre
+    dueno.telefono = datos.telefono
+    dueno.email = datos.email
+    db.commit()
+    db.refresh(dueno)
+    return dueno
+
+
+def eliminar_dueno(db: Session, dueno_id: int):
+    dueno = db.query(Dueno).filter(Dueno.id == dueno_id).first()
+    if dueno is None:
+        return False
+    db.delete(dueno)
+    db.commit()
+    return True</code></pre></div><div class="tip"><p class="componente-label">Regla de oro</p><p>Crear, actualizar o eliminar no modifica PostgreSQL hasta ejecutar <code>commit()</code>.</p></div><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>Los endpoints HTTP de Dueño.</p><p class="componente-label">Por qué</p><p>El router conecta el protocolo HTTP con la lógica del service.</p><p class="componente-label">Qué aprenderás</p><p>Cómo usar APIRouter, Depends, response_model y HTTPException.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/routers/dueno_router.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.schemas.dueno_schemas import DuenoCreate, DuenoRespuesta
+from app.services import dueno_service
+
+router = APIRouter(tags=[&quot;Dueños&quot;])
+
+
+@router.post(&quot;/duenos&quot;, response_model=DuenoRespuesta)
+def crear(datos: DuenoCreate, db: Session = Depends(get_db)):
+    return dueno_service.crear_dueno(db, datos)
+
+
+@router.get(&quot;/duenos&quot;, response_model=list[DuenoRespuesta])
+def listar(db: Session = Depends(get_db)):
+    return dueno_service.listar_duenos(db)
+
+
+@router.get(&quot;/duenos/{dueno_id}&quot;, response_model=DuenoRespuesta)
+def obtener(dueno_id: int, db: Session = Depends(get_db)):
+    dueno = dueno_service.obtener_dueno(db, dueno_id)
+    if dueno is None:
+        raise HTTPException(status_code=404, detail=&quot;Dueño no encontrado&quot;)
+    return dueno
+
+
+@router.put(&quot;/duenos/{dueno_id}&quot;, response_model=DuenoRespuesta)
+def actualizar(dueno_id: int, datos: DuenoCreate, db: Session = Depends(get_db)):
+    dueno = dueno_service.actualizar_dueno(db, dueno_id, datos)
+    if dueno is None:
+        raise HTTPException(status_code=404, detail=&quot;Dueño no encontrado&quot;)
+    return dueno
+
+
+@router.delete(&quot;/duenos/{dueno_id}&quot;)
+def eliminar(dueno_id: int, db: Session = Depends(get_db)):
+    eliminado = dueno_service.eliminar_dueno(db, dueno_id)
+    if not eliminado:
+        raise HTTPException(status_code=404, detail=&quot;Dueño no encontrado&quot;)
+    return {&quot;mensaje&quot;: f&quot;Dueño {dueno_id} eliminado&quot;}</code></pre></div><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>La aplicación inicial y el registro del router.</p><p class="componente-label">Por qué</p><p>FastAPI debe conocer los modelos antes de crear sus tablas y montar sus endpoints.</p><p class="componente-label">Qué aprenderás</p><p>Cómo funcionan create_all e include_router.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/main.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from fastapi import FastAPI
+from app.config.database import Base, engine
+from app.models import dueno_model
+from app.routers import dueno_router
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title=&quot;Patitas Vet API&quot;)
+
+app.include_router(dueno_router.router)</code></pre></div></section><section class="seccion" id="sec-8"><div class="seccion-meta"><span>08</span><span>RELACIÓN 1:N</span></div><h2>Mascota pertenece a un Dueño</h2><p>La relación se representa con <code>dueno_id</code>. Muchas mascotas pueden guardar el mismo identificador de dueño, pero cada mascota apunta a uno solo.</p><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>La tabla mascotas con su llave foránea.</p><p class="componente-label">Por qué</p><p>Evita duplicar los datos del dueño dentro de cada mascota.</p><p class="componente-label">Qué aprenderás</p><p>Cómo usar ForeignKey y relationship para modelar una relación 1:N.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/models/mascota_model.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy.orm import relationship
+from app.config.database import Base
+
+
+class Mascota(Base):
+    __tablename__ = &quot;mascotas&quot;
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, nullable=False)
+    especie = Column(String, nullable=False)
+    raza = Column(String, nullable=True)
+    fecha_nacimiento = Column(Date, nullable=True)
+
+    dueno_id = Column(Integer, ForeignKey(&quot;duenos.id&quot;), nullable=False)
+
+    dueno = relationship(&quot;Dueno&quot;)</code></pre></div><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>Los contratos de Mascota.</p><p class="componente-label">Por qué</p><p>La API necesita recibir el dueno_id y manejar campos opcionales.</p><p class="componente-label">Qué aprenderás</p><p>Cómo representar fechas, valores opcionales y referencias por id.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/schemas/mascota_schemas.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from pydantic import BaseModel, Field
+from datetime import date
+
+
+class MascotaCreate(BaseModel):
+    nombre: str = Field(..., min_length=1, max_length=40)
+    especie: str = Field(..., min_length=2, max_length=30)
+    raza: str | None = None
+    fecha_nacimiento: date | None = None
+    dueno_id: int
+
+
+class MascotaRespuesta(BaseModel):
+    id: int
+    nombre: str
+    especie: str
+    raza: str | None = None
+    fecha_nacimiento: date | None = None
+    dueno_id: int
+
+    class Config:
+        from_attributes = True</code></pre></div><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>La lógica CRUD de Mascota con validación de integridad.</p><p class="componente-label">Por qué</p><p>Antes de crear una mascota debemos comprobar que el dueño exista.</p><p class="componente-label">Qué aprenderás</p><p>Cómo proteger una relación y devolver un error de negocio claro.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/services/mascota_service.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from fastapi import HTTPException
+from app.models.mascota_model import Mascota
+from app.models.dueno_model import Dueno
+from app.schemas.mascota_schemas import MascotaCreate
+
+
+def crear_mascota(db: Session, datos: MascotaCreate):
+    dueno = db.query(Dueno).filter(Dueno.id == datos.dueno_id).first()
+    if dueno is None:
+        raise HTTPException(status_code=404, detail=&quot;El dueño indicado no existe&quot;)
+
+    nueva = Mascota(
+        nombre=datos.nombre,
+        especie=datos.especie,
+        raza=datos.raza,
+        fecha_nacimiento=datos.fecha_nacimiento,
+        dueno_id=datos.dueno_id,
+    )
+    db.add(nueva)
+    db.commit()
+    db.refresh(nueva)
+    return nueva
+
+
+def listar_mascotas(db: Session, dueno_id=None):
+    consulta = db.query(Mascota)
+    if dueno_id is not None:
+        consulta = consulta.filter(Mascota.dueno_id == dueno_id)
+    return consulta.all()
+
+
+def obtener_mascota(db: Session, mascota_id: int):
+    return db.query(Mascota).filter(Mascota.id == mascota_id).first()
+
+
+def eliminar_mascota(db: Session, mascota_id: int):
+    mascota = db.query(Mascota).filter(Mascota.id == mascota_id).first()
+    if mascota is None:
+        return False
+    db.delete(mascota)
+    db.commit()
+    return True</code></pre></div><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>Los endpoints de Mascota y el filtro por dueño.</p><p class="componente-label">Por qué</p><p>La API debe permitir consultar todas las mascotas asociadas a una familia.</p><p class="componente-label">Qué aprenderás</p><p>Cómo exponer filtros opcionales sin mezclar la consulta en el router.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/routers/mascota_router.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.schemas.mascota_schemas import MascotaCreate, MascotaRespuesta
+from app.services import mascota_service
+
+router = APIRouter(tags=[&quot;Mascotas&quot;])
+
+
+@router.post(&quot;/mascotas&quot;, response_model=MascotaRespuesta)
+def crear(datos: MascotaCreate, db: Session = Depends(get_db)):
+    return mascota_service.crear_mascota(db, datos)
+
+
+@router.get(&quot;/mascotas&quot;, response_model=list[MascotaRespuesta])
+def listar(dueno_id: int | None = None, db: Session = Depends(get_db)):
+    return mascota_service.listar_mascotas(db, dueno_id)
+
+
+@router.get(&quot;/mascotas/{mascota_id}&quot;, response_model=MascotaRespuesta)
+def obtener(mascota_id: int, db: Session = Depends(get_db)):
+    mascota = mascota_service.obtener_mascota(db, mascota_id)
+    if mascota is None:
+        raise HTTPException(status_code=404, detail=&quot;Mascota no encontrada&quot;)
+    return mascota
+
+
+@router.delete(&quot;/mascotas/{mascota_id}&quot;)
+def eliminar(mascota_id: int, db: Session = Depends(get_db)):
+    eliminado = mascota_service.eliminar_mascota(db, mascota_id)
+    if not eliminado:
+        raise HTTPException(status_code=404, detail=&quot;Mascota no encontrada&quot;)
+    return {&quot;mensaje&quot;: f&quot;Mascota {mascota_id} eliminada&quot;}</code></pre></div><div class="antes-codigo"><p class="componente-label">Qué vamos a construir</p><p>El registro conjunto de Dueño y Mascota.</p><p class="componente-label">Por qué</p><p>SQLAlchemy necesita importar ambos modelos y FastAPI montar ambos routers.</p><p class="componente-label">Qué aprenderás</p><p>Cómo integrar una nueva entidad sin romper la estructura anterior.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">ACTUALIZAR</span><span class="code-file">app/main.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from fastapi import FastAPI
+from app.config.database import Base, engine
+from app.models import dueno_model, mascota_model
+from app.routers import dueno_router, mascota_router
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title=&quot;Patitas Vet API&quot;)
+
+app.include_router(dueno_router.router)
+app.include_router(mascota_router.router)</code></pre></div></section><section class="seccion" id="sec-9"><div class="seccion-meta"><span>09</span><span>REUTILIZACIÓN</span></div><h2>Veterinario repite el patrón independiente</h2><p>Veterinario no contiene una llave foránea: será la futura Cita la que apunte a él. Esta entidad permite comprobar que el patrón de capas ya puede reutilizarse.</p><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/models/veterinario_model.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String
+from app.config.database import Base
+
+
+class Veterinario(Base):
+    __tablename__ = &quot;veterinarios&quot;
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, nullable=False)
+    especialidad = Column(String, nullable=False)</code></pre></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/schemas/veterinario_schemas.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from pydantic import BaseModel, Field
+
+
+class VeterinarioCreate(BaseModel):
+    nombre: str = Field(..., min_length=2, max_length=60)
+    especialidad: str = Field(..., min_length=2, max_length=40)
+
+
+class VeterinarioRespuesta(BaseModel):
+    id: int
+    nombre: str
+    especialidad: str
+
+    class Config:
+        from_attributes = True</code></pre></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/services/veterinario_service.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from app.models.veterinario_model import Veterinario
+from app.schemas.veterinario_schemas import VeterinarioCreate
+
+
+def crear_veterinario(db: Session, datos: VeterinarioCreate):
+    nuevo = Veterinario(nombre=datos.nombre, especialidad=datos.especialidad)
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+    return nuevo
+
+
+def listar_veterinarios(db: Session):
+    return db.query(Veterinario).all()
+
+
+def obtener_veterinario(db: Session, veterinario_id: int):
+    return db.query(Veterinario).filter(Veterinario.id == veterinario_id).first()</code></pre></div><div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/routers/veterinario_router.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.schemas.veterinario_schemas import VeterinarioCreate, VeterinarioRespuesta
+from app.services import veterinario_service
+
+router = APIRouter(tags=[&quot;Veterinarios&quot;])
+
+
+@router.post(&quot;/veterinarios&quot;, response_model=VeterinarioRespuesta)
+def crear(datos: VeterinarioCreate, db: Session = Depends(get_db)):
+    return veterinario_service.crear_veterinario(db, datos)
+
+
+@router.get(&quot;/veterinarios&quot;, response_model=list[VeterinarioRespuesta])
+def listar(db: Session = Depends(get_db)):
+    return veterinario_service.listar_veterinarios(db)
+
+
+@router.get(&quot;/veterinarios/{veterinario_id}&quot;, response_model=VeterinarioRespuesta)
+def obtener(veterinario_id: int, db: Session = Depends(get_db)):
+    veterinario = veterinario_service.obtener_veterinario(db, veterinario_id)
+    if veterinario is None:
+        raise HTTPException(status_code=404, detail=&quot;Veterinario no encontrado&quot;)
+    return veterinario</code></pre></div><div class="code-block"><div class="code-head"><div><span class="code-context">ACTUALIZAR</span><span class="code-file">app/main.py</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-python">from fastapi import FastAPI
+from app.config.database import Base, engine
+from app.models import dueno_model, mascota_model, veterinario_model
+from app.routers import dueno_router, mascota_router, veterinario_router
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title=&quot;Patitas Vet API&quot;)
+
+app.include_router(dueno_router.router)
+app.include_router(mascota_router.router)
+app.include_router(veterinario_router.router)</code></pre></div><div class="tip"><p class="componente-label">Decisión de diseño</p><p>Una entidad no lleva llave foránea solo porque participa en una relación futura. La llave se coloca en la entidad que necesita apuntar a otra según la regla del negocio.</p></div></section><section class="seccion" id="sec-10"><div class="seccion-meta"><span>10</span><span>VALIDACIÓN</span></div><h2>Probar el flujo completo en Swagger</h2><div class="pasos"><li><span>01</span><p>Ejecuta <code>uvicorn app.main:app --reload</code> desde la raíz y abre <code>http://127.0.0.1:8000/docs</code>.</p></li><li><span>02</span><p>Crea un dueño con <code>POST /duenos</code> y conserva el id generado.</p></li><li><span>03</span><p>Crea dos mascotas usando el mismo <code>dueno_id</code>. Comprueba la relación con <code>GET /mascotas?dueno_id=1</code>.</p></li><li><span>04</span><p>Intenta crear una mascota con <code>dueno_id: 999</code>. El sistema debe responder 404 y no guardar datos inconsistentes.</p></li><li><span>05</span><p>Registra un veterinario para dejar preparada la futura entidad Cita.</p></li></div><div class="practica"><p class="componente-label">Práctica integradora</p><h3>Comprueba que cada capa cumple su responsabilidad</h3><p>Provoca tres casos: email inválido, dueño inexistente y consulta de mascotas por dueño. Identifica qué capa detecta cada situación y explica por qué debe ocurrir allí.</p></div></section><section class="seccion" id="sec-11"><div class="seccion-meta"><span>11</span><span>CONTINUIDAD</span></div><h2>La base del sistema y lo que sigue</h2><div class="modelo-mental"><p class="componente-label">Mapa completo</p><p>Dueño → Mascota → Cita ← Veterinario. La Cita aplicará un Tratamiento; cada Tratamiento tendrá una receta N:M de Insumos con cantidad; y el inventario deberá descontarse como una transacción: todo o nada.</p></div><div class="code-block"><div class="code-head"><div><span class="code-context">CONSULTAR</span><span class="code-file">Mapa conceptual del dominio</span></div><button class="copy-btn" type="button">Copiar código</button></div><pre class="line-numbers"><code class="language-text">   Dueño ──1:N──&gt; Mascota ──1:N──&gt; Cita &lt;──1:N── Veterinario
+   (hoy)          (hoy)            (Clase 2)      (hoy)
+                                     │
+                                     │ aplica
+                                     ▼
+                                 Tratamiento
+                                 (Clase 2)
+                                     │
+                                     │ N:M con cantidad
+                                     ▼
+                          ┌──────────────────────┐
+                          │  tratamiento_insumo   │  ← la &quot;receta&quot;
+                          │  (tabla intermedia)   │     (Clase 2)
+                          │  tratamiento_id       │
+                          │  insumo_id            │
+                          │  cantidad             │
+                          └──────────────────────┘
+                                     │
+                                     ▼
+                                  Insumo
+                                (Clase 2)
+                              (con stock)</code></pre></div><div class="reflexion"><p class="reflexion-label">Cierre</p><div class="reflexion-pregunta">¿Qué parte del trabajo seguirá siendo responsabilidad del desarrollador aunque una IA genere el código?</div><button class="ver-explicacion" type="button" aria-expanded="false">Mostrar explicación</button><div class="explicacion" aria-hidden="true"><div class="explicacion-inner">Comprender el negocio, decidir entidades y relaciones, definir límites entre capas, validar reglas, reconocer riesgos y comprobar que la solución realmente resuelve el problema.</div></div></div></section><footer class="footer">© 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · Todos los derechos reservados · linkedin.com/in/ana-alvarado-instructora-full-stack</footer></article></main></div><div class="watermark" aria-hidden="true">© 2026 ANA ALVARADO</div><div class="slide-status" id="slideStatus" aria-live="polite"></div><div class="slide-hint">← → navegar · Esc salir · espacio avanzar</div><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script><script src="ana-clase.js"></script></body></html>
