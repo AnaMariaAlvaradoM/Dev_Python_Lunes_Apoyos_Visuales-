@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="es" data-empresa="dev-senior" data-formato="spa" data-modo="build" data-direccion="workshop" data-tema-base="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Ana Alvarado">
+  <meta name="copyright" content="© 2026 Ana Alvarado — Todos los derechos reservados">
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+  <title>Patitas Vet · Inventario, recetas y stock · Ana Alvarado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ana-estilos.css">
+</head>
+<body data-formato="spa">
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <div class="progress-bar" id="progressBar" aria-hidden="true"></div>
+  <div class="controls" aria-label="Controles">
+    <button class="ctrl-btn" id="temaBtn" type="button" aria-label="Cambiar tema">☾</button>
+    <button class="ctrl-btn" id="fullscreenBtn" type="button" aria-label="Pantalla completa">⛶</button>
+  </div>
+
+  <div class="spa-shell">
+    <aside class="spa-sidebar" aria-label="Navegación de la clase">
+      <div class="spa-brand-row"><span class="brand-mark">A</span><div class="spa-brand"><h2>Backend con Python</h2><p>Módulo 2 · Clase 4</p></div></div>
+      <nav class="spa-nav" aria-label="Secciones">
+        <a class="nav-item active" href="#sec-1"><span class="nav-index">01</span><span class="nav-label">El reto</span></a>
+        <a class="nav-item" href="#sec-2"><span class="nav-index">02</span><span class="nav-label">Arquitectura</span></a>
+        <a class="nav-item" href="#sec-3"><span class="nav-index">03</span><span class="nav-label">Citas</span></a>
+        <a class="nav-item" href="#sec-4"><span class="nav-index">04</span><span class="nav-label">Inventario</span></a>
+        <a class="nav-item" href="#sec-5"><span class="nav-index">05</span><span class="nav-label">La receta</span></a>
+        <a class="nav-item" href="#sec-6"><span class="nav-index">06</span><span class="nav-label">Transacción</span></a>
+        <a class="nav-item" href="#sec-7"><span class="nav-index">07</span><span class="nav-label">Consultas</span></a>
+        <a class="nav-item" href="#sec-8"><span class="nav-index">08</span><span class="nav-label">Pruebas</span></a>
+        <a class="nav-item" href="#sec-9"><span class="nav-index">09</span><span class="nav-label">Flujo completo</span></a>
+        <a class="nav-item" href="#sec-10"><span class="nav-index">10</span><span class="nav-label">Errores y cierre</span></a>
+      </nav>
+      <p class="footer">© 2026 Ana Alvarado<br>Educadora Tech &amp; Desarrolladora Full Stack</p>
+    </aside>
+
+    <main class="spa-main" id="contenido">
+      <header class="spa-hero">
+        <div class="spa-hero-inner">
+          <div class="spa-hero-copy">
+            <span class="eyebrow">Dev Senior · patitas_vet · Taller integrador</span>
+            <h1 class="spa-title">Inventario, recetas y descuento de stock</h1>
+            <p class="spa-subtitle">Construye citas, relaciona tratamientos con insumos y protege el inventario con una operación de todo o nada.</p>
+            <div class="spa-meta"><span class="meta-pill">SPA · Build</span><span class="meta-pill">Workshop</span><span class="meta-pill">FastAPI + SQLAlchemy</span><span class="meta-pill">PostgreSQL</span></div>
+          </div>
+          <div class="spa-hero-visual">
+            <div class="visual-panel" aria-label="Flujo principal del taller">
+              <div class="diagram">
+                <div class="diagram-row"><div class="diagram-node">Cita</div><div class="diagram-arrow">→</div><div class="diagram-node" data-emphasis="true">Tratamiento</div></div>
+                <div class="diagram-arrow">↓ receta</div>
+                <div class="diagram-row"><div class="diagram-node">Insumos</div><div class="diagram-arrow">→</div><div class="diagram-node">Stock actualizado</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <article class="spa-content">
+        <section class="spa-section" id="sec-1">
+          <header class="section-head"><span class="section-number">01</span><div><span class="section-kicker">Punto de partida</span><h2 class="section-title">Una receta no cabe en una columna</h2><p class="section-summary">El problema no es guardar texto: es conservar relaciones que el sistema pueda consultar, validar y ejecutar.</p></div></header>
+          <div class="section-body">
+            <div class="question-card"><span class="component-label">Decisión de negocio</span><p class="question">¿Por qué no guardar en Tratamiento una columna “insumos” con una lista como “1 vial, 2 guantes”?</p></div>
+            <div class="compare">
+              <article class="compare-card" data-negative="true"><h3>Lista dentro de una columna</h3><ul><li>Convierte la receta en texto muerto.</li><li>No permite consultar el stock por insumo.</li><li>No permite descontar cantidades con integridad.</li></ul></article>
+              <article class="compare-card" data-positive="true"><h3>Relación mediante filas</h3><ul><li>Cada insumo conserva su identidad.</li><li>La cantidad pertenece a la combinación.</li><li>La base puede consultar y operar la receta.</li></ul></article>
+            </div>
+            <div class="business-case"><span class="component-label">Caso Patitas Vet</span><h3>El proyecto continúa, no empieza de cero</h3><p>Ya existen Dueño, Mascota y Veterinario con sus CRUD, además de la relación Dueño → Mascota. Esta clase agrega Cita, Insumo, Tratamiento, la receta N:M y el descuento transaccional.</p></div>
+            <div class="bento-grid">
+              <div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7Z"></path><path d="M14 3v4h4"></path><path d="M9.5 13h5M9.5 16h5"></path></svg></span><h3>Citas</h3></div><p>Conectan una mascota con el veterinario que la atiende.</p></div>
+              <div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5"></path><path d="M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"></path></svg></span><h3>Inventario</h3></div><p>Registra cada material y la cantidad disponible.</p></div>
+              <div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15 15 9"></path><path d="M8 13 4.5 16.5a2.5 2.5 0 1 0 3.5 3.5L11.5 16"></path><path d="M16 11l3.5-3.5a2.5 2.5 0 1 0-3.5-3.5L12.5 8"></path></svg></span><h3>Recetas</h3></div><p>Conectan tratamientos e insumos con una cantidad exacta.</p></div>
+            </div>
+            <div class="checkpoint"><span class="component-label">Verificación inicial</span><h3>Confirma el punto de partida</h3><p>Ejecuta el servidor desde la raíz del proyecto. El comando activa FastAPI en modo de recarga para continuar sobre la Clase 1.</p></div>
+            <div class="code-block" data-tipo="terminal"><div class="code-head"><div><span class="code-context">INICIAR SERVIDOR</span><span class="code-file">patitas_vet/</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-bash">uvicorn app.main:app --reload</code></pre></div>
+            <div class="callout" data-tone="success"><span class="component-label">Resultado esperado</span><h3>La base anterior está operativa</h3><ul class="checklist"><li>El servidor inicia sin errores.</li><li>En <code>/docs</code> aparecen Dueños, Mascotas y Veterinarios.</li><li>Puedes crear un dueño y una mascota asociada.</li></ul></div>
+          </div>
+        </section>
+
+        <section class="spa-section" id="sec-2">
+          <header class="section-head"><span class="section-number">02</span><div><span class="section-kicker">Modelo mental y arquitectura</span><h2 class="section-title">Del negocio a relaciones ejecutables</h2><p class="section-summary">Cada llave foránea expresa una decisión del negocio; la tabla intermedia convierte la receta en datos operables.</p></div></header>
+          <div class="section-body">
+            <div class="visual-panel" aria-label="Arquitectura relacional completa de Patitas Vet">
+              <svg class="erd-diagram" viewBox="0 0 900 500" role="img" aria-labelledby="erdCompletoTitulo erdCompletoDesc">
+                <title id="erdCompletoTitulo">Arquitectura relacional completa de Patitas Vet</title>
+                <desc id="erdCompletoDesc">Dueño tiene mascotas; mascota y veterinario se conectan mediante citas; tratamientos e insumos se conectan mediante la tabla tratamiento_insumo.</desc>
+                <rect class="erd-box" x="20" y="30" width="180" height="110" rx="14"></rect><text class="erd-title" x="40" y="58">Dueño</text><line class="erd-divider" x1="32" y1="70" x2="188" y2="70"></line><text class="erd-field" x="40" y="94">id : Integer</text><text class="erd-field" x="40" y="114">nombre : String</text>
+                <rect class="erd-box" x="260" y="30" width="180" height="130" rx="14"></rect><text class="erd-title" x="280" y="58">Mascota</text><line class="erd-divider" x1="272" y1="70" x2="428" y2="70"></line><text class="erd-field" x="280" y="94">id : Integer</text><text class="erd-field" x="280" y="114">dueno_id : FK</text>
+                <rect class="erd-box" data-emphasis="true" x="510" y="30" width="180" height="150" rx="14"></rect><text class="erd-title" x="530" y="58">Cita</text><line class="erd-divider" x1="522" y1="70" x2="678" y2="70"></line><text class="erd-field" x="530" y="94">mascota_id : FK</text><text class="erd-field" x="530" y="114">veterinario_id : FK</text><text class="erd-field" x="530" y="134">fecha · motivo</text>
+                <rect class="erd-box" x="720" y="30" width="160" height="110" rx="14"></rect><text class="erd-title" x="740" y="58">Veterinario</text><line class="erd-divider" x1="732" y1="70" x2="868" y2="70"></line><text class="erd-field" x="740" y="94">id · nombre</text>
+                <line class="erd-line" x1="200" y1="90" x2="260" y2="90"></line><text class="erd-label" x="208" y="82">1</text><text class="erd-label" x="244" y="82">N</text>
+                <line class="erd-line" x1="440" y1="100" x2="510" y2="100"></line><text class="erd-label" x="448" y="92">1</text><text class="erd-label" x="494" y="92">N</text>
+                <line class="erd-line" x1="690" y1="100" x2="720" y2="100"></line><text class="erd-label" x="694" y="92">N</text><text class="erd-label" x="708" y="92">1</text>
+                <rect class="erd-box" x="70" y="300" width="210" height="130" rx="14"></rect><text class="erd-title" x="90" y="330">Tratamiento</text><line class="erd-divider" x1="82" y1="342" x2="268" y2="342"></line><text class="erd-field" x="90" y="366">id · nombre · precio</text>
+                <rect class="erd-box" data-emphasis="true" x="345" y="270" width="230" height="180" rx="14"></rect><text class="erd-title" x="365" y="300">tratamiento_insumo</text><line class="erd-divider" x1="357" y1="312" x2="563" y2="312"></line><text class="erd-field" x="365" y="338">tratamiento_id : FK</text><text class="erd-field" x="365" y="360">insumo_id : FK</text><text class="erd-field" x="365" y="382">cantidad : Integer</text>
+                <rect class="erd-box" x="640" y="300" width="210" height="130" rx="14"></rect><text class="erd-title" x="660" y="330">Insumo</text><line class="erd-divider" x1="652" y1="342" x2="838" y2="342"></line><text class="erd-field" x="660" y="366">id · nombre</text><text class="erd-field" x="660" y="388">stock · unidad</text>
+                <line class="erd-line" x1="280" y1="365" x2="345" y2="365"></line><text class="erd-label" x="288" y="357">1</text><text class="erd-label" x="329" y="357">N</text>
+                <line class="erd-line" x1="575" y1="365" x2="640" y2="365"></line><text class="erd-label" x="583" y="357">N</text><text class="erd-label" x="624" y="357">1</text>
+              </svg>
+            </div>
+            <div class="definition-grid">
+              <article class="definition-card"><span class="component-label">N:M</span><h3>Definición técnica</h3><p>Ambos lados pueden relacionarse con muchos registros del otro lado, por lo que necesitan una tabla intermedia.</p></article>
+              <article class="definition-card"><span class="component-label">Explicación sencilla</span><h3>Una receta con ingredientes</h3><p>Un tratamiento usa varios insumos y el mismo insumo participa en varios tratamientos.</p></article>
+              <article class="definition-card"><span class="component-label">Aplicación profesional</span><h3>Dato de la relación</h3><p>“Dos guantes” no pertenece al guante ni a la vacuna: pertenece a esa combinación concreta.</p></article>
+            </div>
+            <div class="bento-grid">
+              <div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="4"></rect><rect x="4" y="10" width="16" height="4"></rect><rect x="4" y="16" width="16" height="4"></rect></svg></span><h3>Cuatro capas</h3></div><p>Modelo, schema, service y router separan persistencia, contrato, reglas y HTTP.</p></div>
+              <div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.5 2.5L16 9.5"></path></svg></span><h3>Integridad</h3></div><p>Las FK y las validaciones evitan citas o recetas con referencias inexistentes.</p></div>
+              <div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span><h3>Transacción</h3></div><p>Todos los descuentos se confirman juntos o ninguno altera el inventario.</p></div>
+            </div>
+            <div class="callout" data-tone="info"><span class="component-label">Criterio técnico</span><h3>La IA puede proponer código; tú debes validar el modelo</h3><p>Antes de aceptar una solución, comprueba que la cantidad esté en la tabla intermedia, que las FK apunten a tablas reales y que el descuento no pueda quedar a medias.</p></div>
+          </div>
+        </section>
+        <section class="spa-section" id="sec-3">
+          <header class="section-head"><span class="section-number">03</span><div><span class="section-kicker">Checkpoints 01–05</span><h2 class="section-title">Cita: dos relaciones en una entidad</h2><p class="section-summary">Una cita registra qué mascota se atendió, quién la atendió, cuándo ocurrió y cuál fue el motivo.</p></div></header>
+          <div class="section-body">
+            <div class="checkpoint"><span class="component-label">Checkpoint 01 · Crear</span><h3>Modelo de Cita</h3><p><strong>Qué construirás:</strong> la tabla <code>citas</code>. <strong>Por qué:</strong> el negocio necesita conectar Mascota y Veterinario. <strong>Qué aprenderás:</strong> una entidad puede tener dos llaves foráneas.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/models/cita_model.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy.orm import relationship
+from app.config.database import Base
+
+
+class Cita(Base):
+    __tablename__ = "citas"
+
+    id = Column(Integer, primary_key=True, index=True)
+    fecha = Column(Date, nullable=False)
+    motivo = Column(String, nullable=False)
+
+    mascota_id = Column(Integer, ForeignKey("mascotas.id"), nullable=False)
+    veterinario_id = Column(Integer, ForeignKey("veterinarios.id"), nullable=False)
+
+    mascota = relationship("Mascota")
+    veterinario = relationship("Veterinario")</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p><code>Date</code> almacena la fecha; las dos FK hacen obligatoria una mascota y un veterinario reales. Los dos <code>relationship</code> permiten navegar a los objetos completos desde Python.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 02 · Crear</span><h3>Contrato de entrada y salida</h3><p><strong>Qué construirás:</strong> los schemas de Cita. <strong>Por qué:</strong> FastAPI necesita validar fechas e ids. <strong>Qué aprenderás:</strong> separar el payload de creación de la respuesta persistida.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/schemas/cita_schemas.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from pydantic import BaseModel
+from datetime import date
+
+
+class CitaCreate(BaseModel):
+    fecha: date
+    motivo: str
+    mascota_id: int
+    veterinario_id: int
+
+
+class CitaRespuesta(BaseModel):
+    id: int
+    fecha: date
+    motivo: str
+    mascota_id: int
+    veterinario_id: int
+
+    class Config:
+        from_attributes = True</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>Pydantic exige una fecha con formato válido y números enteros para las relaciones. <code>from_attributes</code> permite convertir el objeto de SQLAlchemy en la respuesta HTTP.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 03 · Crear</span><h3>Service con doble validación</h3><p><strong>Qué construirás:</strong> la lógica de creación y consulta. <strong>Por qué:</strong> una FK válida en intención debe apuntar a un registro existente. <strong>Qué aprenderás:</strong> validar relaciones antes de guardar.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/services/cita_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from fastapi import HTTPException
+from app.models.cita_model import Cita
+from app.models.mascota_model import Mascota
+from app.models.veterinario_model import Veterinario
+from app.schemas.cita_schemas import CitaCreate
+
+
+def crear_cita(db: Session, datos: CitaCreate):
+    mascota = db.query(Mascota).filter(Mascota.id == datos.mascota_id).first()
+    if mascota is None:
+        raise HTTPException(status_code=404, detail="La mascota indicada no existe")
+
+    veterinario = db.query(Veterinario).filter(Veterinario.id == datos.veterinario_id).first()
+    if veterinario is None:
+        raise HTTPException(status_code=404, detail="El veterinario indicado no existe")
+
+    nueva = Cita(
+        fecha=datos.fecha,
+        motivo=datos.motivo,
+        mascota_id=datos.mascota_id,
+        veterinario_id=datos.veterinario_id,
+    )
+    db.add(nueva)
+    db.commit()
+    db.refresh(nueva)
+    return nueva
+
+
+def listar_citas(db: Session):
+    return db.query(Cita).all()
+
+
+def obtener_cita(db: Session, cita_id: int):
+    return db.query(Cita).filter(Cita.id == cita_id).first()</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>Primero se consultan Mascota y Veterinario. Cualquier ausencia corta la operación con 404; solo después se crea la cita y se confirma con <code>commit()</code>.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 04 · Crear</span><h3>Endpoints de Cita</h3><p><strong>Qué construirás:</strong> las rutas para crear, listar y obtener. <strong>Por qué:</strong> el service necesita una interfaz HTTP. <strong>Qué aprenderás:</strong> delegar la regla de negocio sin duplicarla en el router.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/routers/cita_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.schemas.cita_schemas import CitaCreate, CitaRespuesta
+from app.services import cita_service
+
+router = APIRouter(tags=["Citas"])
+
+
+@router.post("/citas", response_model=CitaRespuesta)
+def crear(datos: CitaCreate, db: Session = Depends(get_db)):
+    return cita_service.crear_cita(db, datos)
+
+
+@router.get("/citas", response_model=list[CitaRespuesta])
+def listar(db: Session = Depends(get_db)):
+    return cita_service.listar_citas(db)
+
+
+@router.get("/citas/{cita_id}", response_model=CitaRespuesta)
+def obtener(cita_id: int, db: Session = Depends(get_db)):
+    cita = cita_service.obtener_cita(db, cita_id)
+    if cita is None:
+        raise HTTPException(status_code=404, detail="Cita no encontrada")
+    return cita</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>El router inyecta la sesión, aplica los schemas y delega al service. El único 404 local corresponde a consultar una cita que no existe.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 05 · Editar</span><h3>Registrar Cita en la aplicación</h3><p>En <code>app/main.py</code>, importa <code>cita_model</code> para que <code>create_all</code> conozca la tabla; importa <code>cita_router</code> y añade <code>app.<wbr>include_router(<wbr>cita_router.<wbr>router)</code>. La guía de origen no aporta un bloque consolidado de <code>main.py</code>, por lo que este cambio se conserva como instrucción y no se inventa código.</p></div>
+            <div class="callout" data-tone="danger"><span class="component-label">Errores que debes saber leer</span><h3>Las relaciones no existen</h3><p><strong>404 “La mascota indicada no existe”</strong> o <strong>404 “El veterinario indicado no existe”</strong> significa que uno de los ids del payload no corresponde a un registro real. <strong>404 “Cita no encontrada”</strong> significa que el id consultado no existe.</p></div>
+          </div>
+        </section>
+        <section class="spa-section" id="sec-4">
+          <header class="section-head"><span class="section-number">04</span><div><span class="section-kicker">Checkpoints 06–14</span><h2 class="section-title">Insumo y Tratamiento: las dos piezas del inventario</h2><p class="section-summary">Insumo controla existencias; Tratamiento define procedimientos y precios. Todavía no se conectan: esa relación llegará en la receta.</p></div></header>
+          <div class="section-body">
+            <div class="checkpoint"><span class="component-label">Checkpoint 06 · Crear</span><h3>Modelo de Insumo</h3><p><strong>Qué construirás:</strong> la tabla de materiales. <strong>Por qué:</strong> el descuento necesita una existencia numérica real. <strong>Qué aprenderás:</strong> distinguir stock de unidad de medida.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/models/insumo_model.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String
+from app.config.database import Base
+
+
+class Insumo(Base):
+    __tablename__ = "insumos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, nullable=False)
+    stock = Column(Integer, nullable=False)
+    unidad = Column(String, nullable=True)</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p><code>stock</code> es la cantidad disponible y será el valor descontado. <code>unidad</code> aclara si se cuentan unidades, mililitros o pares, pero puede ser nula.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 07 · Crear</span><h3>Schemas de Insumo</h3><p><strong>Qué construirás:</strong> entrada y respuesta del inventario. <strong>Por qué:</strong> no puede existir stock negativo. <strong>Qué aprenderás:</strong> expresar reglas simples con <code>Field</code>.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/schemas/insumo_schemas.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from pydantic import BaseModel, Field
+
+
+class InsumoCreate(BaseModel):
+    nombre: str = Field(..., min_length=2, max_length=50)
+    stock: int = Field(..., ge=0)
+    unidad: str | None = None
+
+
+class InsumoRespuesta(BaseModel):
+    id: int
+    nombre: str
+    stock: int
+    unidad: str | None = None
+
+    class Config:
+        from_attributes = True</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p><code>ge=0</code> significa mayor o igual a cero. Pydantic rechaza un nombre fuera de 2–50 caracteres o un stock negativo antes de llegar al service.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 08 · Crear</span><h3>Service de Insumo</h3><p><strong>Qué construirás:</strong> creación y consultas. <strong>Por qué:</strong> la persistencia debe estar fuera del router. <strong>Qué aprenderás:</strong> conservar el patrón CRUD del proyecto.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/services/insumo_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from app.models.insumo_model import Insumo
+from app.schemas.insumo_schemas import InsumoCreate
+
+
+def crear_insumo(db: Session, datos: InsumoCreate):
+    nuevo = Insumo(nombre=datos.nombre, stock=datos.stock, unidad=datos.unidad)
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+    return nuevo
+
+
+def listar_insumos(db: Session):
+    return db.query(Insumo).all()
+
+
+def obtener_insumo(db: Session, insumo_id: int):
+    return db.query(Insumo).filter(Insumo.id == insumo_id).first()</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>El service crea el registro, confirma la transacción y recarga el id. Las consultas entregan todos los insumos o uno por su identificador.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 09 · Crear</span><h3>Router de Insumo</h3><p><strong>Qué construirás:</strong> los tres endpoints. <strong>Por qué:</strong> Swagger necesita una interfaz para poblar y revisar el inventario. <strong>Qué aprenderás:</strong> publicar un CRUD parcial con respuestas tipadas.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/routers/insumo_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.schemas.insumo_schemas import InsumoCreate, InsumoRespuesta
+from app.services import insumo_service
+
+router = APIRouter(tags=["Insumos"])
+
+
+@router.post("/insumos", response_model=InsumoRespuesta)
+def crear(datos: InsumoCreate, db: Session = Depends(get_db)):
+    return insumo_service.crear_insumo(db, datos)
+
+
+@router.get("/insumos", response_model=list[InsumoRespuesta])
+def listar(db: Session = Depends(get_db)):
+    return insumo_service.listar_insumos(db)
+
+
+@router.get("/insumos/{insumo_id}", response_model=InsumoRespuesta)
+def obtener(insumo_id: int, db: Session = Depends(get_db)):
+    insumo = insumo_service.obtener_insumo(db, insumo_id)
+    if insumo is None:
+        raise HTTPException(status_code=404, detail="Insumo no encontrado")
+    return insumo</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>Los endpoints POST y GET delegan al service. Consultar un id inexistente produce un 404 claro en vez de devolver una respuesta ambigua.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 10 · Crear</span><h3>Modelo de Tratamiento</h3><p><strong>Qué construirás:</strong> la tabla de procedimientos. <strong>Por qué:</strong> nombre y precio pertenecen al tratamiento. <strong>Qué aprenderás:</strong> no mezclar aquí la lista de insumos.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/models/tratamiento_model.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String, Float
+from app.config.database import Base
+
+
+class Tratamiento(Base):
+    __tablename__ = "tratamientos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, nullable=False)
+    precio = Column(Float, nullable=False)</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>Tratamiento conserva solo sus datos propios. La ausencia de una columna “insumos” es deliberada: la relación N:M se modelará por separado.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 11 · Crear</span><h3>Schemas de Tratamiento</h3><p><strong>Qué construirás:</strong> el contrato del procedimiento. <strong>Por qué:</strong> nombre y precio deben ser válidos. <strong>Qué aprenderás:</strong> expresar que el precio debe ser estrictamente positivo.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/schemas/tratamiento_schemas.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from pydantic import BaseModel, Field
+
+
+class TratamientoCreate(BaseModel):
+    nombre: str = Field(..., min_length=2, max_length=50)
+    precio: float = Field(..., gt=0)
+
+
+class TratamientoRespuesta(BaseModel):
+    id: int
+    nombre: str
+    precio: float
+
+    class Config:
+        from_attributes = True</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p><code>gt=0</code> impide precios iguales o menores que cero. El schema de respuesta agrega el id asignado por la base.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 12 · Crear</span><h3>Service de Tratamiento</h3><p><strong>Qué construirás:</strong> persistencia y consultas del catálogo. <strong>Por qué:</strong> la receta necesitará buscar tratamientos reales. <strong>Qué aprenderás:</strong> preparar una entidad para relacionarla después.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/services/tratamiento_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from app.models.tratamiento_model import Tratamiento
+from app.schemas.tratamiento_schemas import TratamientoCreate
+
+
+def crear_tratamiento(db: Session, datos: TratamientoCreate):
+    nuevo = Tratamiento(nombre=datos.nombre, precio=datos.precio)
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+    return nuevo
+
+
+def listar_tratamientos(db: Session):
+    return db.query(Tratamiento).all()
+
+
+def obtener_tratamiento(db: Session, tratamiento_id: int):
+    return db.query(Tratamiento).filter(Tratamiento.id == tratamiento_id).first()</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>El patrón es completo aunque se parezca al de Insumo: este archivo se conserva en su propio bloque para que pueda copiarse y ejecutarse sin reconstruirlo desde una descripción.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 13 · Crear</span><h3>Router de Tratamiento</h3><p><strong>Qué construirás:</strong> endpoints del catálogo. <strong>Por qué:</strong> necesitamos crear la Vacuna Triple antes de armar su receta. <strong>Qué aprenderás:</strong> mantener rutas y respuestas consistentes.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/routers/tratamiento_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.schemas.tratamiento_schemas import TratamientoCreate, TratamientoRespuesta
+from app.services import tratamiento_service
+
+router = APIRouter(tags=["Tratamientos"])
+
+
+@router.post("/tratamientos", response_model=TratamientoRespuesta)
+def crear(datos: TratamientoCreate, db: Session = Depends(get_db)):
+    return tratamiento_service.crear_tratamiento(db, datos)
+
+
+@router.get("/tratamientos", response_model=list[TratamientoRespuesta])
+def listar(db: Session = Depends(get_db)):
+    return tratamiento_service.listar_tratamientos(db)
+
+
+@router.get("/tratamientos/{tratamiento_id}", response_model=TratamientoRespuesta)
+def obtener(tratamiento_id: int, db: Session = Depends(get_db)):
+    tratamiento = tratamiento_service.obtener_tratamiento(db, tratamiento_id)
+    if tratamiento is None:
+        raise HTTPException(status_code=404, detail="Tratamiento no encontrado")
+    return tratamiento</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>Este router hace visible el catálogo en Swagger. Un id que no existe se interpreta como 404 “Tratamiento no encontrado”.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 14 · Editar</span><h3>Registrar inventario y tratamientos</h3><p>En <code>app/main.py</code>, importa los modelos <code>insumo_model</code> y <code>tratamiento_model</code>, importa sus routers y registra ambos con <code>app.include_router(...)</code>. Conserva este paso aunque el archivo ya haya sido editado para Cita.</p></div>
+            <div class="question-card"><span class="component-label">Antes de continuar</span><p class="question">Tratamiento e Insumo ya existen, pero ¿dónde vive “la Vacuna Triple usa dos guantes”?</p></div>
+            <div class="callout" data-tone="info"><span class="component-label">Decisión</span><h3>En una tabla intermedia</h3><p>La cantidad no pertenece a ninguno de los extremos. Pertenece a la relación entre ambos y debe almacenarse en la receta.</p></div>
+          </div>
+        </section>
+        <section class="spa-section" id="sec-5">
+          <header class="section-head"><span class="section-number">05</span><div><span class="section-kicker">Checkpoints 15–19</span><h2 class="section-title">La receta: N:M con cantidad</h2><p class="section-summary">Cada fila de la tabla intermedia afirma: “este tratamiento usa esta cantidad de este insumo”.</p></div></header>
+          <div class="section-body">
+            <div class="visual-panel" aria-label="Relación muchos a muchos entre tratamientos e insumos">
+              <svg class="erd-diagram" viewBox="0 0 820 270" role="img" aria-labelledby="erdRecetaTitulo erdRecetaDesc">
+                <title id="erdRecetaTitulo">Relación muchos a muchos entre tratamientos e insumos</title>
+                <desc id="erdRecetaDesc">La tabla tratamiento_insumo conecta tratamientos e insumos y guarda la cantidad.</desc>
+                <rect class="erd-box" x="20" y="40" width="220" height="150" rx="14"></rect><text class="erd-title" x="42" y="70">tratamientos</text><line class="erd-divider" x1="32" y1="84" x2="228" y2="84"></line><text class="erd-field" x="42" y="110">id : PK</text><text class="erd-field" x="42" y="132">nombre · precio</text>
+                <rect class="erd-box" data-emphasis="true" x="300" y="20" width="230" height="200" rx="14"></rect><text class="erd-title" x="322" y="52">tratamiento_insumo</text><line class="erd-divider" x1="312" y1="66" x2="518" y2="66"></line><text class="erd-field" x="322" y="94">id : PK</text><text class="erd-field" x="322" y="118">tratamiento_id : FK</text><text class="erd-field" x="322" y="142">insumo_id : FK</text><text class="erd-field" x="322" y="166">cantidad : Integer</text>
+                <rect class="erd-box" x="590" y="40" width="210" height="150" rx="14"></rect><text class="erd-title" x="612" y="70">insumos</text><line class="erd-divider" x1="602" y1="84" x2="788" y2="84"></line><text class="erd-field" x="612" y="110">id : PK</text><text class="erd-field" x="612" y="132">nombre · stock</text>
+                <line class="erd-line" x1="240" y1="125" x2="300" y2="125"></line><text class="erd-label" x="248" y="116">1</text><text class="erd-label" x="284" y="116">N</text>
+                <line class="erd-line" x1="530" y1="125" x2="590" y2="125"></line><text class="erd-label" x="538" y="116">N</text><text class="erd-label" x="574" y="116">1</text>
+              </svg>
+            </div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 15 · Crear</span><h3>Modelo de la tabla intermedia</h3><p><strong>Qué construirás:</strong> la entidad de receta. <strong>Por qué:</strong> debe guardar dos FK y el atributo <code>cantidad</code>. <strong>Qué aprenderás:</strong> modelar una relación N:M con datos propios.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/models/tratamiento_insumo_model.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy.orm import relationship
+from app.config.database import Base
+
+
+class TratamientoInsumo(Base):
+    __tablename__ = "tratamiento_insumo"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tratamiento_id = Column(Integer, ForeignKey("tratamientos.id"), nullable=False)
+    insumo_id = Column(Integer, ForeignKey("insumos.id"), nullable=False)
+    cantidad = Column(Integer, nullable=False)
+
+    insumo = relationship("Insumo")</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>El id identifica cada línea de receta. <code>tratamiento_id</code> indica a qué receta pertenece; <code>insumo_id</code> cuál material usa; <code>cantidad</code> cuánto consume. El relationship permite acceder al stock del insumo.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 16 · Crear</span><h3>Schemas de la receta</h3><p><strong>Qué construirás:</strong> el contrato para una línea. <strong>Por qué:</strong> cada petición agrega un insumo con una cantidad válida. <strong>Qué aprenderás:</strong> validar un atributo de relación.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/schemas/tratamiento_insumo_schemas.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from pydantic import BaseModel, Field
+
+
+class RecetaItemCreate(BaseModel):
+    insumo_id: int
+    cantidad: int = Field(..., gt=0)
+
+
+class RecetaItemRespuesta(BaseModel):
+    id: int
+    tratamiento_id: int
+    insumo_id: int
+    cantidad: int
+
+    class Config:
+        from_attributes = True</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>La entrada solo necesita el insumo y la cantidad; el tratamiento llega en la URL. <code>gt=0</code> impide recetas con cero o cantidades negativas.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 17 · Crear</span><h3>Service para armar y consultar la receta</h3><p><strong>Qué construirás:</strong> la creación de líneas y su consulta. <strong>Por qué:</strong> ambos extremos deben existir. <strong>Qué aprenderás:</strong> validar y persistir una relación.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/services/tratamiento_insumo_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from fastapi import HTTPException
+from app.models.tratamiento_insumo_model import TratamientoInsumo
+from app.models.tratamiento_model import Tratamiento
+from app.models.insumo_model import Insumo
+from app.schemas.tratamiento_insumo_schemas import RecetaItemCreate
+
+
+def agregar_insumo_a_receta(db: Session, tratamiento_id: int, datos: RecetaItemCreate):
+    tratamiento = db.query(Tratamiento).filter(Tratamiento.id == tratamiento_id).first()
+    if tratamiento is None:
+        raise HTTPException(status_code=404, detail="El tratamiento no existe")
+
+    insumo = db.query(Insumo).filter(Insumo.id == datos.insumo_id).first()
+    if insumo is None:
+        raise HTTPException(status_code=404, detail="El insumo no existe")
+
+    linea = TratamientoInsumo(
+        tratamiento_id=tratamiento_id,
+        insumo_id=datos.insumo_id,
+        cantidad=datos.cantidad,
+    )
+    db.add(linea)
+    db.commit()
+    db.refresh(linea)
+    return linea
+
+
+def ver_receta(db: Session, tratamiento_id: int):
+    return db.query(TratamientoInsumo).filter(
+        TratamientoInsumo.tratamiento_id == tratamiento_id
+    ).all()</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>El service rechaza con 404 cualquier extremo inexistente. Una línea válida se guarda con tratamiento, insumo y cantidad; <code>ver_receta</code> devuelve todas las líneas de un tratamiento.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 18 · Crear</span><h3>Router con URL anidada</h3><p><strong>Qué construirás:</strong> rutas para agregar y ver ingredientes. <strong>Por qué:</strong> la URL debe expresar que la receta pertenece a un tratamiento. <strong>Qué aprenderás:</strong> diseñar una API legible.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/routers/tratamiento_insumo_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.schemas.tratamiento_insumo_schemas import RecetaItemCreate, RecetaItemRespuesta
+from app.services import tratamiento_insumo_service
+
+router = APIRouter(tags=["Recetas"])
+
+
+@router.post("/tratamientos/{tratamiento_id}/insumos", response_model=RecetaItemRespuesta)
+def agregar_insumo(tratamiento_id: int, datos: RecetaItemCreate, db: Session = Depends(get_db)):
+    return tratamiento_insumo_service.agregar_insumo_a_receta(db, tratamiento_id, datos)
+
+
+@router.get("/tratamientos/{tratamiento_id}/insumos", response_model=list[RecetaItemRespuesta])
+def ver_receta(tratamiento_id: int, db: Session = Depends(get_db)):
+    return tratamiento_insumo_service.ver_receta(db, tratamiento_id)</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p><code>/tratamientos/1/insumos</code> se lee como “los insumos del tratamiento 1”. POST agrega una línea; GET entrega la receta completa.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 19 · Editar</span><h3>Registrar la receta</h3><p>En <code>app/main.py</code>, importa <code>tratamiento_insumo_model</code> para crear la tabla, importa <code>tratamiento_insumo_router</code> y registra su router. Si omites el modelo, la tabla <code>tratamiento_insumo</code> no aparecerá.</p></div>
+            <div class="callout" data-tone="warning"><span class="component-label">Criterio de diseño</span><h3>¿Por qué tiene id propio?</h3><p>Como la tabla intermedia guarda un atributo —<code>cantidad</code>— se trata como entidad. En una relación sin datos extra podría utilizarse otra estrategia, pero no en esta receta.</p></div>
+          </div>
+        </section>
+        <section class="spa-section" id="sec-6">
+          <header class="section-head"><span class="section-number">06</span><div><span class="section-kicker">Checkpoints 20–22</span><h2 class="section-title">Descontar stock con una transacción</h2><p class="section-summary">Primero se verifica la receta completa; solo después se modifica el inventario y se confirma todo junto.</p></div></header>
+          <div class="section-body">
+            <div class="definition-grid">
+              <article class="definition-card"><span class="component-label">Qué es</span><h3>Transacción</h3><p>Un conjunto de operaciones que se ejecutan todas o ninguna.</p></article>
+              <article class="definition-card"><span class="component-label">Por qué existe</span><h3>Evita estados parciales</h3><p>No puede descontarse el vial si después se descubre que faltan guantes.</p></article>
+              <article class="definition-card"><span class="component-label">Aplicación real</span><h3>Transferencia bancaria</h3><p>Restar de una cuenta y sumar a otra debe ocurrir completo o revertirse.</p></article>
+            </div>
+            <div class="flow">
+              <div class="flow-step"><strong>1. Buscar receta</strong><p>Traer insumos y cantidades del tratamiento.</p></div>
+              <div class="flow-step"><strong>2. Verificar todo</strong><p>Comparar cada cantidad con el stock actual.</p></div>
+              <div class="flow-step"><strong>3. Decidir</strong><p>Si uno falla, cancelar sin tocar el inventario.</p></div>
+              <div class="flow-step"><strong>4. Confirmar</strong><p>Si todos alcanzan, descontar y hacer un solo commit.</p></div>
+            </div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 20 · Crear</span><h3>Service de aplicación</h3><p><strong>Qué construirás:</strong> la función central del taller. <strong>Por qué:</strong> ejecutar una receta no puede corromper el stock. <strong>Qué aprenderás:</strong> separar verificación, modificación y confirmación.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/services/aplicacion_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from fastapi import HTTPException
+from app.models.tratamiento_model import Tratamiento
+from app.models.tratamiento_insumo_model import TratamientoInsumo
+from app.models.insumo_model import Insumo
+
+
+def aplicar_tratamiento(db: Session, tratamiento_id: int):
+    tratamiento = db.query(Tratamiento).filter(Tratamiento.id == tratamiento_id).first()
+    if tratamiento is None:
+        raise HTTPException(status_code=404, detail="El tratamiento no existe")
+
+    receta = db.query(TratamientoInsumo).filter(
+        TratamientoInsumo.tratamiento_id == tratamiento_id
+    ).all()
+
+    if not receta:
+        raise HTTPException(status_code=400, detail="El tratamiento no tiene receta definida")
+
+    # PASO 1: verificar que haya stock de TODOS antes de tocar nada
+    for linea in receta:
+        insumo = db.query(Insumo).filter(Insumo.id == linea.insumo_id).first()
+        if insumo.stock &lt; linea.cantidad:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Stock insuficiente de {insumo.nombre}: hay {insumo.stock}, se necesitan {linea.cantidad}",
+            )
+
+    # PASO 2: si llegamos aquí, TODO alcanza. Ahora sí descontamos.
+    for linea in receta:
+        insumo = db.query(Insumo).filter(Insumo.id == linea.insumo_id).first()
+        insumo.stock = insumo.stock - linea.cantidad
+
+    db.commit()
+    return {"mensaje": f"Tratamiento '{tratamiento.nombre}' aplicado. Inventario actualizado."}</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo funciona</span><p>El primer recorrido solo lee. Un <code>raise</code> 409 termina la función antes de cualquier descuento. El segundo recorrido se ejecuta únicamente cuando todos los insumos alcanzan.</p><p>El <code>commit()</code> único confirma todos los cambios juntos. Aquí no aparece un <code>rollback()</code> explícito porque la verificación sucede antes de modificar: si falla, nunca hay cambios pendientes que confirmar.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 21 · Crear</span><h3>Endpoint para aplicar un tratamiento</h3><p><strong>Qué construirás:</strong> una acción anidada en Cita. <strong>Por qué:</strong> la ruta debe expresar la operación de negocio. <strong>Qué aprenderás:</strong> separar la interfaz HTTP de la transacción.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/routers/aplicacion_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.services import aplicacion_service
+
+router = APIRouter(tags=["Aplicar Tratamiento"])
+
+
+@router.post("/citas/{cita_id}/aplicar-tratamiento/{tratamiento_id}")
+def aplicar(cita_id: int, tratamiento_id: int, db: Session = Depends(get_db)):
+    return aplicacion_service.aplicar_tratamiento(db, tratamiento_id)</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>La URL se lee “en la cita X, aplicar el tratamiento Y”. El router recibe ambos ids y delega el descuento al service; en esta versión, <code>cita_id</code> expresa el contexto pero no se persiste en una relación adicional.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 22 · Editar</span><h3>Registrar la aplicación</h3><p>En <code>app/main.py</code>, importa <code>aplicacion_router</code> y añade <code>app.<wbr>include_router(<wbr>aplicacion_router.<wbr>router)</code>. No omitas este paso: sin él, Swagger no mostrará la acción.</p></div>
+            <div class="question-card"><span class="component-label">Decisión de seguridad</span><p class="question">¿Por qué recorrer la receta dos veces en vez de verificar y descontar insumo por insumo?</p></div>
+            <div class="callout" data-tone="success"><span class="component-label">Respuesta técnica</span><h3>Medir dos veces evita devolver cambios</h3><p>Si el tercer insumo falla después de descontar los dos primeros, el inventario queda parcial o exige revertirlo. Verificar todo primero garantiza que la modificación comienza solo cuando la receta completa puede cumplirse.</p></div>
+          </div>
+        </section>
+        <section class="spa-section" id="sec-7">
+          <header class="section-head"><span class="section-number">07</span><div><span class="section-kicker">Checkpoints 23–27</span><h2 class="section-title">Consultas que cruzan el sistema</h2><p class="section-summary">Las relaciones cobran valor cuando permiten responder preguntas de gestión sin traer todos los datos a Python.</p></div></header>
+          <div class="section-body">
+            <div class="definition-grid">
+              <article class="definition-card"><span class="component-label">JOIN</span><h3>Definición técnica</h3><p>Combina filas de tablas relacionadas usando sus llaves foráneas.</p></article>
+              <article class="definition-card"><span class="component-label">Explicación sencilla</span><h3>Cruzar listas</h3><p>Convierte “Max — dueño 1” en “Max — Familia Gómez”.</p></article>
+              <article class="definition-card"><span class="component-label">Aplicación profesional</span><h3>Trabajo donde viven los datos</h3><p>La base filtra, cuenta y agrupa sin cargar miles de filas en memoria.</p></article>
+            </div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 23 · Crear</span><h3>Consulta 1: mascotas con su dueño</h3><p><strong>Qué construirás:</strong> el primer JOIN. <strong>Por qué:</strong> un id aislado no responde una pregunta de negocio. <strong>Qué aprenderás:</strong> seleccionar columnas, unir y etiquetar resultados.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/services/consultas_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from app.models.mascota_model import Mascota
+from app.models.dueno_model import Dueno
+
+
+def mascotas_con_dueno(db: Session):
+    resultado = (
+        db.query(Mascota.nombre, Dueno.nombre.label("dueno"))
+        .join(Dueno, Mascota.dueno_id == Dueno.id)
+        .all()
+    )
+    return [{"mascota": fila.nombre, "dueno": fila.dueno} for fila in resultado]</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo funciona</span><p><code>label("dueno")</code> distingue los dos nombres. El JOIN une donde <code>Mascota.dueno_id</code> coincide con <code>Dueno.id</code>; la comprensión final devuelve diccionarios legibles.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 24 · Añadir</span><h3>Consulta 2: citas por veterinario</h3><p><strong>Qué construirás:</strong> una agregación. <strong>Por qué:</strong> gestión necesita totales, no filas crudas. <strong>Qué aprenderás:</strong> combinar <code>count</code>, JOIN y <code>group_by</code>.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">AÑADIR</span><span class="code-file">app/services/consultas_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import func
+from app.models.cita_model import Cita
+from app.models.veterinario_model import Veterinario
+
+
+def citas_por_veterinario(db: Session):
+    resultado = (
+        db.query(Veterinario.nombre, func.count(Cita.id).label("total_citas"))
+        .join(Cita, Cita.veterinario_id == Veterinario.id)
+        .group_by(Veterinario.nombre)
+        .all()
+    )
+    return [{"veterinario": fila.nombre, "total_citas": fila.total_citas} for fila in resultado]</code></pre></div>
+            <div class="panel prose"><span class="component-label">Dónde añadir</span><p>Añade estos imports junto a los existentes y la función después de <code>mascotas_con_dueno</code>. <code>group_by</code> forma un grupo por veterinario y <code>count</code> cuenta las citas de cada grupo.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 25 · Añadir</span><h3>Consulta 3: insumos por agotarse</h3><p><strong>Qué construirás:</strong> un filtro configurable. <strong>Por qué:</strong> inventario necesita anticipar reposiciones. <strong>Qué aprenderás:</strong> traducir un umbral de negocio a una condición SQL.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">AÑADIR</span><span class="code-file">app/services/consultas_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from app.models.insumo_model import Insumo
+
+
+def insumos_por_agotarse(db: Session, minimo: int = 5):
+    return db.query(Insumo).filter(Insumo.stock &lt; minimo).all()</code></pre></div>
+            <div class="panel prose"><span class="component-label">Dónde añadir</span><p>Añade el import con los anteriores y la función al final del archivo. El valor predeterminado es 5 y el filtro devuelve stock estrictamente menor al mínimo.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 26 · Crear</span><h3>Router de consultas</h3><p><strong>Qué construirás:</strong> tres endpoints de lectura. <strong>Por qué:</strong> las preguntas de gestión necesitan una interfaz. <strong>Qué aprenderás:</strong> exponer consultas especializadas sin crear modelos nuevos.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">CREAR</span><span class="code-file">app/routers/consultas_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.config.database import get_db
+from app.services import consultas_service
+
+router = APIRouter(tags=["Consultas"])
+
+
+@router.get("/consultas/mascotas-con-dueno")
+def mascotas_con_dueno(db: Session = Depends(get_db)):
+    return consultas_service.mascotas_con_dueno(db)
+
+
+@router.get("/consultas/citas-por-veterinario")
+def citas_por_veterinario(db: Session = Depends(get_db)):
+    return consultas_service.citas_por_veterinario(db)
+
+
+@router.get("/consultas/insumos-por-agotarse")
+def insumos_por_agotarse(minimo: int = 5, db: Session = Depends(get_db)):
+    return consultas_service.insumos_por_agotarse(db, minimo)</code></pre></div>
+            <div class="panel prose"><span class="component-label">Cómo se conecta</span><p>El router reutiliza los modelos existentes a través del service. El umbral <code>minimo</code> llega como parámetro de consulta y mantiene 5 como valor predeterminado.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Checkpoint 27 · Editar</span><h3>Registrar las consultas</h3><p>En <code>app/main.py</code>, importa <code>consultas_router</code> y registra <code>app.<wbr>include_router(<wbr>consultas_router.<wbr>router)</code>. No hace falta importar un modelo nuevo: estas consultas usan tablas ya registradas.</p></div>
+            <div class="question-card"><span class="component-label">Decisión de rendimiento</span><p class="question">¿Por qué pedirle a la base que cuente en vez de recorrer todas las citas con un <code>for</code> en Python?</p></div>
+            <div class="callout" data-tone="info"><span class="component-label">Respuesta técnica</span><h3>Procesar cerca de los datos</h3><p>La base ejecuta una consulta optimizada sin transferir todas las citas ni mantener contadores en memoria. El resultado usa menos código, memoria y tráfico.</p></div>
+          </div>
+        </section>
+        <section class="spa-section" id="sec-8">
+          <header class="section-head"><span class="section-number">08</span><div><span class="section-kicker">Datos y evidencia</span><h2 class="section-title">Prueba la receta y la transacción</h2><p class="section-summary">Los valores son deliberados: permiten comprobar con números exactos que la receta se ejecuta y que un fallo no deja descuentos parciales.</p></div></header>
+          <div class="section-body">
+            <div class="checkpoint"><span class="component-label">Prueba A · Preparar tratamiento</span><h3>Crea la Vacuna Triple</h3><p>En Swagger ejecuta <code>POST /tratamientos</code>. El resultado debe asignar <code>id: 1</code>.</p></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">ENVIAR PAYLOAD</span><span class="code-file">POST /tratamientos</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  "nombre": "Vacuna Triple",
+  "precio": 45000
+}</code></pre></div>
+
+            <div class="checkpoint"><span class="component-label">Prueba B · Preparar inventario</span><h3>Crea tres insumos</h3><p>Ejecuta <code>POST /insumos</code> tres veces, en este orden, para obtener ids 1, 2 y 3.</p></div>
+            <div class="bento-grid">
+              <div class="code-block bento-4"><div class="code-head"><div><span class="code-context">POST</span><span class="code-file">/insumos · id 1</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  "nombre": "Vial vacuna",
+  "stock": 10,
+  "unidad": "unidades"
+}</code></pre></div>
+              <div class="code-block bento-4"><div class="code-head"><div><span class="code-context">POST</span><span class="code-file">/insumos · id 2</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  "nombre": "Jeringa",
+  "stock": 50,
+  "unidad": "unidades"
+}</code></pre></div>
+              <div class="code-block bento-4"><div class="code-head"><div><span class="code-context">POST</span><span class="code-file">/insumos · id 3</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  "nombre": "Guantes",
+  "stock": 100,
+  "unidad": "pares"
+}</code></pre></div>
+            </div>
+
+            <div class="checkpoint"><span class="component-label">Prueba C · Armar receta</span><h3>Agrega las tres líneas</h3><p>Ejecuta <code>POST /tratamientos/1/insumos</code> con cada payload. La cantidad pertenece a cada combinación.</p></div>
+            <div class="bento-grid">
+              <div class="code-block bento-4"><div class="code-head"><div><span class="code-context">1 VIAL</span><span class="code-file">POST /tratamientos/1/insumos</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  "insumo_id": 1,
+  "cantidad": 1
+}</code></pre></div>
+              <div class="code-block bento-4"><div class="code-head"><div><span class="code-context">1 JERINGA</span><span class="code-file">POST /tratamientos/1/insumos</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  "insumo_id": 2,
+  "cantidad": 1
+}</code></pre></div>
+              <div class="code-block bento-4"><div class="code-head"><div><span class="code-context">2 GUANTES</span><span class="code-file">POST /tratamientos/1/insumos</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  "insumo_id": 3,
+  "cantidad": 2
+}</code></pre></div>
+            </div>
+            <div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><h3>La receta existe</h3><p><code>GET /tratamientos/1/insumos</code> debe mostrar tres líneas: insumo 1 × 1, insumo 2 × 1 e insumo 3 × 2. La Vacuna Triple consume 1 vial, 1 jeringa y 2 guantes.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Prueba D · Caso exitoso</span><h3>Aplica el tratamiento</h3><p>Confirma primero <code>GET /insumos</code>: vial 10, jeringa 50 y guantes 100. Después ejecuta <code>POST /citas/1/aplicar-tratamiento/1</code>.</p></div>
+            <div class="bento-grid">
+              <div class="metric-card bento-4"><span class="metric-label">Vial vacuna</span><div class="metric-value">10→9</div><p class="metric-note">Descuenta una unidad.</p></div>
+              <div class="metric-card bento-4"><span class="metric-label">Jeringa</span><div class="metric-value">50→49</div><p class="metric-note">Descuenta una unidad.</p></div>
+              <div class="metric-card bento-4"><span class="metric-label">Guantes</span><div class="metric-value">100→98</div><p class="metric-note">Descuenta dos pares.</p></div>
+            </div>
+            <div class="callout" data-tone="success"><span class="component-label">Resultado verificado</span><h3>HTTP 200</h3><p>Debe aparecer “Tratamiento aplicado. Inventario actualizado.” Luego <code>GET /insumos</code> debe mostrar exactamente 9, 49 y 98.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Prueba E · Caso rechazado</span><h3>Comprueba el todo o nada</h3><p>Deja Guantes con stock 1 cuando la receta necesita 2. Aplica otra vez el tratamiento y revisa todos los insumos.</p></div>
+            <div class="callout" data-tone="danger"><span class="component-label">Resultado verificado</span><h3>HTTP 409</h3><p>Debe aparecer: “Stock insuficiente de Guantes: hay 1, se necesitan 2”. El vial y la jeringa no deben disminuir, aunque sí tuvieran stock.</p></div>
+            <ul class="checklist"><li>El fallo ocurre antes del segundo recorrido.</li><li>No se ejecuta el <code>commit()</code>.</li><li>Ningún insumo queda descontado parcialmente.</li></ul>
+          </div>
+        </section>
+
+        <section class="spa-section" id="sec-9">
+          <header class="section-head"><span class="section-number">09</span><div><span class="section-kicker">Integración</span><h2 class="section-title">Un día completo en Patitas Vet</h2><p class="section-summary">Cada paso reutiliza el anterior. El sistema pasa de registrar clientes a entregar información de gestión.</p></div></header>
+          <div class="section-body">
+            <div class="flow">
+              <div class="flow-step"><strong>1. Dueño</strong><p><code>POST /duenos</code>: Familia Gómez.</p></div>
+              <div class="flow-step"><strong>2. Mascota</strong><p><code>POST /mascotas</code>: Max, asociado a la familia.</p></div>
+              <div class="flow-step"><strong>3. Veterinario</strong><p><code>POST /veterinarios</code>: Dra. Ramírez.</p></div>
+              <div class="flow-step"><strong>4. Inventario</strong><p><code>POST /insumos</code>: viales, jeringas y guantes.</p></div>
+              <div class="flow-step"><strong>5. Tratamiento</strong><p><code>POST /tratamientos</code>: Vacuna Triple.</p></div>
+              <div class="flow-step"><strong>6. Receta</strong><p><code>POST /tratamientos/1/insumos</code>: 1 vial, 1 jeringa y 2 guantes.</p></div>
+              <div class="flow-step"><strong>7. Cita</strong><p><code>POST /citas</code>: Max con la Dra. Ramírez.</p></div>
+              <div class="flow-step"><strong>8. Aplicación</strong><p><code>POST /citas/1/aplicar-tratamiento/1</code>: el inventario baja solo.</p></div>
+              <div class="flow-step"><strong>9. Gestión</strong><p>Consulta relaciones, carga de trabajo y reposición.</p></div>
+            </div>
+            <div class="bento-grid">
+              <div class="panel prose bento-4"><span class="component-label">Verificar</span><h3>Mascotas con dueño</h3><p><code>GET /consultas/mascotas-con-dueno</code> debe mostrar a Max con Familia Gómez.</p></div>
+              <div class="panel prose bento-4"><span class="component-label">Verificar</span><h3>Citas por veterinario</h3><p><code>GET /consultas/citas-por-veterinario</code> debe entregar un total para la Dra. Ramírez.</p></div>
+              <div class="panel prose bento-4"><span class="component-label">Verificar</span><h3>Insumos por agotarse</h3><p><code>GET /consultas/insumos-por-agotarse</code> debe devolver los registros bajo el mínimo.</p></div>
+            </div>
+            <div class="callout" data-tone="success"><span class="component-label">Sistema integrado</span><h3>Así sabes que quedó bien</h3><p>Puedes registrar clientes, mascotas y citas; definir tratamientos y recetas; aplicar un procedimiento sin romper el inventario; y responder preguntas de gestión cruzando tablas.</p></div>
+          </div>
+        </section>
+
+        <section class="spa-section" id="sec-10">
+          <header class="section-head"><span class="section-number">10</span><div><span class="section-kicker">Diagnóstico y criterio</span><h2 class="section-title">Lee el error antes de cambiar el código</h2><p class="section-summary">Un mensaje útil comunica si falta un recurso, si el payload es inválido o si el estado actual impide la operación.</p></div></header>
+          <div class="section-body">
+            <div class="bento-grid">
+              <div class="callout bento-6" data-tone="danger"><span class="component-label">404 · Recurso inexistente</span><h3>Citas y catálogos</h3><p>“La mascota indicada no existe”, “El veterinario indicado no existe”, “Cita no encontrada”, “Insumo no encontrado” o “Tratamiento no encontrado” indican que el id solicitado no corresponde a un registro real.</p></div>
+              <div class="callout bento-6" data-tone="danger"><span class="component-label">404 · Receta y aplicación</span><h3>Extremos inexistentes</h3><p>“El tratamiento no existe” o “El insumo no existe” significa que se intentó crear o ejecutar una relación con un extremo ausente.</p></div>
+              <div class="callout bento-6" data-tone="warning"><span class="component-label">422 · Validación</span><h3>Payload fuera de contrato</h3><p>Ocurre si un nombre queda fuera de 2–50 caracteres, el stock es negativo, el precio no es mayor que cero o la cantidad de receta es cero o negativa.</p></div>
+              <div class="callout bento-6" data-tone="warning"><span class="component-label">400 · Petición inválida</span><h3>Tratamiento sin receta</h3><p>El tratamiento existe, pero no tiene líneas de receta. Debes agregar sus insumos antes de aplicarlo.</p></div>
+              <div class="callout bento-6" data-tone="danger"><span class="component-label">409 · Conflicto</span><h3>Stock insuficiente</h3><p>El recurso existe y la petición está bien formada, pero el inventario actual no permite ejecutar la receta completa.</p></div>
+              <div class="callout bento-6" data-tone="warning"><span class="component-label">Referencia rota</span><h3><code>insumo is None</code></h3><p>La receta apunta a un insumo eliminado. Verifica que sus ids correspondan a registros existentes.</p></div>
+              <div class="callout bento-6" data-tone="warning"><span class="component-label">Persistencia</span><h3>El stock no baja</h3><p>Revisa que <code>aplicar_tratamiento</code> llegue al <code>commit()</code> y que consultes el inventario después de aplicar.</p></div>
+              <div class="callout bento-6" data-tone="warning"><span class="component-label">Datos</span><h3>El JOIN devuelve vacío</h3><p>No necesariamente es un error de sintaxis: puede no haber datos relacionados. Crea citas o relaciones antes de consultar.</p></div>
+              <div class="callout bento-6" data-tone="warning"><span class="component-label">Import</span><h3><code>func</code> no está definido</h3><p>Falta <code>from sqlalchemy import func</code> en <code>consultas_service.py</code>.</p></div>
+              <div class="callout bento-6" data-tone="warning"><span class="component-label">Registro de modelo</span><h3>No aparece <code>tratamiento_insumo</code></h3><p>Importa el modelo en <code>main.py</code> antes de ejecutar <code>create_all</code>.</p></div>
+            </div>
+            <div class="callout" data-tone="info"><span class="component-label">Límite conocido</span><h3>¿Qué pasa si dos personas descuentan al mismo tiempo?</h3><p>Eso es concurrencia. Esta clase asume un usuario y no la resuelve. En un sistema con uso simultáneo habría que evaluar bloqueos, nivel de aislamiento y control de actualizaciones.</p></div>
+            <div class="question-card"><span class="component-label">Reflexión profesional</span><p class="question">¿Qué parte de este sistema no habría podido decidir la IA sin comprender el negocio?</p></div>
+            <div class="panel prose"><span class="component-label">Criterio antes que sintaxis</span><h3>La arquitectura fue una decisión humana</h3><p>La IA puede redactar funciones, pero no sabe por sí sola que el descuento debe ser todo o nada, que la cantidad pertenece a la tabla intermedia o en qué orden conviene construir.</p><p>Tu responsabilidad es formular la regla, pedir una propuesta concreta, revisar relaciones e imports, ejecutar los casos exitosos y fallidos, y rechazar cualquier solución que deje el inventario inconsistente.</p></div>
+            <div class="bento-grid">
+              <div class="panel prose bento-4"><span class="component-label">Lo que consolidaste</span><h3>Persistencia</h3><p>PostgreSQL y SQLAlchemy reemplazan los datos efímeros en memoria.</p></div>
+              <div class="panel prose bento-4"><span class="component-label">Lo que consolidaste</span><h3>Relaciones</h3><p>1:N y N:M con atributos traducen decisiones de negocio a estructura.</p></div>
+              <div class="panel prose bento-4"><span class="component-label">Lo que consolidaste</span><h3>Integridad</h3><p>Validaciones, FK y transacciones protegen el estado del sistema.</p></div>
+            </div>
+          </div>
+        </section>
+        <footer class="footer">© 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · Todos los derechos reservados · linkedin.com/in/ana-alvarado-instructora-full-stack</footer>
+      </article>
+    </main>
+  </div>
+
+  <div class="watermark" aria-hidden="true">© 2026 ANA ALVARADO</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="ana-clase.js"></script>
+</body>
+</html>

@@ -1,53 +1,50 @@
 /* ============================================================================
-   ana-clase.js
-   © 2026 Ana Alvarado — Educadora Tech & Desarrolladora Full Stack
-   Lógica compartida para libros de clase interactivos.
+   ANA LEARNING EXPERIENCE SYSTEM · CONTROLADOR v4.0
+   © 2026 Ana Alvarado · Educadora Tech & Desarrolladora Full Stack
+   Sin cambios funcionales respecto a v3.0: los componentes nuevos de v4.0
+   (iconos SVG, diagrama ERD, variante terminal de code-block) son estáticos
+   y reutilizan los mismos selectores (.code-block, .copy-btn) ya controlados
+   por este script. No requieren JS adicional.
    ============================================================================ */
-
 (function () {
   'use strict';
 
-  var root = document.documentElement;
-  var body = document.body;
-  var themeButton = document.getElementById('temaBtn');
-  var presentButton = document.getElementById('presentBtn');
-  var progressBar = document.getElementById('progressBar');
-  var slideStatus = document.getElementById('slideStatus');
-  var sections = Array.from(document.querySelectorAll('.seccion'));
-  var navItems = Array.from(document.querySelectorAll('.nav-item'));
-  var currentSlide = 0;
-  var scrollBeforePresentation = 0;
+  const root = document.documentElement;
+  const body = document.body;
+  const format = body.dataset.formato || root.dataset.formato || 'spa';
+  const themeButton = document.getElementById('temaBtn');
+  const fullscreenButton = document.getElementById('fullscreenBtn');
+  const progressBar = document.getElementById('progressBar');
 
   function setTheme(theme) {
-    var isLight = theme === 'claro';
-    if (isLight) root.setAttribute('data-tema', 'claro');
-    else root.removeAttribute('data-tema');
-
+    const normalized = theme === 'oscuro' ? 'oscuro' : 'claro';
+    root.dataset.tema = normalized;
+    localStorage.setItem('ana-tema', normalized);
     if (themeButton) {
-      themeButton.querySelector('span').textContent = isLight ? '☾' : '☀';
-      themeButton.setAttribute('aria-label', isLight ? 'Activar tema oscuro' : 'Activar tema claro');
+      const dark = normalized === 'oscuro';
+      themeButton.textContent = dark ? '☀' : '☾';
+      themeButton.setAttribute('aria-label', dark ? 'Activar tema claro' : 'Activar tema oscuro');
     }
-    localStorage.setItem('ana-tema', isLight ? 'claro' : 'oscuro');
   }
 
-  setTheme(localStorage.getItem('ana-tema') === 'claro' ? 'claro' : 'oscuro');
-  if (themeButton) {
-    themeButton.addEventListener('click', function () {
-      setTheme(root.getAttribute('data-tema') === 'claro' ? 'oscuro' : 'claro');
-    });
-  }
+  const saved = localStorage.getItem('ana-tema');
+  setTheme(saved || (root.dataset.temaBase === 'oscuro' ? 'oscuro' : 'claro'));
+  themeButton?.addEventListener('click', () => setTheme(root.dataset.tema === 'oscuro' ? 'claro' : 'oscuro'));
 
-  document.querySelectorAll('.copy-btn').forEach(function (button) {
-    button.addEventListener('click', async function () {
-      var code = button.closest('.code-block')?.querySelector('code')?.innerText;
+  fullscreenButton?.addEventListener('click', () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
+    else document.exitFullscreen?.().catch(() => {});
+  });
+
+  document.querySelectorAll('.copy-btn').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const code = button.closest('.code-block')?.querySelector('code')?.innerText;
       if (!code) return;
-      var originalText = button.textContent;
-
+      const original = button.textContent;
       try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(code);
-        } else {
-          var textarea = document.createElement('textarea');
+        if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(code);
+        else {
+          const textarea = document.createElement('textarea');
           textarea.value = code;
           textarea.style.position = 'fixed';
           textarea.style.opacity = '0';
@@ -57,134 +54,129 @@
           textarea.remove();
         }
         button.textContent = 'Copiado ✓';
-      } catch (error) {
+      } catch (_) {
         button.textContent = 'No se pudo copiar';
       }
-
-      window.setTimeout(function () { button.textContent = originalText; }, 1800);
+      window.setTimeout(() => { button.textContent = original; }, 1600);
     });
   });
 
-  document.querySelectorAll('.ver-explicacion').forEach(function (button) {
-    button.addEventListener('click', function () {
-      var explanation = button.nextElementSibling;
-      if (!explanation) return;
-      var open = explanation.classList.toggle('abierta');
-      explanation.setAttribute('aria-hidden', String(!open));
+  document.querySelectorAll('.reveal-btn').forEach((button) => {
+    button.addEventListener('click', () => {
+      const content = button.nextElementSibling;
+      if (!content) return;
+      const open = content.classList.toggle('is-open');
       button.setAttribute('aria-expanded', String(open));
       button.textContent = open ? 'Ocultar explicación' : 'Mostrar explicación';
     });
   });
 
-  function updateProgress() {
-    if (!progressBar || body.classList.contains('presentacion')) return;
-    var scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    var progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
-    progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
-  }
+  function initSpa() {
+    const sections = Array.from(document.querySelectorAll('.spa-section[id]'));
+    const navItems = Array.from(document.querySelectorAll('.nav-item'));
 
-  function setActiveNavigation(sectionId) {
-    navItems.forEach(function (item) {
-      var active = item.getAttribute('href') === '#' + sectionId;
-      item.classList.toggle('active', active);
-      if (active) item.setAttribute('aria-current', 'location');
-      else item.removeAttribute('aria-current');
-    });
-  }
-
-  if ('IntersectionObserver' in window && sections.length) {
-    var observer = new IntersectionObserver(function (entries) {
-      var visible = entries
-        .filter(function (entry) { return entry.isIntersecting; })
-        .sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; })[0];
-      if (visible) setActiveNavigation(visible.target.id);
-    }, { rootMargin: '-18% 0px -62% 0px', threshold: [0.05, 0.2, 0.5] });
-    sections.forEach(function (section) { observer.observe(section); });
-  }
-
-  window.addEventListener('scroll', updateProgress, { passive: true });
-  window.addEventListener('resize', updateProgress);
-  updateProgress();
-
-  function updateSlide() {
-    sections.forEach(function (section, index) {
-      section.classList.toggle('slide-activa', index === currentSlide);
-    });
-    var contentArea = document.querySelector('.content-area');
-    if (contentArea) contentArea.scrollTo({ top: 0, behavior: 'instant' });
-    if (slideStatus) slideStatus.textContent = String(currentSlide + 1).padStart(2, '0') + ' / ' + String(sections.length).padStart(2, '0');
-  }
-
-  function enterPresentation() {
-    if (!sections.length || body.classList.contains('presentacion')) return;
-    scrollBeforePresentation = window.scrollY;
-    var activeIndex = navItems.findIndex(function (item) { return item.classList.contains('active'); });
-    currentSlide = activeIndex >= 0 ? activeIndex : 0;
-    body.classList.add('presentacion');
-    if (progressBar) progressBar.style.width = '0%';
-    updateSlide();
-
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(function () {});
+    function updateProgress() {
+      if (!progressBar) return;
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const percentage = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+      progressBar.style.width = `${Math.min(100, Math.max(0, percentage))}%`;
     }
-  }
 
-  function exitPresentation() {
-    if (!body.classList.contains('presentacion')) return;
-    body.classList.remove('presentacion');
-    sections.forEach(function (section) { section.classList.remove('slide-activa'); });
-    if (document.fullscreenElement && document.exitFullscreen) {
-      document.exitFullscreen().catch(function () {});
+    function setActive(id) {
+      navItems.forEach((item) => {
+        const active = item.getAttribute('href') === `#${id}`;
+        item.classList.toggle('active', active);
+        if (active) item.setAttribute('aria-current', 'location');
+        else item.removeAttribute('aria-current');
+      });
     }
-    window.scrollTo({ top: scrollBeforePresentation, behavior: 'instant' });
+
+    if ('IntersectionObserver' in window && sections.length) {
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive(visible.target.id);
+      }, { rootMargin: '-22% 0px -62% 0px', threshold: [0.05, 0.2, 0.45] });
+      sections.forEach((section) => observer.observe(section));
+    }
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    window.addEventListener('resize', updateProgress);
     updateProgress();
   }
 
-  function moveSlide(delta) {
-    var next = currentSlide + delta;
-    if (next < 0 || next >= sections.length) return;
-    currentSlide = next;
-    updateSlide();
+  function initSlides() {
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const prevButtons = Array.from(document.querySelectorAll('[data-slide-action="prev"]'));
+    const nextButtons = Array.from(document.querySelectorAll('[data-slide-action="next"]'));
+    const statusNodes = Array.from(document.querySelectorAll('[data-slide-status]'));
+    const progressNodes = Array.from(document.querySelectorAll('[data-slide-progress]'));
+    const dotContainers = Array.from(document.querySelectorAll('[data-slide-dots]'));
+    let current = 0;
+
+    dotContainers.forEach((container) => {
+      container.innerHTML = slides.map((_, index) => `<button class="slide-dot" type="button" data-slide-index="${index}" aria-label="Ir a diapositiva ${index + 1}"></button>`).join('');
+    });
+
+    function fragmentsFor(index) {
+      return Array.from(slides[index]?.querySelectorAll('.fragment') || []);
+    }
+
+    function render() {
+      slides.forEach((slide, index) => {
+        const active = index === current;
+        slide.classList.toggle('is-active', active);
+        slide.setAttribute('aria-hidden', String(!active));
+      });
+
+      const label = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+      const percentage = slides.length ? ((current + 1) / slides.length) * 100 : 0;
+      statusNodes.forEach((node) => { node.textContent = label; });
+      progressNodes.forEach((node) => { node.style.width = `${percentage}%`; });
+      if (progressBar) progressBar.style.width = `${percentage}%`;
+      document.querySelectorAll('.slide-dot').forEach((dot) => dot.classList.toggle('is-active', Number(dot.dataset.slideIndex) === current));
+    }
+
+    function next() {
+      const nextFragment = fragmentsFor(current).find((item) => !item.classList.contains('is-visible'));
+      if (nextFragment) { nextFragment.classList.add('is-visible'); return; }
+      if (current < slides.length - 1) { current += 1; render(); }
+    }
+
+    function previous() {
+      const visible = fragmentsFor(current).filter((item) => item.classList.contains('is-visible'));
+      if (visible.length) { visible[visible.length - 1].classList.remove('is-visible'); return; }
+      if (current > 0) { current -= 1; render(); }
+    }
+
+    prevButtons.forEach((button) => button.addEventListener('click', previous));
+    nextButtons.forEach((button) => button.addEventListener('click', next));
+    document.addEventListener('click', (event) => {
+      const dot = event.target.closest('.slide-dot');
+      if (!dot) return;
+      current = Number(dot.dataset.slideIndex) || 0;
+      render();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      const typing = event.target && /INPUT|TEXTAREA|SELECT/.test(event.target.tagName);
+      if (typing) return;
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); next(); }
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); previous(); }
+      if (event.key === 'Home') { current = 0; render(); }
+      if (event.key === 'End') { current = slides.length - 1; render(); }
+      if ((event.key === 'f' || event.key === 'F') && !document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
+      if (event.key === 'Escape' && document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+    });
+
+    render();
   }
 
-  if (presentButton) presentButton.addEventListener('click', enterPresentation);
+  if (format === 'slides') initSlides();
+  else initSpa();
 
-  document.addEventListener('keydown', function (event) {
-    var target = event.target;
-    var isTyping = target && /INPUT|TEXTAREA|SELECT/.test(target.tagName);
-    if (isTyping) return;
-
-    if ((event.key === 'p' || event.key === 'P') && !body.classList.contains('presentacion')) {
-      enterPresentation();
-      return;
-    }
-    if (!body.classList.contains('presentacion')) return;
-
-    if (event.key === 'Escape') exitPresentation();
-    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
-      event.preventDefault();
-      moveSlide(1);
-    }
-    if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
-      event.preventDefault();
-      moveSlide(-1);
-    }
-    if (event.key === 'Home') { currentSlide = 0; updateSlide(); }
-    if (event.key === 'End') { currentSlide = sections.length - 1; updateSlide(); }
-  });
-
-  document.addEventListener('fullscreenchange', function () {
-    if (!document.fullscreenElement && body.classList.contains('presentacion')) {
-      exitPresentation();
-    }
-  });
-
-  document.addEventListener('contextmenu', function (event) {
-    if (!event.target.closest('.code-block')) event.preventDefault();
-  });
-
-  var accent = getComputedStyle(root).getPropertyValue('--brand').trim() || '#6018F0';
-  console.log('%c© 2026 Ana Alvarado', 'color:' + accent + ';font-weight:700;font-size:16px');
-  console.log('Educadora Tech & Desarrolladora Full Stack — Todos los derechos reservados.');
-  console.log('Este material es de autoría exclusiva. Prohibida su reproducción o redistribución sin autorización.');
+  const accent = getComputedStyle(root).getPropertyValue('--brand').trim() || '#6018F0';
+  console.log('%c© 2026 Ana Alvarado', `color:${accent};font-weight:800;font-size:16px`);
+  console.log('Ana Learning Experience System v3.0 · Material de autoría exclusiva.');
 })();
