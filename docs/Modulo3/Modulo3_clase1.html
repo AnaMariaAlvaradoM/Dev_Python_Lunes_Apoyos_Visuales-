@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="es" data-empresa="dev-senior" data-formato="spa" data-modo="build" data-direccion="tech-lab" data-tema-base="claro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Ana Alvarado">
+  <meta name="copyright" content="© 2026 Ana Alvarado — Todos los derechos reservados">
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+  <title>Módulo 3 · Seguridad en APIs con JWT · Ana Alvarado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ana-estilos.css">
+</head>
+<body data-formato="spa">
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <div class="progress-bar" id="progressBar" aria-hidden="true"></div>
+  <div class="controls" aria-label="Controles"><button class="ctrl-btn" id="temaBtn" type="button" aria-label="Cambiar tema">☾</button><button class="ctrl-btn" id="fullscreenBtn" type="button" aria-label="Pantalla completa">⛶</button></div>
+  <div class="spa-shell">
+    <aside class="spa-sidebar" aria-label="Navegación de la clase">
+      <div class="spa-brand-row"><span class="brand-mark">A</span><div class="spa-brand"><h2>Python Backend Developer</h2><p>Módulo 3 · Clase 1 + 2</p></div></div>
+      <nav class="spa-nav" aria-label="Secciones"><a class="nav-item active" href="#sec-1"><span class="nav-index">01</span><span class="nav-label">ARRANQUE</span></a>
+<a class="nav-item" href="#sec-2"><span class="nav-index">02</span><span class="nav-label">EL PROBLEMA</span></a>
+<a class="nav-item" href="#sec-3"><span class="nav-index">03</span><span class="nav-label">CASO DE NEGOCIO</span></a>
+<a class="nav-item" href="#sec-4"><span class="nav-index">04</span><span class="nav-label">MODELO MENTAL</span></a>
+<a class="nav-item" href="#sec-5"><span class="nav-index">05</span><span class="nav-label">DEFINICIONES TÉCNICAS</span></a>
+<a class="nav-item" href="#sec-6"><span class="nav-index">06</span><span class="nav-label">JWT</span></a>
+<a class="nav-item" href="#sec-7"><span class="nav-index">07</span><span class="nav-label">HASHING DE CONTRASEÑAS</span></a>
+<a class="nav-item" href="#sec-8"><span class="nav-index">08</span><span class="nav-label">MANOS A LA OBRA</span></a>
+<a class="nav-item" href="#sec-9"><span class="nav-index">09</span><span class="nav-label">LA BASE DE DATOS</span></a>
+<a class="nav-item" href="#sec-10"><span class="nav-index">10</span><span class="nav-label">MODELOS</span></a>
+<a class="nav-item" href="#sec-11"><span class="nav-index">11</span><span class="nav-label">SCHEMAS</span></a>
+<a class="nav-item" href="#sec-12"><span class="nav-index">12</span><span class="nav-label">LA CAPA DE SEGURIDAD</span></a>
+<a class="nav-item" href="#sec-13"><span class="nav-index">13</span><span class="nav-label">SERVICES</span></a>
+<a class="nav-item" href="#sec-14"><span class="nav-index">14</span><span class="nav-label">LA DEPENDENCIA `get_current_user`</span></a>
+<a class="nav-item" href="#sec-15"><span class="nav-index">15</span><span class="nav-label">REGISTRO Y LOGIN</span></a>
+<a class="nav-item" href="#sec-16"><span class="nav-index">16</span><span class="nav-label">ROUTERS PROTEGIDOS</span></a>
+<a class="nav-item" href="#sec-17"><span class="nav-index">17</span><span class="nav-label">`main.py`</span></a>
+<a class="nav-item" href="#sec-18"><span class="nav-index">18</span><span class="nav-label">PRUEBAS GUIADAS EN SWAGGER</span></a>
+<a class="nav-item" href="#sec-19"><span class="nav-index">19</span><span class="nav-label">MAPA DE ARCHIVOS DE LA CLASE</span></a>
+<a class="nav-item" href="#sec-20"><span class="nav-index">20</span><span class="nav-label">CIERRE Y PUENTE</span></a>
+<a class="nav-item" href="#sec-21"><span class="nav-index">21</span><span class="nav-label">DIAGNÓSTICO Y PREGUNTAS FRECUENTES</span></a></nav>
+      <p class="footer">Dev Senior · Proyecto biblioteca_api</p>
+    </aside>
+    <main class="spa-main" id="contenido">
+      <header class="spa-hero"><div class="spa-hero-inner"><div class="spa-hero-copy"><span class="eyebrow">Dev Senior · Módulo 3 · Clase 1 + 2</span><h1 class="spa-title">Seguridad en APIs con JWT</h1><p class="spa-subtitle">Construye desde cero una biblioteca con FastAPI, PostgreSQL, contraseñas hasheadas, login real y autorización por rol y propiedad de los datos.</p><div class="spa-meta"><span class="meta-pill">SPA · Build</span><span class="meta-pill">Tech Lab</span><span class="meta-pill">Nivel intermedio</span><span class="meta-pill">Proyecto biblioteca_api</span></div></div><div class="spa-hero-visual"><div class="visual-panel" aria-label="Flujo de seguridad de la Biblioteca API"><div class="diagram"><div class="diagram-row"><div class="diagram-node">Credenciales</div><div class="diagram-arrow">→</div><div class="diagram-node" data-emphasis="true">Login + JWT</div></div><div class="diagram-arrow">↓</div><div class="diagram-row"><div class="diagram-node">FastAPI</div><div class="diagram-arrow">→</div><div class="diagram-node">PostgreSQL</div></div><div class="diagram-arrow">↓</div><div class="diagram-row"><div class="diagram-node">401 · Identidad</div><div class="diagram-node">403 · Permisos</div><div class="diagram-node" data-emphasis="true">200 · Acceso</div></div></div></div></div></div></header>
+      <article class="spa-content"><section class="spa-section" id="sec-1"><header class="section-head"><span class="section-number">01</span><div><span class="section-kicker">Punto de partida</span><h2 class="section-title">ARRANQUE — Pregunta de negocio</h2><p class="section-summary">La seguridad comienza como una decisión de negocio: proteger personas, datos y operaciones.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Decide antes de continuar</h3></div>
+<br>
+<div class="question-card"><span class="component-label">Pregunta guía</span><p class="question">Imagina que construyes el backend de una biblioteca digital. Cualquier persona con la URL de tu API puede entrar a <code>/<wbr>usuarios</code> y ver el nombre, el correo y el historial de préstamos de <strong>todos</strong> los usuarios. Y puede entrar a <code>/<wbr>usuarios/<wbr>5</code> y hacer <code>DELETE</code>. <strong>¿Es esto un problema técnico o un problema de negocio? ¿Qué pierde la biblioteca si esto pasa?</strong></p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Primera intuición</h3></div>
+<br>
+<div class="panel prose"><p>&quot;Es un problema técnico, falta ponerle una clave a la API.&quot;</p></div>
+<br>
+<div class="panel prose"><p>Los estudiantes suelen ver la seguridad como un candado que se agrega al final, un detalle técnico.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Criterio técnico</h3></div>
+<br>
+<div class="panel prose"><p>Es <strong>ambos</strong>, y sobre todo es un problema de <strong>negocio</strong>.</p></div>
+<br>
+<div class="panel prose"><p>Técnicamente falta control de acceso. Pero el daño es de negocio: se viola la privacidad de los usuarios, se expone información personal (correos, hábitos de lectura), cualquiera puede borrar cuentas ajenas, y la biblioteca queda expuesta legalmente por incumplir protección de datos.</p></div>
+<br>
+<div class="callout" data-tone="info"><span class="component-label">Criterio técnico</span><p>La seguridad <strong>no es un candado que se pone al final</strong>. Es una decisión de arquitectura que define quién es quién y qué puede hacer cada quién. Eso es lo que aprenderemos hoy.</p></div></div></section>
+<section class="spa-section" id="sec-2"><header class="section-head"><span class="section-number">02</span><div><span class="section-kicker">Riesgo real</span><h2 class="section-title">EL PROBLEMA — Una API sin seguridad es una casa sin puertas</h2><p class="section-summary">Toda API real debe identificar a quien llama y limitar lo que puede hacer.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Por qué existe este tema?</h3></div>
+<br>
+<div class="panel prose"><p>Hasta ahora, todas nuestras APIs (Módulo 1 y 2) tenían una característica peligrosa que no habíamos nombrado:</p></div>
+<br>
+<div class="panel prose"><p><strong>Estaban completamente abiertas.</strong></p></div>
+<br>
+<div class="panel prose"><p>Cualquiera que conociera la URL podía crear, leer, editar y borrar datos. En clase eso estaba bien: estábamos aprendiendo a construir. Pero ninguna API real funciona así.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>El problema en dos preguntas</h3></div>
+<br>
+<div class="panel prose"><p>Toda aplicación seria debe responder dos preguntas antes de dejar pasar una petición:</p></div>
+<br>
+<div class="panel prose"><ol><li><strong>¿Quién eres?</strong> → Autenticación</li><li><strong>¿Qué tienes permitido hacer?</strong> → Autorización</li></ol></div>
+<br>
+<div class="panel prose"><p>Nuestra API de biblioteca no sabe responder ninguna de las dos. Hoy le enseñamos a responder ambas.</p></div></div></section>
+<section class="spa-section" id="sec-3"><header class="section-head"><span class="section-number">03</span><div><span class="section-kicker">Contexto profesional</span><h2 class="section-title">CASO DE NEGOCIO — Cómo lo hacen los grandes</h2><p class="section-summary">Netflix, un banco y la biblioteca comparten el mismo patrón de acceso.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Netflix</h3></div>
+<br>
+<div class="panel prose"><p>Cuando abres Netflix, primero inicias sesión (<strong>autenticación</strong>: demuestras quién eres). Después, tu perfil solo ve <strong>tus</strong> listas, no las del vecino. Y un perfil infantil no puede ver contenido para adultos (<strong>autorización</strong>: qué puedes hacer).</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Un banco</h3></div>
+<br>
+<div class="panel prose"><p>El cajero automático primero te pide tarjeta y clave (autenticación). Luego solo te deja ver <strong>tus</strong> cuentas, no las de otro cliente (autorización). Nadie discute que esto sea &quot;opcional&quot; o &quot;para el final&quot;. Es el corazón del sistema.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Nuestra biblioteca</h3></div>
+<br>
+<div class="panel prose"><p>Es el mismo patrón, a menor escala:</p></div>
+<br>
+<div class="panel prose"><ul><li>Un <strong>usuario</strong> inicia sesión y solo ve y gestiona <strong>sus</strong> préstamos.</li><li>Un <strong>administrador</strong> puede gestionar usuarios y libros.</li><li>Nadie sin identificarse puede tocar nada sensible.</li></ul></div></div></section>
+<section class="spa-section" id="sec-4"><header class="section-head"><span class="section-number">04</span><div><span class="section-kicker">Modelo mental</span><h2 class="section-title">MODELO MENTAL — La discoteca</h2><p class="section-summary">La cédula, la manilla y las zonas permitidas conectan autenticación, token y autorización.</p></div></header><div><div class="bento-grid"><div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"></circle><path d="M5 20c1.2-4 4.2-6 7-6s5.8 2 7 6"></path></svg></span><h3>Autenticación</h3></div><p>Confirma la identidad: el portero valida quién eres.</p></div><div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span><h3>Token JWT</h3></div><p>Transporta una credencial firmada entre peticiones.</p></div><div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15 15 9"></path><path d="M8 13 4.5 16.5a2.5 2.5 0 1 0 3.5 3.5L11.5 16"></path><path d="M16 11l3.5-3.5a2.5 2.5 0 1 0-3.5-3.5L12.5 8"></path></svg></span><h3>Autorización</h3></div><p>Decide qué acciones y datos corresponden a esa identidad.</p></div></div><br><div class="panel prose"><p>Antes de cualquier definición técnica, construyamos la intuición.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>La escena</h3></div>
+<br>
+<div class="panel prose"><p>Piensa en una discoteca con seguridad en la puerta.</p></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Autenticación = el portero revisa tu cédula.</strong> Confirma que eres quien dices ser. Si tu cédula es válida, entras.</p></div>
+<br>
+<div class="panel prose"><p><strong>El token = la manilla que te ponen en la muñeca.</strong> Una vez validado, te dan una manilla. Ya no tienes que mostrar la cédula en cada puerta interna: basta enseñar la manilla.</p></div>
+<br>
+<div class="panel prose"><p><strong>Autorización = qué zonas te deja entrar la manilla.</strong> Una manilla normal entra a la pista. Una manilla VIP entra a la zona VIP. La misma manilla, distintos permisos.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Por qué esta analogía importa</h3></div>
+<br>
+<div class="panel prose"><p>El <strong>token JWT</strong> es exactamente esa manilla: una credencial que llevas contigo y muestras en cada petición, para no tener que mandar usuario y contraseña cada vez.</p></div>
+<br>
+<div class="panel prose"><p>Conserva esta imagen mental: conecta autenticación, token y autorización durante todo el proyecto.</p></div></div></section>
+<section class="spa-section" id="sec-5"><header class="section-head"><span class="section-number">05</span><div><span class="section-kicker">Fundamentos</span><h2 class="section-title">DEFINICIONES TÉCNICAS</h2><p class="section-summary">Distingue identidad de permisos antes de escribir una sola línea de seguridad.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Autenticación (Authentication)</h3></div>
+<br>
+<div class="panel prose"><p><strong>Definición técnica.</strong> Proceso de verificar la identidad de quien hace una petición. Responde: <em>¿eres realmente quien dices ser?</em></p></div>
+<br>
+<div class="panel prose"><p><strong>Explicación sencilla.</strong> Es el portero revisando tu cédula.</p></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Aplicación profesional.</strong> El endpoint de login: recibe usuario y contraseña, y si coinciden con lo guardado, confirma la identidad.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Autorización (Authorization)</h3></div>
+<br>
+<div class="panel prose"><p><strong>Definición técnica.</strong> Proceso de determinar qué recursos y acciones tiene permitido un usuario ya autenticado. Responde: <em>¿qué puedes hacer?</em></p></div>
+<br>
+<div class="panel prose"><p><strong>Explicación sencilla.</strong> Es la manilla que define a qué zonas entras.</p></div>
+<br>
+<div class="panel prose"><p><strong>Aplicación profesional.</strong> Un endpoint que solo permite acceso a usuarios con rol <code>admin</code>. Ya sabemos quién es (autenticado), ahora revisamos si puede (autorizado).</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Diferencia clave (no confundir nunca)</h3></div>
+<br>
+<div class="spa-nav" aria-label="Tabla desplazable"><div class="panel prose"><table><thead><tr><th></th><th>Pregunta</th><th>Ejemplo</th></tr></thead><tbody><tr><td><strong>Autenticación</strong></td><td>¿Quién eres?</td><td>Iniciar sesión</td></tr><tr><td><strong>Autorización</strong></td><td>¿Qué puedes hacer?</td><td>Solo admin borra usuarios</td></tr></tbody></table></div></div>
+<br>
+<div class="panel prose"><p>Primero autenticación, después autorización. Siempre en ese orden. No puedes revisar qué puede hacer alguien si todavía no sabes quién es.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Decide antes de continuar</h3></div>
+<br>
+<div class="question-card"><span class="component-label">Pregunta guía</span><p class="question">Si alguien está <strong>autenticado</strong>, ¿significa que puede hacer cualquier cosa en el sistema?</p></div>
+<br>
+<div class="panel prose"><p><strong>Primera intuición.</strong> &quot;Sí, si ya inició sesión, ya tiene acceso.&quot;</p></div>
+<br>
+<div class="panel prose"><p><strong>Criterio técnico.</strong> No. Autenticado significa que sabemos <strong>quién es</strong>, pero no que pueda hacer <strong>todo</strong>. Un usuario normal inició sesión (está autenticado), pero no puede borrar a otros usuarios (no está autorizado para eso). Son dos capas independientes.</p></div></div></section>
+<section class="spa-section" id="sec-6"><header class="section-head"><span class="section-number">06</span><div><span class="section-kicker">Token firmado</span><h2 class="section-title">JWT — ¿Qué es y por qué se usa?</h2><p class="section-summary">Comprende qué firma JWT, qué información expone y por qué debe expirar.</p></div></header><div><div class="visual-panel" aria-label="Anatomía de un token JWT"><div class="flow"><div class="flow-step"><strong>Header</strong><p>Declara el algoritmo de firma.</p></div><div class="flow-step"><strong>Payload</strong><p>Transporta identidad y expiración; se puede leer.</p></div><div class="flow-step"><strong>Signature</strong><p>Detecta cualquier alteración del contenido.</p></div></div></div><br><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>El problema que resuelve JWT</h3></div>
+<br>
+<div class="panel prose"><p>Ya validamos al usuario en el login. Pero HTTP tiene una característica incómoda: <strong>no recuerda nada entre una petición y la siguiente.</strong></p></div>
+<br>
+<div class="panel prose"><p>Cada petición llega &quot;en blanco&quot;, como si fuera la primera vez. Entonces, ¿cómo sabe la API en la petición número 50 que ya iniciaste sesión en la número 1?</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Dos respuestas posibles</h3></div>
+<br>
+<div class="panel prose"><p><strong>Opción antigua (sesiones en servidor).</strong> El servidor guarda en su memoria &quot;el usuario 5 ya inició sesión&quot;. Problema: si tienes muchos servidores, cada uno tendría que recordarlo. No escala bien.</p></div>
+<br>
+<div class="panel prose"><p><strong>Opción moderna (JWT).</strong> El servidor no recuerda nada. En su lugar, le entrega al cliente una <strong>credencial firmada</strong> (el token). El cliente la manda en cada petición. El servidor solo verifica la firma. No necesita memoria. Escala perfecto.</p></div>
+<br>
+<div class="panel prose"><p>Esta es la manilla de la discoteca: no hay una lista en la puerta, la prueba la llevas tú puesta.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>JWT — definición</h3></div>
+<br>
+<div class="panel prose"><p><strong>Definición técnica.</strong> JWT (JSON Web Token) es un estándar para transmitir información entre dos partes de forma <strong>compacta y firmada digitalmente</strong>. La firma garantiza que nadie alteró el contenido.</p></div>
+<br>
+<div class="panel prose"><p><strong>Explicación sencilla.</strong> Es un carnet que lleva tu información y un sello imposible de falsificar. Cualquiera puede leerlo, pero nadie puede modificarlo sin romper el sello.</p></div>
+<br>
+<div class="panel prose"><p><strong>Aplicación profesional.</strong> Tras el login, la API genera un JWT con el id del usuario. El cliente lo guarda y lo envía en cada petición. La API verifica el sello y sabe quién eres sin volver a pedir contraseña.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Anatomía de un JWT — las tres partes</h3></div>
+<br>
+<div class="panel prose"><p>Un JWT es un texto largo dividido en <strong>tres partes separadas por puntos</strong>:</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="01"><div class="code-head"><div><span class="code-context">LEER ESTRUCTURA</span><span class="code-file">token JWT</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-plaintext">xxxxx.yyyyy.zzzzz</code></pre></div></div>
+<br>
+<div class="panel prose"><p>Cada parte tiene un nombre y una función:</p></div>
+<br>
+<div class="panel prose"><p><strong>1. Header (encabezado).</strong> Dice qué algoritmo se usó para firmar. Ejemplo: <code>HS256</code>.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>2. Payload (carga).</strong> Los datos que transporta: el id del usuario, cuándo expira. <strong>Ojo: esto NO va encriptado, solo codificado.</strong> Cualquiera puede leerlo. Nunca metas una contraseña aquí.</p></div>
+<br>
+<div class="panel prose"><p><strong>3. Signature (firma).</strong> El sello de seguridad. Se calcula combinando header + payload + una <strong>clave secreta</strong> que solo el servidor conoce. Si alguien cambia una coma del payload, la firma deja de coincidir y el token se rechaza.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Actividad práctica — inspeccionar un token real</h3></div>
+<br>
+<div class="panel prose"><p>Abre jwt.io (o un visor equivalente) y pega un token de ejemplo.</p></div>
+<br>
+<div class="panel prose"><p>Observa en pantalla:</p></div>
+<br>
+<div class="panel prose"><ul><li>Que el <strong>payload se lee</strong> sin ninguna clave (por eso no se guardan secretos ahí).</li><li>Que si cambias <strong>una sola letra</strong> del payload, la firma se pone en rojo (inválida).</li></ul></div>
+<br>
+<div class="panel prose"><p>Esto ancla el concepto: <strong>el JWT no oculta información, garantiza que no fue alterada.</strong></p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Decide antes de continuar</h3></div>
+<br>
+<div class="question-card"><span class="component-label">Pregunta guía</span><p class="question">Si el payload de un JWT se puede leer sin ninguna clave, ¿es seguro guardar ahí la contraseña del usuario &quot;para tenerla a mano&quot;?</p></div>
+<br>
+<div class="panel prose"><p><strong>Primera intuición.</strong> &quot;Como el token está firmado y es seguro, sí se puede.&quot;</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Criterio técnico.</strong> No, jamás. El payload está <strong>codificado, no encriptado</strong>: cualquiera que intercepte el token lo lee en segundos. La firma protege contra <strong>modificación</strong>, no contra <strong>lectura</strong>. En el payload solo va información no sensible: el id del usuario y la expiración. Nunca contraseñas ni datos privados.</p></div></div></section>
+<section class="spa-section" id="sec-7"><header class="section-head"><span class="section-number">07</span><div><span class="section-kicker">Contraseñas</span><h2 class="section-title">HASHING DE CONTRASEÑAS — Antes de tocar la base de datos</h2><p class="section-summary">La contraseña nunca se guarda ni se recupera: se compara mediante un hash bcrypt.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>El problema</h3></div>
+<br>
+<div class="callout" data-tone="info"><span class="component-label">Criterio técnico</span><p>Vamos a guardar usuarios con contraseña. Primera decisión de ingeniería, y es crítica:</p></div>
+<br>
+<div class="panel prose"><p><strong>¿Guardamos la contraseña tal cual la escribió el usuario?</strong></p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p>Nunca. Si alguien roba la base de datos, tendría todas las contraseñas en texto plano. Y como la gente repite contraseñas, comprometerías también sus correos y bancos.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>La solución — hashing</h3></div>
+<br>
+<div class="panel prose"><p><strong>Definición técnica.</strong> Un <em>hash</em> es el resultado de aplicar una función matemática de una sola vía a un texto. De la contraseña sale el hash, pero del hash <strong>no se puede volver</strong> a la contraseña.</p></div>
+<br>
+<div class="panel prose"><p><strong>Explicación sencilla.</strong> Es como licuar una fruta: de la fruta sacas el jugo, pero del jugo no puedes reconstruir la fruta.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Aplicación profesional.</strong> Guardamos el hash, nunca la contraseña. Cuando el usuario inicia sesión, hasheamos lo que escribió y comparamos los dos hashes. Si coinciden, la contraseña es correcta, y nunca tuvimos que almacenar el original.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>bcrypt — la herramienta</h3></div>
+<br>
+<div class="panel prose"><p>Usaremos <strong>bcrypt</strong>, un algoritmo de hashing diseñado específicamente para contraseñas. Es lento a propósito: eso hace que un atacante que intente adivinar millones de contraseñas se demore una eternidad.</p></div>
+<br>
+<div class="panel prose"><p>Lo manejaremos a través de <strong>passlib</strong>, una librería que nos da una interfaz limpia sobre bcrypt.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Decide antes de continuar</h3></div>
+<br>
+<div class="question-card"><span class="component-label">Pregunta guía</span><p class="question">Si guardamos solo el hash y no la contraseña, ¿cómo verificamos después que el usuario escribió la contraseña correcta al iniciar sesión?</p></div>
+<br>
+<div class="panel prose"><p><strong>Primera intuición.</strong> &quot;Habría que desencriptar el hash para comparar.&quot;</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Criterio técnico.</strong> No se puede desencriptar (es de una sola vía, es el punto). Lo que hacemos es: tomamos la contraseña que el usuario escribió <strong>ahora</strong>, le aplicamos el mismo hash, y comparamos ese hash nuevo con el que guardamos. Si son idénticos, la contraseña es correcta. Nunca reconstruimos el original.</p></div></div></section>
+<section class="spa-section" id="sec-8"><header class="section-head"><span class="section-number">08</span><div><span class="section-kicker">Checkpoint de proyecto</span><h2 class="section-title">MANOS A LA OBRA — Preparar el proyecto</h2><p class="section-summary">Crea desde cero el proyecto, el entorno, las dependencias y la arquitectura por capas.</p></div></header><div><div class="panel prose"><p>Ya entendimos el problema y la teoría. Ahora construimos.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Qué vamos a construir</h3></div>
+<br>
+<div class="panel prose"><p>Una API de biblioteca con:</p></div>
+<br>
+<div class="panel prose"><ul><li><strong>Usuarios</strong> con rol (admin / usuario) y contraseña hasheada</li><li><strong>Libros</strong> con inventario</li><li><strong>Préstamos</strong> que conectan usuario y libro</li><li><strong>Login con JWT</strong> y <strong>endpoints protegidos</strong></li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Paso 1 — Crear la carpeta del proyecto</h3></div>
+<br>
+<div class="panel prose"><p>Abrimos PowerShell y creamos la carpeta desde donde queramos trabajar.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-tipo="terminal" data-code-id="02"><div class="code-head"><div><span class="code-context">CREAR CARPETA</span><span class="code-file">carpeta de trabajo</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-bash">mkdir biblioteca_api</code></pre></div></div>
+<br>
+<div class="panel prose"><p>Entramos a ella.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-tipo="terminal" data-code-id="03"><div class="code-head"><div><span class="code-context">ENTRAR A LA CARPETA</span><span class="code-file">carpeta de trabajo</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-bash">cd biblioteca_api</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Paso 2 — Crear el entorno virtual</h3></div>
+<br>
+<div class="panel prose"><p>Creamos el entorno virtual con el lanzador de Python de Windows.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-tipo="terminal" data-code-id="04"><div class="code-head"><div><span class="code-context">CREAR ENTORNO VIRTUAL</span><span class="code-file">biblioteca_api/</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-bash">py -m venv venv</code></pre></div></div>
+<br>
+<div class="callout" data-tone="warning"><p><strong>Nota importante (repaso del Módulo 2).</strong> Usamos <code>py</code>, no <code>python</code>. En Windows, <code>py</code> fuerza el lanzador oficial y crea la carpeta <code>Scripts</code> correcta. Si usan <code>python</code> desde Git Bash, puede crear una carpeta <code>bin</code> que rompe la activación en PowerShell.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Paso 3 — Activar el entorno virtual</h3></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-tipo="terminal" data-code-id="05"><div class="code-head"><div><span class="code-context">ACTIVAR ENTORNO VIRTUAL</span><span class="code-file">biblioteca_api/</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-bash">venv\Scripts\activate</code></pre></div></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Al inicio de la línea aparece <code>(<wbr>venv)<wbr></code>. Eso confirma que el entorno está activo.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Paso 4 — Crear el archivo de dependencias</h3></div>
+<br>
+<div class="panel prose"><p>Antes de instalar, declaramos <strong>todo</strong> lo que el proyecto necesita en un solo archivo. Esto es buena práctica profesional: cualquiera puede reconstruir el entorno con un solo comando.</p></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>requirements.<wbr>txt</code> · <strong>Ubicación:</strong> raíz de <code>biblioteca_<wbr>api</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="06"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">requirements.txt</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-plaintext">fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg[binary]
+pydantic[email]
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt==4.0.1
+python-multipart</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación del <code>requirements.<wbr>txt</code> — cada línea tiene una razón</h3></div>
+<br>
+<div class="panel prose"><p>No copiamos dependencias porque sí. Cada una cumple un papel:</p></div>
+<br>
+<div class="panel prose"><ul><li><code>fastapi</code> — el framework (Módulo 1).</li><li><code>uvicorn[standard]</code> — el servidor que corre la API (Módulo 1).</li><li><code>sqlalchemy</code> — el ORM para hablar con la base de datos (Módulo 2).</li><li><code>psycopg[binary]</code> — el driver de PostgreSQL (Módulo 2).</li><li><code>pydantic[email]</code> — Pydantic, con soporte extra para validar correos.</li><li><code>python-<wbr>jose[cryptography]</code> — <strong>nuevo:</strong> crea y verifica los tokens JWT.</li><li><code>passlib[bcrypt]</code> — <strong>nuevo:</strong> hashea y verifica contraseñas.</li><li><code>bcrypt=<wbr>=<wbr>4.<wbr>0.<wbr>1</code> — <strong>nuevo y deliberado:</strong> ver la nota de abajo.</li><li><code>python-<wbr>multipart</code> — <strong>nuevo:</strong> necesario para que el login reciba usuario y contraseña como formulario.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Por qué fijamos <code>bcrypt=<wbr>=<wbr>4.<wbr>0.<wbr>1</code> (decisión de ingeniería, no capricho)</h3></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p>Las versiones nuevas de <code>bcrypt</code> (4.1 en adelante) cambiaron una parte interna que <code>passlib</code> necesita leer. El resultado es un error molesto al arrancar que dice, en resumen, que no puede leer la versión de bcrypt.</p></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p>No rompe del todo, pero ensucia la consola y a veces falla el hash. Fijar <code>bcrypt=<wbr>=<wbr>4.<wbr>0.<wbr>1</code> es la combinación estable y probada con <code>passlib</code>. Lo dejamos escrito para que nadie tropiece con eso en clase ni en producción.</p></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p><strong>Cómo se lee el error si aparece.</strong> En la consola verás un mensaje sobre &quot;error reading bcrypt version&quot; y una referencia a un atributo <code>_<wbr>_<wbr>about_<wbr>_<wbr></code> que no existe. Si lo ves, es exactamente este problema de versiones.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Paso 5 — Instalar todo</h3></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-tipo="terminal" data-code-id="07"><div class="code-head"><div><span class="code-context">INSTALAR DEPENDENCIAS</span><span class="code-file">biblioteca_api/</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-bash">pip install -r requirements.txt</code></pre></div></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Una lista de descargas terminando en <code>Successfully installed .<wbr>.<wbr>.<wbr></code> con todos los paquetes. Sin errores en rojo.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>IA como copiloto</h3></div>
+<br>
+<div class="panel prose"><p>Un buen prompt para que la IA te ayude aquí:</p></div>
+<br>
+<div class="callout" data-tone="info"><p>&quot;Genera un requirements.txt para una API en FastAPI con PostgreSQL, SQLAlchemy y autenticación JWT con bcrypt. Estoy en Windows.&quot;</p></div>
+<br>
+<div class="panel prose"><p><strong>Qué validar de la respuesta.</strong> Que incluya <code>python-<wbr>multipart</code> (la IA lo olvida seguido) y que no ponga una versión de <code>bcrypt</code> incompatible con <code>passlib</code>. Si la IA no fija <code>bcrypt</code>, tú sabes que debes hacerlo. Ese criterio es lo que te hace ingeniera y no copiadora.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Paso 6 — Estructura de carpetas</h3></div>
+<br>
+<div class="panel prose"><p>Creamos la estructura por capas utilizada en los módulos anteriores del Módulo 1 y 2, más una carpeta nueva: <code>auth</code>.</p></div>
+<br>
+<div class="panel prose"><p>📍 Estructura final de <code>biblioteca_<wbr>api</code>:</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="08"><div class="code-head"><div><span class="code-context">ESTRUCTURA FINAL</span><span class="code-file">biblioteca_api/</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-plaintext">biblioteca_api/
+│
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── database.py
+│   │
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── usuario.py
+│   │   ├── libro.py
+│   │   └── prestamo.py
+│   │
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── usuario.py
+│   │   ├── libro.py
+│   │   └── prestamo.py
+│   │
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── usuario_service.py
+│   │   ├── libro_service.py
+│   │   └── prestamo_service.py
+│   │
+│   ├── routers/
+│   │   ├── __init__.py
+│   │   ├── usuario_router.py
+│   │   ├── libro_router.py
+│   │   ├── prestamo_router.py
+│   │   └── auth_router.py
+│   │
+│   └── auth/
+│       ├── __init__.py
+│       ├── seguridad.py
+│       └── dependencias.py
+│
+└── requirements.txt</code></pre></div></div>
+<br>
+<div class="callout" data-tone="info"><p><strong>Qué es nuevo aquí.</strong> La carpeta <code>auth/<wbr></code> es la única novedad estructural. Todo lo demás (models, schemas, services, routers) es la arquitectura por capas utilizada en los módulos anteriores. La seguridad merece su propia capa porque es una responsabilidad separada (principio de responsabilidad única, SOLID).</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Cómo crear los <code>_<wbr>_<wbr>init_<wbr>_<wbr>.<wbr>py</code></h3></div>
+<br>
+<div class="callout" data-tone="info"><p><strong>Repaso.</strong> Cada carpeta que Python deba tratar como paquete lleva un archivo <code>_<wbr>_<wbr>init_<wbr>_<wbr>.<wbr>py</code> vacío. Es el &quot;letrero en la puerta&quot; que le dice a Python &quot;aquí adentro hay módulos que puedes importar&quot;.</p></div>
+<br>
+<div class="panel prose"><p>Los creamos vacíos en cada carpeta: <code>app/<wbr></code>, <code>models/<wbr></code>, <code>schemas/<wbr></code>, <code>services/<wbr></code>, <code>routers/<wbr></code>, <code>auth/<wbr></code>.</p></div></div></section>
+<section class="spa-section" id="sec-9"><header class="section-head"><span class="section-number">09</span><div><span class="section-kicker">Persistencia</span><h2 class="section-title">LA BASE DE DATOS — Conexión (repaso Módulo 2)</h2><p class="section-summary">Conecta FastAPI con PostgreSQL mediante sesiones controladas.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Qué construiremos</h3></div>
+<br>
+<div class="panel prose"><p>El archivo que conecta nuestra API con PostgreSQL. Es idéntico en estructura al del Módulo 2; se explica de nuevo porque es la base de todo lo demás.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Antes, en PostgreSQL</h3></div>
+<br>
+<div class="panel prose"><p>Creamos la base de datos vacía desde pgAdmin o DBeaver. La llamamos <code>biblioteca</code>.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="09"><div class="code-head"><div><span class="code-context">EJECUTAR EN POSTGRESQL</span><span class="code-file">pgAdmin o DBeaver</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-sql">CREATE DATABASE biblioteca;</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>El archivo de conexión</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>database.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="10"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/database.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+
+DATABASE_URL = &quot;postgresql+psycopg://postgres:TU_CLAVE@localhost:5432/biblioteca&quot;
+
+engine = create_engine(DATABASE_URL)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — repasemos cada pieza</h3></div>
+<br>
+<div class="panel prose"><ul><li><code>DATABASE_<wbr>URL</code> — la dirección de la base. Formato: <code>postgresql+<wbr>psycopg:<wbr>/<wbr>/<wbr>usuario:<wbr>clave@<wbr>host:<wbr>puerto/<wbr>nombre_<wbr>base</code>. Reemplaza <code>TU_<wbr>CLAVE</code> por tu contraseña real de PostgreSQL.</li><li><code>create_<wbr>engine</code> — el motor, el traductor entre Python y PostgreSQL.</li><li><code>SessionLocal</code> — la fábrica de sesiones. Cada petición abre una sesión para hablar con la base.</li><li><code>Base</code> — la clase madre de la que heredarán todos nuestros modelos.</li><li><code>get_<wbr>db</code> — la dependencia que entrega una sesión y la cierra sola al terminar, gracias al <code>yield</code> y el <code>finally</code>.</li></ul></div>
+<br>
+<div class="callout" data-tone="warning"><p><strong>Advertencia de la vida real (repaso Módulo 2).</strong> Si usas Copilot, revisa que <strong>no</strong> cambie la cadena de conexión por SQLite. A veces reemplaza esta línea por algo con <code>sqlite:<wbr>/<wbr>/<wbr>/<wbr></code>. Si tu app de repente &quot;funciona&quot; pero no ves los datos en PostgreSQL, es esto.</p></div></div></section>
+<section class="spa-section" id="sec-10"><header class="section-head"><span class="section-number">10</span><div><span class="section-kicker">Modelo de datos</span><h2 class="section-title">MODELOS — Las tablas (repaso + rol de usuario)</h2><p class="section-summary">Modela usuarios, libros y préstamos con relaciones y responsabilidades claras.</p></div></header><div><div class="visual-panel" aria-label="Relaciones entre Usuario, Préstamo y Libro"><svg class="erd-diagram" viewBox="0 0 900 320" role="img" aria-labelledby="erdTituloBiblioteca erdDescBiblioteca"><title id="erdTituloBiblioteca">Modelo entidad-relación de la biblioteca</title><desc id="erdDescBiblioteca">Un usuario tiene muchos préstamos y un libro participa en muchos préstamos a lo largo del tiempo.</desc><rect class="erd-box" x="20" y="70" width="230" height="170" rx="14"></rect><text class="erd-title" x="42" y="102">Usuario</text><line class="erd-divider" x1="32" y1="116" x2="238" y2="116"></line><text class="erd-field" x="42" y="142">id : Integer</text><text class="erd-field" x="42" y="164">email : String</text><text class="erd-field" x="42" y="186">password_hash : String</text><text class="erd-field" x="42" y="208">rol : String</text><rect class="erd-box" data-emphasis="true" x="335" y="55" width="230" height="200" rx="14"></rect><text class="erd-title" x="357" y="87">Préstamo</text><line class="erd-divider" x1="347" y1="101" x2="553" y2="101"></line><text class="erd-field" x="357" y="127">id : Integer</text><text class="erd-field" x="357" y="149">usuario_id : ForeignKey</text><text class="erd-field" x="357" y="171">libro_id : ForeignKey</text><text class="erd-field" x="357" y="193">estado : String</text><rect class="erd-box" x="650" y="70" width="230" height="170" rx="14"></rect><text class="erd-title" x="672" y="102">Libro</text><line class="erd-divider" x1="662" y1="116" x2="868" y2="116"></line><text class="erd-field" x="672" y="142">id : Integer</text><text class="erd-field" x="672" y="164">título : String</text><text class="erd-field" x="672" y="186">copias_disponibles : Integer</text><line class="erd-line" x1="250" y1="155" x2="335" y2="155"></line><text class="erd-label" x="265" y="146">1</text><text class="erd-label" x="315" y="146">N</text><line class="erd-line" x1="565" y1="155" x2="650" y2="155"></line><text class="erd-label" x="580" y="146">N</text><text class="erd-label" x="630" y="146">1</text></svg></div><br><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Qué construiremos</h3></div>
+<br>
+<div class="panel prose"><p>Tres modelos: <code>Usuario</code>, <code>Libro</code>, <code>Prestamo</code>. Los modelos definen las tablas reales en PostgreSQL.</p></div>
+<br>
+<div class="callout" data-tone="info"><p><strong>Repaso.</strong> Un <strong>modelo</strong> (SQLAlchemy) es la tabla. Un <strong>schema</strong> (Pydantic) es el contrato de la API. No son lo mismo y no se mezclan. El modelo vive en la base; el schema viaja por la red.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Modelo Usuario</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>models/<wbr>usuario.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="11"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/models/usuario.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Usuario(Base):
+    __tablename__ = &quot;usuarios&quot;
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=False, index=True)
+    password_hash = Column(String, nullable=False)
+    rol = Column(String, nullable=False, default=&quot;usuario&quot;)
+
+    prestamos = relationship(&quot;Prestamo&quot;, back_populates=&quot;usuario&quot;)</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — Usuario, campo por campo</h3></div>
+<br>
+<div class="panel prose"><ul><li><code>_<wbr>_<wbr>tablename_<wbr>_<wbr> =<wbr> &quot;usuarios&quot;</code> — nombre real de la tabla en PostgreSQL.</li><li><code>id</code> — clave primaria, autonumérica, indexada.</li><li><code>nombre</code> — texto obligatorio (<code>nullable=<wbr>False</code>).</li><li><code>email</code> — texto obligatorio y <strong>único</strong> (<code>unique=<wbr>True</code>): dos usuarios no pueden tener el mismo correo. Indexado porque buscaremos por él en el login.</li><li><code>password_<wbr>hash</code> — <strong>aquí NO va la contraseña, va su hash.</strong> El nombre del campo lo deja claro a propósito.</li><li><code>rol</code> — texto con valor por defecto <code>&quot;usuario&quot;</code>. Este campo es la base de la <strong>autorización</strong>: distingue <code>admin</code> de <code>usuario</code>.</li><li><code>prestamos</code> — la relación con la tabla de préstamos. Un usuario tiene muchos préstamos (1:N).</li></ul></div>
+<br>
+<div class="callout" data-tone="info"><p><strong>Decisión de diseño.</strong> ¿Por qué <code>rol</code> es un <code>String</code> y no una tabla aparte de roles? Porque hoy solo tenemos dos roles fijos. Un <code>String</code> es suficiente y simple. Si el sistema creciera a decenas de roles con permisos configurables, un junior lo dejaría así; un senior crearía una tabla <code>roles</code>. Hoy, para dos roles, la tabla sería sobre-ingeniería.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Modelo Libro</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>models/<wbr>libro.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="12"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/models/libro.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Libro(Base):
+    __tablename__ = &quot;libros&quot;
+
+    id = Column(Integer, primary_key=True, index=True)
+    titulo = Column(String, nullable=False)
+    autor = Column(String, nullable=False)
+    copias_disponibles = Column(Integer, nullable=False, default=1)
+
+    prestamos = relationship(&quot;Prestamo&quot;, back_populates=&quot;libro&quot;)</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — Libro</h3></div>
+<br>
+<div class="panel prose"><ul><li><code>titulo</code> y <code>autor</code> — texto obligatorio.</li><li><code>copias_<wbr>disponibles</code> — cuántos ejemplares quedan para prestar. Por defecto 1. Este número bajará cuando alguien pida el libro (lógica de negocio que va en el service).</li><li><code>prestamos</code> — relación 1:N: un libro puede estar en muchos préstamos a lo largo del tiempo.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Modelo Prestamo</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>models/<wbr>prestamo.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="13"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/models/prestamo.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Prestamo(Base):
+    __tablename__ = &quot;prestamos&quot;
+
+    id = Column(Integer, primary_key=True, index=True)
+    usuario_id = Column(Integer, ForeignKey(&quot;usuarios.id&quot;), nullable=False)
+    libro_id = Column(Integer, ForeignKey(&quot;libros.id&quot;), nullable=False)
+    estado = Column(String, nullable=False, default=&quot;activo&quot;)
+
+    usuario = relationship(&quot;Usuario&quot;, back_populates=&quot;prestamos&quot;)
+    libro = relationship(&quot;Libro&quot;, back_populates=&quot;prestamos&quot;)</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — Prestamo</h3></div>
+<br>
+<div class="panel prose"><p>Este modelo es el corazón del dominio y repasa las <strong>relaciones del Módulo 2</strong>.</p></div>
+<br>
+<div class="panel prose"><ul><li><code>usuario_<wbr>id</code> — <strong>llave foránea</strong> hacia <code>usuarios.<wbr>id</code>. Dice de quién es el préstamo.</li><li><code>libro_<wbr>id</code> — <strong>llave foránea</strong> hacia <code>libros.<wbr>id</code>. Dice qué libro se prestó.</li><li><code>estado</code> — <code>&quot;activo&quot;</code> mientras el libro está prestado, <code>&quot;devuelto&quot;</code> cuando lo regresan.</li><li><code>usuario</code> y <code>libro</code> — las relaciones que permiten, desde un préstamo, acceder directo al objeto usuario y al objeto libro.</li></ul></div>
+<br>
+<div class="callout" data-tone="info"><p><strong>Por qué importa para la seguridad.</strong> El campo <code>usuario_<wbr>id</code> es la clave de la <strong>autorización</strong> más adelante: nos permitirá verificar que un usuario solo vea y edite <strong>sus</strong> préstamos, no los de otros.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Decide antes de continuar</h3></div>
+<br>
+<div class="question-card"><span class="component-label">Pregunta guía</span><p class="question">¿Por qué el préstamo guarda <code>usuario_<wbr>id</code> y <code>libro_<wbr>id</code> en vez de guardar el nombre del usuario y el título del libro directamente?</p></div>
+<br>
+<div class="panel prose"><p><strong>Primera intuición.</strong> &quot;Para no repetir el texto en cada préstamo.&quot;</p></div>
+<br>
+<div class="panel prose"><p><strong>Criterio técnico.</strong> Correcto en parte, pero hay más. Guardamos los <strong>id</strong> (llaves foráneas) porque son la fuente de verdad: si el usuario cambia su nombre o el libro corrige su título, el préstamo sigue apuntando al registro correcto sin quedar desactualizado. Guardar el texto copiado rompería la integridad de los datos. Esto es normalización, y se trabajó en el Módulo 2.</p></div></div></section>
+<section class="spa-section" id="sec-11"><header class="section-head"><span class="section-number">11</span><div><span class="section-kicker">Contratos de API</span><h2 class="section-title">SCHEMAS — Los contratos de la API (repaso + decisión de seguridad)</h2><p class="section-summary">Separa los datos que entran de los datos que la API puede devolver.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Qué construiremos</h3></div>
+<br>
+<div class="callout" data-tone="info"><span class="component-label">Criterio técnico</span><p>Los schemas de Pydantic que definen qué entra y qué sale de la API. Aquí aparece una <strong>decisión de seguridad crítica</strong> que no existía en los módulos anteriores.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>La decisión clave: la contraseña entra pero NUNCA sale</h3></div>
+<br>
+<div class="panel prose"><p>Piensen esto:</p></div>
+<br>
+<div class="panel prose"><ul><li>Cuando alguien <strong>se registra</strong>, la API <strong>recibe</strong> una contraseña en texto plano.</li><li>Cuando alguien <strong>consulta</strong> un usuario, la API <strong>jamás</strong> debe devolver ni la contraseña ni su hash.</li></ul></div>
+<br>
+<div class="panel prose"><p>Por eso necesitamos <strong>schemas distintos para entrada y salida</strong>. Este es el uso profesional real de separar schemas.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Schema de Usuario</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>schemas/<wbr>usuario.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="14"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/schemas/usuario.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from pydantic import BaseModel, EmailStr
+
+class UsuarioCreate(BaseModel):
+    nombre: str
+    email: EmailStr
+    password: str
+
+class UsuarioRespuesta(BaseModel):
+    id: int
+    nombre: str
+    email: EmailStr
+    rol: str
+
+    class Config:
+        from_attributes = True</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — dos schemas, dos propósitos</h3></div>
+<br>
+<div class="panel prose"><p><strong><code>UsuarioCreate</code> (entrada).</strong> Lo que el cliente envía para registrarse.</p></div>
+<br>
+<div class="panel prose"><ul><li><code>email:<wbr> EmailStr</code> — Pydantic valida que sea un correo con formato real. Si mandan <code>&quot;hola&quot;</code> sin arroba, lo rechaza automáticamente. (Por esto instalamos <code>pydantic[email]</code>.)</li><li><code>password:<wbr> str</code> — la contraseña en texto plano. <strong>Solo existe en la entrada.</strong> La recibimos, la hasheamos, y jamás la volvemos a exponer.</li></ul></div>
+<br>
+<div class="panel prose"><p><strong><code>UsuarioRespuesta</code> (salida).</strong> Lo que la API devuelve.</p></div>
+<br>
+<div class="panel prose"><ul><li><strong>No tiene <code>password</code> ni <code>password_<wbr>hash</code>.</strong> Esa omisión es intencional y es la seguridad en acción.</li><li><code>from_<wbr>attributes =<wbr> True</code> — permite que Pydantic construya la respuesta directamente desde el objeto SQLAlchemy.</li></ul></div>
+<br>
+<div class="callout" data-tone="warning"><p><strong>Regla de oro.</strong> El hash de la contraseña nunca cruza la frontera de la API hacia afuera. Si un schema de salida incluye la contraseña, es un fallo de seguridad grave.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Schema de Libro</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>schemas/<wbr>libro.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="15"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/schemas/libro.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from pydantic import BaseModel
+
+class LibroCreate(BaseModel):
+    titulo: str
+    autor: str
+    copias_disponibles: int = 1
+
+class LibroRespuesta(BaseModel):
+    id: int
+    titulo: str
+    autor: str
+    copias_disponibles: int
+
+    class Config:
+        from_attributes = True</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — Libro</h3></div>
+<br>
+<div class="panel prose"><ul><li><code>LibroCreate</code> — lo que se envía para registrar un libro. <code>copias_<wbr>disponibles:<wbr> int =<wbr> 1</code> tiene valor por defecto: si no lo mandan, asume 1.</li><li><code>LibroRespuesta</code> — lo que se devuelve, incluyendo el <code>id</code> generado por la base.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Schema de Prestamo</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>schemas/<wbr>prestamo.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="16"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/schemas/prestamo.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from pydantic import BaseModel
+
+class PrestamoCreate(BaseModel):
+    libro_id: int
+
+class PrestamoRespuesta(BaseModel):
+    id: int
+    usuario_id: int
+    libro_id: int
+    estado: str
+
+    class Config:
+        from_attributes = True</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — Prestamo, y una decisión de seguridad sutil</h3></div>
+<br>
+<div class="panel prose"><p>Observa <code>PrestamoCreate</code>: <strong>solo pide <code>libro_<wbr>id</code>.</strong></p></div>
+<br>
+<div class="panel prose"><p>¿Por qué no pide también <code>usuario_<wbr>id</code>? Porque el usuario del préstamo <strong>no lo decide el cliente</strong>: lo sabremos por el <strong>token</strong>. Si dejáramos que el cliente mandara <code>usuario_<wbr>id</code>, cualquiera podría crear préstamos a nombre de otro.</p></div>
+<br>
+<div class="callout" data-tone="info"><p><strong>Esto es seguridad por diseño.</strong> El id del dueño del préstamo saldrá del token autenticado, no del cuerpo de la petición. Lo implementaremos cuando protejamos el endpoint. Conserva esta idea como criterio de diseño.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Decide antes de continuar</h3></div>
+<br>
+<div class="question-card"><span class="component-label">Pregunta guía</span><p class="question">¿Por qué <code>UsuarioRespuesta</code> no incluye el campo de la contraseña, si el modelo en la base sí lo tiene?</p></div>
+<br>
+<div class="panel prose"><p><strong>Primera intuición.</strong> &quot;Porque se nos olvidó ponerlo.&quot;</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Criterio técnico.</strong> Es intencional, no un olvido. El modelo (la tabla) guarda el <code>password_<wbr>hash</code> porque lo necesita para verificar logins. Pero el schema de respuesta lo omite a propósito para que <strong>nunca salga</strong> de la API. La tabla y el contrato de la API tienen responsabilidades distintas: por eso separamos modelo y schema. Exponer el hash sería una fuga de seguridad.</p></div></div></section>
+<section class="spa-section" id="sec-12"><header class="section-head"><span class="section-number">12</span><div><span class="section-kicker">Núcleo de seguridad</span><h2 class="section-title">LA CAPA DE SEGURIDAD — El corazón nuevo de la clase</h2><p class="section-summary">Centraliza hashing, verificación y ciclo de vida del token.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Qué construiremos</h3></div>
+<br>
+<div class="panel prose"><p>El archivo <code>seguridad.<wbr>py</code>, que reúne todas las herramientas de seguridad en un solo lugar:</p></div>
+<br>
+<div class="panel prose"><ul><li>Hashear una contraseña</li><li>Verificar una contraseña contra su hash</li><li>Crear un token JWT</li><li>Verificar y decodificar un token JWT</li></ul></div>
+<br>
+<div class="callout" data-tone="info"><p><strong>Por qué en su propia capa (SOLID).</strong> La seguridad es una responsabilidad única y transversal. Aislarla evita repetir código y facilita cambiarla sin tocar la lógica de negocio.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>El archivo de seguridad</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>auth/<wbr>seguridad.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="17"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/auth/seguridad.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from datetime import datetime, timedelta, timezone
+from jose import jwt, JWTError
+from passlib.context import CryptContext
+
+SECRET_KEY = &quot;clave-secreta-de-la-biblioteca-cambiar-en-produccion&quot;
+ALGORITHM = &quot;HS256&quot;
+MINUTOS_EXPIRACION_TOKEN = 60
+
+pwd_context = CryptContext(schemes=[&quot;bcrypt&quot;], deprecated=&quot;auto&quot;)
+
+def hashear_password(password: str) -&gt; str:
+    return pwd_context.hash(password)
+
+def verificar_password(password_plano: str, password_hash: str) -&gt; bool:
+    return pwd_context.verify(password_plano, password_hash)
+
+def crear_token(datos: dict) -&gt; str:
+    datos_a_codificar = datos.copy()
+    expira = datetime.now(timezone.utc) + timedelta(minutes=MINUTOS_EXPIRACION_TOKEN)
+    datos_a_codificar.update({&quot;exp&quot;: expira})
+    token = jwt.encode(datos_a_codificar, SECRET_KEY, algorithm=ALGORITHM)
+    return token
+
+def verificar_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        return None</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — la configuración</h3></div>
+<br>
+<div class="panel prose"><ul><li><code>SECRET_<wbr>KEY</code> — la clave secreta con la que se firman los tokens. <strong>Es el sello de la manilla.</strong> Quien la tenga, puede falsificar tokens. Por eso en producción va en una variable de entorno, nunca en el código.</li><li><code>ALGORITHM =<wbr> &quot;HS256&quot;</code> — el algoritmo de firma. Estándar y seguro para este caso.</li><li><code>MINUTOS_<wbr>EXPIRACION_<wbr>TOKEN =<wbr> 60</code> — el token vale una hora. Después expira y hay que volver a iniciar sesión. Un token eterno es un riesgo: si lo roban, sirve para siempre.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — el contexto de hashing</h3></div>
+<br>
+<div class="panel prose"><ul><li><code>pwd_<wbr>context =<wbr> CryptContext(<wbr>schemes=<wbr>[&quot;bcrypt&quot;],<wbr> deprecated=<wbr>&quot;auto&quot;)<wbr></code> — configura passlib para usar bcrypt. <code>deprecated=<wbr>&quot;auto&quot;</code> deja que passlib maneje esquemas viejos si algún día migramos. Esta es la línea exacta que exige <code>bcrypt=<wbr>=<wbr>4.<wbr>0.<wbr>1</code> para no dar el error de versión.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — hashear y verificar</h3></div>
+<br>
+<div class="panel prose"><ul><li><code>hashear_<wbr>password</code> — recibe la contraseña en texto plano y devuelve su hash. Lo usaremos al <strong>registrar</strong>.</li><li><code>verificar_<wbr>password</code> — recibe la contraseña que el usuario escribió ahora y el hash guardado, y devuelve <code>True</code> o <code>False</code>. Lo usaremos al <strong>iniciar sesión</strong>. Observa: <strong>no desencripta nada</strong>, solo compara.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — crear el token</h3></div>
+<br>
+<div class="panel prose"><p><code>crear_<wbr>token</code> construye la manilla:</p></div>
+<br>
+<div class="panel prose"><ul><li><code>datos.<wbr>copy(<wbr>)<wbr></code> — copiamos los datos para no modificar el original.</li><li><code>expira</code> — calculamos el momento exacto de expiración: ahora + 60 minutos. Usamos <code>timezone.<wbr>utc</code> para trabajar en hora universal y evitar líos de zona horaria.</li><li><code>datos_<wbr>a_<wbr>codificar.<wbr>update(<wbr>{&quot;exp&quot;:<wbr> expira})<wbr></code> — agregamos la expiración. <code>exp</code> es un campo estándar del JWT que las librerías reconocen automáticamente.</li><li><code>jwt.<wbr>encode(<wbr>.<wbr>.<wbr>.<wbr>)<wbr></code> — firma y arma el token con la clave secreta.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — verificar el token</h3></div>
+<br>
+<div class="panel prose"><p><code>verificar_<wbr>token</code> revisa la manilla:</p></div>
+<br>
+<div class="panel prose"><ul><li><code>jwt.<wbr>decode(<wbr>.<wbr>.<wbr>.<wbr>)<wbr></code> — verifica la firma <strong>y</strong> la expiración automáticamente. Si el token fue alterado o ya venció, lanza <code>JWTError</code>.</li><li>El <code>try/<wbr>except</code> — si algo falla, devolvemos <code>None</code> en vez de reventar. Quien llame a esta función sabrá que <code>None</code> significa &quot;token inválido&quot;.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Decide antes de continuar</h3></div>
+<br>
+<div class="question-card"><span class="component-label">Pregunta guía</span><p class="question">¿Por qué el token debe expirar? ¿No sería más cómodo para el usuario que durara para siempre?</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Primera intuición.</strong> &quot;Sí, así el usuario no tendría que volver a iniciar sesión nunca.&quot;</p></div>
+<br>
+<div class="panel prose"><p><strong>Criterio técnico.</strong> Más cómodo, pero peligroso. Si un token no expira y alguien lo roba (por ejemplo, de un computador público), tendría acceso <strong>para siempre</strong>. La expiración limita la ventana de daño: un token robado sirve máximo una hora. Es el equilibrio entre comodidad y seguridad, y en seguridad casi siempre gana la protección. Por eso existen los <em>refresh tokens</em>, que veremos más adelante.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>IA como copiloto — con criterio</h3></div>
+<br>
+<div class="panel prose"><p>Si le pides a la IA &quot;genera la lógica de JWT para FastAPI&quot;, casi siempre te dará algo parecido a esto. Pero revisa <strong>siempre</strong> dos cosas:</p></div>
+<br>
+<div class="panel prose"><ol><li>Que use <code>datetime.<wbr>now(<wbr>timezone.<wbr>utc)<wbr></code> y no el <code>datetime.<wbr>utcnow(<wbr>)<wbr></code> viejo (está en desuso).</li><li>Que la <code>SECRET_<wbr>KEY</code> no venga escrita como un valor real &quot;de ejemplo&quot; que luego se te olvide cambiar.</li></ol></div>
+<br>
+<div class="panel prose"><p>La IA escribe el patrón; tú garantizas que sea seguro. Ese es tu trabajo.</p></div></div></section>
+<section class="spa-section" id="sec-13"><header class="section-head"><span class="section-number">13</span><div><span class="section-kicker">Lógica de negocio</span><h2 class="section-title">SERVICES — La lógica de negocio (repaso Módulo 1 y 2)</h2><p class="section-summary">Protege las reglas de negocio dentro de services reutilizables.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Qué construiremos</h3></div>
+<br>
+<div class="panel prose"><p>Los services contienen la lógica de negocio, separada de los routers. Repasamos el patrón del Módulo 1, ahora con seguridad adentro.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Service de Usuario</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>services/<wbr>usuario_<wbr>service.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="18"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/services/usuario_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from fastapi import HTTPException
+from app.models.usuario import Usuario
+from app.schemas.usuario import UsuarioCreate
+from app.auth.seguridad import hashear_password
+
+def registrar_usuario(db: Session, datos: UsuarioCreate) -&gt; Usuario:
+    existente = db.query(Usuario).filter(Usuario.email == datos.email).first()
+    if existente:
+        raise HTTPException(status_code=400, detail=&quot;El email ya está registrado&quot;)
+
+    nuevo_usuario = Usuario(
+        nombre=datos.nombre,
+        email=datos.email,
+        password_hash=hashear_password(datos.password),
+        rol=&quot;usuario&quot;
+    )
+    db.add(nuevo_usuario)
+    db.commit()
+    db.refresh(nuevo_usuario)
+    return nuevo_usuario
+
+def listar_usuarios(db: Session):
+    return db.query(Usuario).all()
+
+def obtener_usuario(db: Session, usuario_id: int) -&gt; Usuario:
+    usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail=&quot;Usuario no encontrado&quot;)
+    return usuario
+
+def eliminar_usuario(db: Session, usuario_id: int):
+    usuario = obtener_usuario(db, usuario_id)
+    db.delete(usuario)
+    db.commit()
+    return {&quot;mensaje&quot;: &quot;Usuario eliminado&quot;}</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — <code>registrar_<wbr>usuario</code>, el paso de seguridad</h3></div>
+<br>
+<div class="panel prose"><p>Esta función es donde la seguridad toca la base de datos.</p></div>
+<br>
+<div class="panel prose"><ul><li>Primero revisamos si el email ya existe. Si sí, lanzamos error 400 (repaso: manejo de errores del Módulo 1).</li><li>Al crear el usuario, <code>password_<wbr>hash=<wbr>hashear_<wbr>password(<wbr>datos.<wbr>password)<wbr></code>: <strong>aquí ocurre la magia.</strong> Recibimos la contraseña en texto plano, la hasheamos, y guardamos <strong>solo el hash</strong>. La contraseña original nunca toca la base.</li><li><code>rol=<wbr>&quot;usuario&quot;</code> — todos se registran como usuario normal. Nadie se auto-nombra admin. Los admin se crean por otra vía controlada.</li><li><code>db.<wbr>add /<wbr> commit /<wbr> refresh</code> — el patrón del Módulo 2 para guardar y recuperar el objeto con su id.</li></ul></div>
+<br>
+<div class="callout" data-tone="danger"><p><strong>Decisión de seguridad.</strong> Fijar <code>rol=<wbr>&quot;usuario&quot;</code> en el registro, ignorando cualquier rol que mande el cliente, evita una vulnerabilidad clásica: que alguien se registre mandando <code>&quot;rol&quot;:<wbr> &quot;admin&quot;</code> en el JSON y se vuelva administrador solo.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — el resto del service</h3></div>
+<br>
+<div class="panel prose"><ul><li><code>listar_<wbr>usuarios</code> — devuelve todos. (Más adelante lo protegeremos: solo admin.)</li><li><code>obtener_<wbr>usuario</code> — busca por id, lanza 404 si no existe. Reutilizado por <code>eliminar_<wbr>usuario</code>.</li><li><code>eliminar_<wbr>usuario</code> — reutiliza <code>obtener_<wbr>usuario</code> (no repetimos la búsqueda ni el 404). Esto es reutilización de código, buena práctica del Módulo 1.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Service de Libro</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>services/<wbr>libro_<wbr>service.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="19"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/services/libro_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from fastapi import HTTPException
+from app.models.libro import Libro
+from app.schemas.libro import LibroCreate
+
+def crear_libro(db: Session, datos: LibroCreate) -&gt; Libro:
+    nuevo_libro = Libro(
+        titulo=datos.titulo,
+        autor=datos.autor,
+        copias_disponibles=datos.copias_disponibles
+    )
+    db.add(nuevo_libro)
+    db.commit()
+    db.refresh(nuevo_libro)
+    return nuevo_libro
+
+def listar_libros(db: Session):
+    return db.query(Libro).all()
+
+def obtener_libro(db: Session, libro_id: int) -&gt; Libro:
+    libro = db.query(Libro).filter(Libro.id == libro_id).first()
+    if not libro:
+        raise HTTPException(status_code=404, detail=&quot;Libro no encontrado&quot;)
+    return libro</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — Libro service</h3></div>
+<br>
+<div class="panel prose"><p>Puro CRUD del Módulo 2, sin sorpresas:</p></div>
+<br>
+<div class="panel prose"><ul><li><code>crear_<wbr>libro</code> — guarda un libro nuevo.</li><li><code>listar_<wbr>libros</code> — devuelve todos (esto será público: cualquiera puede ver el catálogo).</li><li><code>obtener_<wbr>libro</code> — busca por id con 404. Lo reutilizará el service de préstamos.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Service de Prestamo</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>services/<wbr>prestamo_<wbr>service.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="20"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/services/prestamo_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from fastapi import HTTPException
+from app.models.prestamo import Prestamo
+from app.services.libro_service import obtener_libro
+
+def crear_prestamo(db: Session, usuario_id: int, libro_id: int) -&gt; Prestamo:
+    libro = obtener_libro(db, libro_id)
+
+    if libro.copias_disponibles &lt; 1:
+        raise HTTPException(status_code=400, detail=&quot;No hay copias disponibles&quot;)
+
+    libro.copias_disponibles -= 1
+
+    nuevo_prestamo = Prestamo(
+        usuario_id=usuario_id,
+        libro_id=libro_id,
+        estado=&quot;activo&quot;
+    )
+    db.add(nuevo_prestamo)
+    db.commit()
+    db.refresh(nuevo_prestamo)
+    return nuevo_prestamo
+
+def listar_prestamos_de_usuario(db: Session, usuario_id: int):
+    return db.query(Prestamo).filter(Prestamo.usuario_id == usuario_id).all()
+
+def devolver_prestamo(db: Session, prestamo_id: int, usuario_id: int) -&gt; Prestamo:
+    prestamo = db.query(Prestamo).filter(Prestamo.id == prestamo_id).first()
+    if not prestamo:
+        raise HTTPException(status_code=404, detail=&quot;Préstamo no encontrado&quot;)
+
+    if prestamo.usuario_id != usuario_id:
+        raise HTTPException(status_code=403, detail=&quot;Este préstamo no es tuyo&quot;)
+
+    prestamo.estado = &quot;devuelto&quot;
+    libro = obtener_libro(db, prestamo.libro_id)
+    libro.copias_disponibles += 1
+    db.commit()
+    db.refresh(prestamo)
+    return prestamo</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — <code>crear_<wbr>prestamo</code></h3></div>
+<br>
+<div class="panel prose"><ul><li>Recibe <code>usuario_<wbr>id</code> como parámetro (vendrá del token, no del cliente).</li><li>Verifica que haya copias antes de prestar (regla de negocio).</li><li><code>libro.<wbr>copias_<wbr>disponibles -<wbr>=<wbr> 1</code> — descuenta inventario. Repaso del patrón de stock del Módulo 2.</li><li>Crea el préstamo con el <code>usuario_<wbr>id</code> recibido y estado <code>&quot;activo&quot;</code>.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — <code>devolver_<wbr>prestamo</code> y la autorización a nivel de datos</h3></div>
+<br>
+<div class="panel prose"><p>Observa esta línea, es clave:</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="21"><div class="code-head"><div><span class="code-context">REVISAR FRAGMENTO</span><span class="code-file">app/services/prestamo_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">if prestamo.usuario_id != usuario_id:
+    raise HTTPException(status_code=403, detail=&quot;Este préstamo no es tuyo&quot;)</code></pre></div></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p>Aquí está la <strong>autorización a nivel de datos</strong>. No basta con estar autenticado: verificamos que el préstamo que quieres devolver <strong>sea tuyo</strong>. Si intentas devolver el préstamo de otro, error <strong>403 Forbidden</strong>.</p></div>
+<br>
+<div class="callout" data-tone="danger"><p><strong>401 vs 403 (concepto nuevo importante).</strong> - <strong>401 Unauthorized</strong> — &quot;no sé quién eres&quot; (falta autenticación o token inválido). - <strong>403 Forbidden</strong> — &quot;sé quién eres, pero esto no te corresponde&quot; (autenticado pero sin permiso). Confundirlos es un error común. 401 es de identidad; 403 es de permisos.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Decide antes de continuar</h3></div>
+<br>
+<div class="question-card"><span class="component-label">Pregunta guía</span><p class="question">Si un usuario está autenticado con un token válido, ¿por qué todavía revisamos si el préstamo es suyo antes de dejarlo devolverlo?</p></div>
+<br>
+<div class="panel prose"><p><strong>Primera intuición.</strong> &quot;Si ya tiene token válido, debería poder hacer la operación.&quot;</p></div>
+<br>
+<div class="panel prose"><p><strong>Criterio técnico.</strong> El token prueba <strong>quién es</strong> (autenticación), pero no le da derecho sobre datos ajenos (autorización). Sin esa verificación, cualquier usuario autenticado podría devolver, o peor, manipular los préstamos de cualquier otro con solo cambiar el id en la URL. La autenticación abre la puerta del edificio; la autorización decide a qué oficinas entras. Ambas son necesarias.</p></div></div></section>
+<section class="spa-section" id="sec-14"><header class="section-head"><span class="section-number">14</span><div><span class="section-kicker">Identidad actual</span><h2 class="section-title">LA DEPENDENCIA <code>get_<wbr>current_<wbr>user</code> — El portero interno</h2><p class="section-summary">Convierte el token en un usuario real antes de ejecutar la ruta.</p></div></header><div><div class="visual-panel" aria-label="Flujo para convertir un token en un usuario autenticado"><div class="flow"><div class="flow-step"><strong>1. Bearer token</strong><p>FastAPI lo extrae del encabezado.</p></div><div class="flow-step"><strong>2. Firma y expiración</strong><p>La capa de seguridad valida el JWT.</p></div><div class="flow-step"><strong>3. Campo sub</strong><p>Se obtiene el id estable del usuario.</p></div><div class="flow-step"><strong>4. Base de datos</strong><p>Se recupera el objeto Usuario.</p></div><div class="flow-step"><strong>5. Endpoint</strong><p>La ruta recibe una identidad confiable.</p></div></div></div><br><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Qué construiremos</h3></div>
+<br>
+<div class="panel prose"><p>La pieza que convierte un token en un usuario real. Es la que protege los endpoints: cualquier ruta que dependa de ella exigirá un token válido.</p></div>
+<br>
+<div class="callout" data-tone="info"><p><strong>Repaso.</strong> <code>Depends</code> se utilizó antes del Módulo 1 (lo usamos con <code>get_<wbr>db</code>). Aquí lo llevamos al siguiente nivel: una dependencia que además <strong>valida seguridad</strong>.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>El flujo que vamos a montar</h3></div>
+<br>
+<div class="panel prose"><ol><li>El cliente manda el token en el encabezado <code>Authorization:<wbr> Bearer &lt;token&gt;</code>.</li><li>FastAPI extrae el token automáticamente con <code>OAuth2PasswordBearer</code>.</li><li>Nuestra dependencia verifica el token y busca al usuario en la base.</li><li>Si todo va bien, el endpoint recibe el objeto <code>Usuario</code> listo para usar.</li></ol></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>El archivo de dependencias</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>auth/<wbr>dependencias.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="22"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/auth/dependencias.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.auth.seguridad import verificar_token
+from app.models.usuario import Usuario
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=&quot;auth/login&quot;)
+
+def obtener_usuario_actual(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -&gt; Usuario:
+    payload = verificar_token(token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail=&quot;Token inválido o expirado&quot;)
+
+    usuario_id = payload.get(&quot;sub&quot;)
+    if usuario_id is None:
+        raise HTTPException(status_code=401, detail=&quot;Token sin identificación&quot;)
+
+    usuario = db.query(Usuario).filter(Usuario.id == int(usuario_id)).first()
+    if usuario is None:
+        raise HTTPException(status_code=401, detail=&quot;Usuario no existe&quot;)
+
+    return usuario
+
+def requerir_admin(usuario: Usuario = Depends(obtener_usuario_actual)) -&gt; Usuario:
+    if usuario.rol != &quot;admin&quot;:
+        raise HTTPException(status_code=403, detail=&quot;Requiere permisos de administrador&quot;)
+    return usuario</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — <code>oauth2_<wbr>scheme</code></h3></div>
+<br>
+<div class="panel prose"><p><code>OAuth2PasswordBearer(<wbr>tokenUrl=<wbr>&quot;auth/<wbr>login&quot;)<wbr></code> — esta línea hace dos cosas:</p></div>
+<br>
+<div class="panel prose"><ul><li>Le enseña a FastAPI a <strong>extraer el token</strong> del encabezado <code>Authorization</code> de cada petición.</li><li>Le dice a Swagger dónde está el login (<code>auth/<wbr>login</code>), lo que activa el <strong>botón &quot;Authorize&quot;</strong> en la interfaz. Ese botón es lo que usaremos para probar.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — <code>obtener_<wbr>usuario_<wbr>actual</code>, paso a paso</h3></div>
+<br>
+<div class="panel prose"><p>Esta es la dependencia estrella. La leemos con calma:</p></div>
+<br>
+<div class="panel prose"><ul><li><code>token:<wbr> str =<wbr> Depends(<wbr>oauth2_<wbr>scheme)<wbr></code> — FastAPI saca el token del encabezado y nos lo entrega.</li><li><code>verificar_<wbr>token(<wbr>token)<wbr></code> — reusamos la función de <code>seguridad.<wbr>py</code>. Si el token es inválido o expiró, devuelve <code>None</code>.</li><li>Si es <code>None</code> → <strong>401</strong>: &quot;no sé quién eres&quot;.</li><li><code>payload.<wbr>get(<wbr>&quot;sub&quot;)<wbr></code> — <code>sub</code> (subject) es el campo estándar del JWT donde guardamos el id del usuario. Lo sacamos.</li><li>Buscamos el usuario en la base por ese id.</li><li>Si todo está bien, <strong>devolvemos el objeto <code>Usuario</code> completo</strong>. El endpoint lo recibe listo.</li></ul></div>
+<br>
+<div class="callout" data-tone="info"><p><strong>Por qué es tan potente.</strong> Cualquier endpoint que escriba <code>Depends(<wbr>obtener_<wbr>usuario_<wbr>actual)<wbr></code> queda protegido automáticamente. Sin token válido, ni siquiera entra a la lógica: FastAPI corta antes con 401.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — <code>requerir_<wbr>admin</code>, la autorización por rol</h3></div>
+<br>
+<div class="panel prose"><p><code>requerir_<wbr>admin</code> es autorización pura:</p></div>
+<br>
+<div class="panel prose"><ul><li><strong>Depende de</strong> <code>obtener_<wbr>usuario_<wbr>actual</code> (primero autentica).</li><li>Luego revisa <code>if usuario.<wbr>rol !=<wbr> &quot;admin&quot;</code>. Si no es admin → <strong>403</strong>.</li><li>Si es admin, lo deja pasar.</li></ul></div>
+<br>
+<div class="panel prose"><p>Esto encadena dependencias: para ser admin, primero hay que estar autenticado. FastAPI resuelve la cadena solo. Elegante y reutilizable.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Decide antes de continuar</h3></div>
+<br>
+<div class="question-card"><span class="component-label">Pregunta guía</span><p class="question">¿Por qué guardamos el id del usuario en el token (<code>sub</code>) y no su nombre o su email?</p></div>
+<br>
+<div class="panel prose"><p><strong>Primera intuición.</strong> &quot;El email sería más fácil de leer y reconocer.&quot;</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Criterio técnico.</strong> El id es la identidad <strong>estable e inmutable</strong>. El email o el nombre pueden cambiar; el id nunca. Si guardáramos el email en el token y el usuario lo cambia, el token viejo apuntaría a un dato desactualizado. Además, el id es más corto y no expone información personal en el payload (que recuerden, se puede leer). El id es la llave correcta.</p></div></div></section>
+<section class="spa-section" id="sec-15"><header class="section-head"><span class="section-number">15</span><div><span class="section-kicker">Entrada al sistema</span><h2 class="section-title">REGISTRO Y LOGIN — Los endpoints de entrada</h2><p class="section-summary">Registra usuarios, valida credenciales y entrega tokens Bearer.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Qué construiremos</h3></div>
+<br>
+<div class="panel prose"><p>El router de autenticación: registro (<code>/<wbr>auth/<wbr>registro</code>) y login (<code>/<wbr>auth/<wbr>login</code>). El login es el que <strong>entrega el token</strong>.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>El router de autenticación</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>routers/<wbr>auth_<wbr>router.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="23"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/routers/auth_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.schemas.usuario import UsuarioCreate, UsuarioRespuesta
+from app.services.usuario_service import registrar_usuario
+from app.models.usuario import Usuario
+from app.auth.seguridad import verificar_password, crear_token
+
+router = APIRouter(prefix=&quot;/auth&quot;, tags=[&quot;Autenticación&quot;])
+
+@router.post(&quot;/registro&quot;, response_model=UsuarioRespuesta)
+def registro(datos: UsuarioCreate, db: Session = Depends(get_db)):
+    return registrar_usuario(db, datos)
+
+@router.post(&quot;/login&quot;)
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
+    usuario = db.query(Usuario).filter(Usuario.email == form_data.username).first()
+
+    if not usuario or not verificar_password(form_data.password, usuario.password_hash):
+        raise HTTPException(status_code=401, detail=&quot;Correo o contraseña incorrectos&quot;)
+
+    token = crear_token({&quot;sub&quot;: str(usuario.id)})
+    return {&quot;access_token&quot;: token, &quot;token_type&quot;: &quot;bearer&quot;}</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — el registro</h3></div>
+<br>
+<div class="panel prose"><ul><li><code>@<wbr>router.<wbr>post(<wbr>&quot;/<wbr>registro&quot;,<wbr> response_<wbr>model=<wbr>UsuarioRespuesta)<wbr></code> — recibe un <code>UsuarioCreate</code>, devuelve un <code>UsuarioRespuesta</code>. Por el <code>response_<wbr>model</code>, FastAPI <strong>filtra la respuesta</strong>: aunque el objeto tenga <code>password_<wbr>hash</code>, solo sale lo que define <code>UsuarioRespuesta</code>. La seguridad se aplica sola.</li><li>Delega todo al service. El router solo conecta; la lógica vive en el service (repaso de capas).</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — el login, la pieza clave</h3></div>
+<br>
+<div class="panel prose"><p>Este endpoint es el que entrega la manilla. Leámoslo con cuidado:</p></div>
+<br>
+<div class="panel prose"><ul><li><code>form_<wbr>data:<wbr> OAuth2PasswordRequestForm =<wbr> Depends(<wbr>)<wbr></code> — <strong>novedad importante.</strong> El login <strong>no recibe JSON</strong>, recibe un <strong>formulario</strong>. Es el estándar OAuth2. Por eso instalamos <code>python-<wbr>multipart</code>. El formulario trae dos campos: <code>username</code> y <code>password</code>.</li><li><strong>Ojo:</strong> OAuth2 llama <code>username</code> al campo de identidad, pero nosotros ahí mandamos el <strong>email</strong>. Es solo el nombre del campo del estándar.</li><li>Buscamos el usuario por email.</li><li><code>if not usuario or not verificar_<wbr>password(<wbr>.<wbr>.<wbr>.<wbr>)<wbr></code> — si el usuario no existe <strong>o</strong> la contraseña no coincide, error 401. Observa: <strong>el mismo mensaje para ambos casos</strong>. Es a propósito.</li><li><code>crear_<wbr>token(<wbr>{&quot;sub&quot;:<wbr> str(<wbr>usuario.<wbr>id)<wbr>})<wbr></code> — creamos el token con el id del usuario en <code>sub</code>. Convertimos a string porque <code>sub</code> debe ser texto.</li><li>Devolvemos <code>access_<wbr>token</code> y <code>token_<wbr>type:<wbr> &quot;bearer&quot;</code>. Ese formato es el que espera Swagger para el botón Authorize.</li></ul></div>
+<br>
+<div class="callout" data-tone="danger"><p><strong>Decisión de seguridad — el mensaje ambiguo.</strong> ¿Por qué no decimos &quot;el correo no existe&quot; o &quot;la contraseña es incorrecta&quot; por separado? Porque le daríamos pistas a un atacante. Si dijéramos &quot;el correo no existe&quot;, podría probar correos hasta encontrar cuáles están registrados. Un mensaje genérico no revela nada. Esto se llama evitar <em>enumeración de usuarios</em>.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Decide antes de continuar</h3></div>
+<br>
+<div class="question-card"><span class="component-label">Pregunta guía</span><p class="question">¿Por qué el mensaje de error del login dice &quot;correo o contraseña incorrectos&quot; en vez de precisar cuál de los dos falló?</p></div>
+<br>
+<div class="panel prose"><p><strong>Primera intuición.</strong> &quot;Sería más útil para el usuario saber exactamente qué se equivocó.&quot;</p></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p><strong>Criterio técnico.</strong> Más útil para el usuario, pero también para un atacante. Si el sistema dijera &quot;ese correo no existe&quot;, alguien podría probar miles de correos y armar una lista de cuáles sí están registrados (enumeración de usuarios). El mensaje ambiguo protege esa información. En seguridad, a veces una peor experiencia de usuario es el precio correcto de la protección.</p></div></div></section>
+<section class="spa-section" id="sec-16"><header class="section-head"><span class="section-number">16</span><div><span class="section-kicker">Control de acceso</span><h2 class="section-title">ROUTERS PROTEGIDOS — Poniendo el candado</h2><p class="section-summary">Aplica acceso público, autenticado o administrativo según cada acción.</p></div></header><div><div class="bento-grid"><div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 15 15 9"></path><path d="M8 13 4.5 16.5a2.5 2.5 0 1 0 3.5 3.5L11.5 16"></path><path d="M16 11l3.5-3.5a2.5 2.5 0 1 0-3.5-3.5L12.5 8"></path></svg></span><h3>Público</h3></div><p>El catálogo se consulta sin credenciales.</p></div><div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"></circle><path d="M5 20c1.2-4 4.2-6 7-6s5.8 2 7 6"></path></svg></span><h3>Usuario autenticado</h3></div><p>Cada persona gestiona únicamente sus préstamos.</p></div><div class="panel prose bento-4"><div class="icon-row"><span class="icon-orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span><h3>Administrador</h3></div><p>Gestiona usuarios e inventario con control por rol.</p></div></div><br><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Qué construiremos</h3></div>
+<br>
+<div class="panel prose"><p>Los routers de usuarios, libros y préstamos, cada uno con el nivel de protección que corresponde. Aquí se ve la seguridad <strong>aplicada</strong> endpoint por endpoint.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Router de Usuarios — solo admin</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>routers/<wbr>usuario_<wbr>router.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="24"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/routers/usuario_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.schemas.usuario import UsuarioRespuesta
+from app.services.usuario_service import listar_usuarios, obtener_usuario, eliminar_usuario
+from app.auth.dependencias import requerir_admin
+from app.models.usuario import Usuario
+
+router = APIRouter(prefix=&quot;/usuarios&quot;, tags=[&quot;Usuarios&quot;])
+
+@router.get(&quot;/&quot;, response_model=list[UsuarioRespuesta])
+def get_usuarios(
+    db: Session = Depends(get_db),
+    admin: Usuario = Depends(requerir_admin)
+):
+    return listar_usuarios(db)
+
+@router.get(&quot;/{usuario_id}&quot;, response_model=UsuarioRespuesta)
+def get_usuario(
+    usuario_id: int,
+    db: Session = Depends(get_db),
+    admin: Usuario = Depends(requerir_admin)
+):
+    return obtener_usuario(db, usuario_id)
+
+@router.delete(&quot;/{usuario_id}&quot;)
+def delete_usuario(
+    usuario_id: int,
+    db: Session = Depends(get_db),
+    admin: Usuario = Depends(requerir_admin)
+):
+    return eliminar_usuario(db, usuario_id)</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — Usuarios, la gestión reservada al admin</h3></div>
+<br>
+<div class="panel prose"><p>Cada endpoint tiene <code>admin:<wbr> Usuario =<wbr> Depends(<wbr>requerir_<wbr>admin)<wbr></code>. Esa línea es el candado:</p></div>
+<br>
+<div class="panel prose"><ul><li>Sin token → 401.</li><li>Con token de usuario normal → 403.</li><li>Con token de admin → pasa.</li></ul></div>
+<br>
+<div class="panel prose"><p>Ver la lista de usuarios, consultar uno o eliminarlo son operaciones sensibles: solo el administrador de la biblioteca las hace. La autorización por rol lo garantiza en cada ruta.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Router de Libros — lectura pública, escritura admin</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>routers/<wbr>libro_<wbr>router.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="25"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/routers/libro_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.schemas.libro import LibroCreate, LibroRespuesta
+from app.services.libro_service import crear_libro, listar_libros, obtener_libro
+from app.auth.dependencias import requerir_admin
+from app.models.usuario import Usuario
+
+router = APIRouter(prefix=&quot;/libros&quot;, tags=[&quot;Libros&quot;])
+
+@router.get(&quot;/&quot;, response_model=list[LibroRespuesta])
+def get_libros(db: Session = Depends(get_db)):
+    return listar_libros(db)
+
+@router.get(&quot;/{libro_id}&quot;, response_model=LibroRespuesta)
+def get_libro(libro_id: int, db: Session = Depends(get_db)):
+    return obtener_libro(db, libro_id)
+
+@router.post(&quot;/&quot;, response_model=LibroRespuesta)
+def post_libro(
+    datos: LibroCreate,
+    db: Session = Depends(get_db),
+    admin: Usuario = Depends(requerir_admin)
+):
+    return crear_libro(db, datos)</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — Libros, distintos niveles según la acción</h3></div>
+<br>
+<div class="callout" data-tone="info"><span class="component-label">Criterio técnico</span><p>Aquí mostramos una decisión de diseño real: <strong>no todos los endpoints de una entidad tienen la misma protección.</strong></p></div>
+<br>
+<div class="panel prose"><ul><li><strong>Ver el catálogo</strong> (<code>GET</code>) → <strong>público</strong>. Cualquiera puede consultar qué libros hay, incluso sin cuenta. No hay <code>Depends</code> de seguridad.</li><li><strong>Agregar un libro</strong> (<code>POST</code>) → <strong>solo admin</strong>. Modificar el inventario es una operación administrativa.</li></ul></div>
+<br>
+<div class="callout" data-tone="info"><p><strong>Criterio profesional.</strong> La pregunta no es &quot;¿protejo esta entidad?&quot; sino &quot;¿protejo esta <strong>acción</strong>?&quot;. Leer el catálogo es inofensivo; alterarlo no. Cada endpoint se evalúa por separado.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Router de Préstamos — cada quien los suyos</h3></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>routers/<wbr>prestamo_<wbr>router.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="26"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/routers/prestamo_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.schemas.prestamo import PrestamoCreate, PrestamoRespuesta
+from app.services.prestamo_service import (
+    crear_prestamo,
+    listar_prestamos_de_usuario,
+    devolver_prestamo,
+)
+from app.auth.dependencias import obtener_usuario_actual
+from app.models.usuario import Usuario
+
+router = APIRouter(prefix=&quot;/prestamos&quot;, tags=[&quot;Préstamos&quot;])
+
+@router.post(&quot;/&quot;, response_model=PrestamoRespuesta)
+def post_prestamo(
+    datos: PrestamoCreate,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(obtener_usuario_actual)
+):
+    return crear_prestamo(db, usuario.id, datos.libro_id)
+
+@router.get(&quot;/mis-prestamos&quot;, response_model=list[PrestamoRespuesta])
+def get_mis_prestamos(
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(obtener_usuario_actual)
+):
+    return listar_prestamos_de_usuario(db, usuario.id)
+
+@router.put(&quot;/{prestamo_id}/devolver&quot;, response_model=PrestamoRespuesta)
+def put_devolver(
+    prestamo_id: int,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(obtener_usuario_actual)
+):
+    return devolver_prestamo(db, prestamo_id, usuario.id)</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — Préstamos, la seguridad más fina</h3></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p>Aquí se cierra el círculo de la clase. Observa cómo el <code>usuario.<wbr>id</code> sale del token, <strong>nunca del cliente</strong>:</p></div>
+<br>
+<div class="panel prose"><ul><li><code>crear_<wbr>prestamo(<wbr>db,<wbr> usuario.<wbr>id,<wbr> datos.<wbr>libro_<wbr>id)<wbr></code> — el <code>usuario.<wbr>id</code> viene de <code>obtener_<wbr>usuario_<wbr>actual</code> (del token). El cliente solo eligió qué libro (<code>datos.<wbr>libro_<wbr>id</code>). <strong>Imposible crear un préstamo a nombre de otro.</strong></li><li><code>get_<wbr>mis_<wbr>prestamos</code> — filtra por <code>usuario.<wbr>id</code> del token. Cada quien ve <strong>solo los suyos</strong>. Aunque quisieras ver los de otro, la consulta ni siquiera te lo permite.</li><li><code>put_<wbr>devolver</code> — pasa <code>usuario.<wbr>id</code> al service, que verifica que el préstamo sea tuyo (el 403 que ya montamos).</li></ul></div>
+<br>
+<div class="callout" data-tone="info"><p><strong>Este es el corazón del negocio protegido.</strong> Ten presente el gancho del inicio: &quot;un usuario solo debe ver y editar SUS préstamos&quot;. Aquí está resuelto, a nivel de datos, usando el token como fuente de identidad.</p></div></div></section>
+<section class="spa-section" id="sec-17"><header class="section-head"><span class="section-number">17</span><div><span class="section-kicker">Integración</span><h2 class="section-title"><code>main.<wbr>py</code> — Armar todo</h2><p class="section-summary">Registra modelos y routers para levantar la API completa.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Qué construiremos</h3></div>
+<br>
+<div class="panel prose"><p>El archivo que une todo: crea las tablas y registra los routers.</p></div>
+<br>
+<div class="panel prose"><p>📍 <strong>Archivo:</strong> <code>app/<wbr>main.<wbr>py</code> · <strong>Acción:</strong> crear desde cero.</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="27"><div class="code-head"><div><span class="code-context">CREAR DESDE CERO</span><span class="code-file">app/main.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from fastapi import FastAPI
+from app.database import Base, engine
+
+from app.models import usuario, libro, prestamo
+
+from app.routers import auth_router, usuario_router, libro_router, prestamo_router
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title=&quot;Biblioteca API&quot;, description=&quot;API con autenticación JWT&quot;)
+
+app.include_router(auth_router.router)
+app.include_router(usuario_router.router)
+app.include_router(libro_router.router)
+app.include_router(prestamo_router.router)
+
+@app.get(&quot;/&quot;)
+def raiz():
+    return {&quot;mensaje&quot;: &quot;API de Biblioteca funcionando&quot;}</code></pre></div></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Explicación — <code>main.<wbr>py</code></h3></div>
+<br>
+<div class="panel prose"><ul><li><code>from app.<wbr>models import usuario,<wbr> libro,<wbr> prestamo</code> — <strong>importamos los modelos antes de crear las tablas.</strong> Si no los importa, SQLAlchemy no sabe que existen y no crea las tablas. Error clásico.</li><li><code>Base.<wbr>metadata.<wbr>create_<wbr>all(<wbr>bind=<wbr>engine)<wbr></code> — crea todas las tablas en PostgreSQL si no existen. Repaso del Módulo 2.</li><li><code>app.<wbr>include_<wbr>router(<wbr>.<wbr>.<wbr>.<wbr>)<wbr></code> — registramos cada router. El de <code>auth</code> primero, por orden lógico.</li><li>El endpoint raíz <code>/<wbr></code> solo confirma que la API está viva.</li></ul></div>
+<br>
+<div class="callout" data-tone="danger"><p><strong>Advertencia (repaso).</strong> Si Copilot mete rutas de disco absolutas en los imports (algo como <code>from Preparacion.<wbr>Modulo3.<wbr>.<wbr>.<wbr></code>), la app no arranca con <code>ModuleNotFoundError</code>. Los imports siempre relativos al proyecto: <code>from app.<wbr>routers import .<wbr>.<wbr>.<wbr></code>.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Levantar el servidor</h3></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p>Desde la carpeta <code>biblioteca_<wbr>api</code> (la que contiene <code>app/<wbr></code>, <strong>nunca</strong> desde adentro de <code>app</code>):</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-tipo="terminal" data-code-id="28"><div class="code-head"><div><span class="code-context">INICIAR SERVIDOR</span><span class="code-file">biblioteca_api/</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-bash">uvicorn app.main:app --reload</code></pre></div></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Mensajes de Uvicorn terminando en <code>Application startup complete</code>. Y en PostgreSQL, las tablas <code>usuarios</code>, <code>libros</code> y <code>prestamos</code> ya creadas.</p></div>
+<br>
+<div class="panel prose"><p>Abrimos el navegador en <code>http:<wbr>/<wbr>/<wbr>127.<wbr>0.<wbr>0.<wbr>1:<wbr>8000/<wbr>docs</code>.</p></div></div></section>
+<section class="spa-section" id="sec-18"><header class="section-head"><span class="section-number">18</span><div><span class="section-kicker">Verificación observable</span><h2 class="section-title">PRUEBAS GUIADAS EN SWAGGER — Paso a paso</h2><p class="section-summary">Ejecuta catorce pruebas guiadas y observa 200, 401 y 403 en contexto.</p></div></header><div><div class="panel prose"><p>Esta es la parte que demuestra que la seguridad funciona. Síguela <strong>en orden</strong>, viendo cómo la API pasa de abierta a protegida.</p></div>
+<br>
+<div class="callout" data-tone="info"><p>Todas las pruebas se hacen en <code>http:<wbr>/<wbr>/<wbr>127.<wbr>0.<wbr>0.<wbr>1:<wbr>8000/<wbr>docs</code>.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Comparación observable — antes y después de proteger</h3></div>
+<br>
+<div class="panel prose"><p>Para observar el contraste: antes de agregar <code>Depends(<wbr>requerir_<wbr>admin)<wbr></code> a los usuarios, muestra que <strong>cualquiera</strong> puede hacer <code>GET /<wbr>usuarios</code> y <code>DELETE /<wbr>usuarios/<wbr>1</code>. Luego agregas la protección y repites: ahora pide token. El contraste es la mejor lección.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 1 — Registrar un usuario normal</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> Que se puede crear una cuenta y que la respuesta <strong>no</strong> trae la contraseña.</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> Endpoint <code>POST /<wbr>auth/<wbr>registro</code>. Clic en &quot;Try it out&quot;.</p></div>
+<br>
+<div class="panel prose"><p><strong>Qué enviar.</strong> En el cuerpo:</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="29"><div class="code-head"><div><span class="code-context">ENVIAR EN SWAGGER</span><span class="code-file">Prueba 1 — Registrar un usuario normal</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  &quot;nombre&quot;: &quot;Ana Lectora&quot;,
+  &quot;email&quot;: &quot;ana@correo.com&quot;,
+  &quot;password&quot;: &quot;clave1234&quot;
+}</code></pre></div></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Respuesta <strong>200</strong> con:</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="30"><div class="code-head"><div><span class="code-context">SALIDA VERIFICADA</span><span class="code-file">Prueba 1 — Registrar un usuario normal</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  &quot;id&quot;: 1,
+  &quot;nombre&quot;: &quot;Ana Lectora&quot;,
+  &quot;email&quot;: &quot;ana@correo.com&quot;,
+  &quot;rol&quot;: &quot;usuario&quot;
+}</code></pre></div></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> Observa: <strong>no aparece la contraseña ni el hash.</strong> El <code>response_<wbr>model</code> la filtró. La seguridad de salida funciona.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 2 — Verificar el hash en la base de datos</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> Que en PostgreSQL la contraseña está hasheada, no en texto plano.</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> En pgAdmin o DBeaver, tabla <code>usuarios</code>.</p></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> En la columna <code>password_<wbr>hash</code>, algo como <code>$2b$12$.<wbr>.<wbr>.<wbr>.<wbr></code> (un texto largo ilegible), <strong>nunca</strong> <code>clave1234</code>.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> Aunque alguien robe la base, no obtiene las contraseñas. Esto es lo que protege a los usuarios de verdad.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 3 — Login y obtención del token</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> Que con las credenciales correctas recibimos un token.</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> Endpoint <code>POST /<wbr>auth/<wbr>login</code>. &quot;Try it out&quot;.</p></div>
+<br>
+<div class="panel prose"><p><strong>Qué enviar.</strong> Ten presente: es <strong>formulario</strong>, no JSON. Swagger muestra dos campos:</p></div>
+<br>
+<div class="panel prose"><ul><li><code>username</code>: <code>ana@<wbr>correo.<wbr>com</code> (aquí va el email)</li><li><code>password</code>: <code>clave1234</code></li></ul></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Respuesta <strong>200</strong> con:</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="31"><div class="code-head"><div><span class="code-context">SALIDA VERIFICADA</span><span class="code-file">Prueba 3 — Login y obtención del token</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  &quot;access_token&quot;: &quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;,
+  &quot;token_type&quot;: &quot;bearer&quot;
+}</code></pre></div></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> Ese <code>access_<wbr>token</code> es la manilla. Cópialo (lo usaremos ya).</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 4 — Login con contraseña incorrecta</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> Que el sistema rechaza credenciales malas sin dar pistas.</p></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p><strong>Dónde.</strong> <code>POST /<wbr>auth/<wbr>login</code>. Mismo email, contraseña <code>incorrecta999</code>.</p></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Respuesta <strong>401</strong> con detalle &quot;Correo o contraseña incorrectos&quot;.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> No dice si falló el correo o la contraseña. Protección contra enumeración de usuarios.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 5 — Intentar ver préstamos SIN token</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> Que un endpoint protegido bloquea el acceso sin token.</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> Endpoint <code>GET /<wbr>prestamos/<wbr>mis-<wbr>prestamos</code>. &quot;Try it out&quot; y &quot;Execute&quot; <strong>sin autorizar</strong>.</p></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Respuesta <strong>401</strong> &quot;Not authenticated&quot;.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> El candado funciona. Sin manilla, no entras.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 6 — Autorizarse en Swagger (usar el token)</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> Cómo se envía el token en cada petición.</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> Botón verde <strong>&quot;Authorize&quot;</strong> arriba a la derecha en Swagger.</p></div>
+<br>
+<div class="panel prose"><p><strong>Cómo.</strong> Clic en Authorize. En el campo, Swagger ya sabe que es tipo Bearer: solo pega el <code>access_<wbr>token</code> de la Prueba 3 (sin escribir &quot;Bearer&quot;, Swagger lo agrega). Clic en Authorize y luego Close.</p></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> El candado de los endpoints ahora aparece cerrado. Estás autenticada.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 7 — Crear un libro SIN ser admin</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> Que un usuario normal no puede crear libros (autorización por rol).</p></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p><strong>Dónde.</strong> Como todavía no existe un administrador, usa el usuario normal ya autorizado. Endpoint <code>POST /<wbr>libros</code>.</p></div>
+<br>
+<div class="panel prose"><p><strong>Qué enviar.</strong></p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="32"><div class="code-head"><div><span class="code-context">ENVIAR EN SWAGGER</span><span class="code-file">Prueba 7 — Crear un libro SIN ser admin</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  &quot;titulo&quot;: &quot;Cien años de soledad&quot;,
+  &quot;autor&quot;: &quot;Gabriel García Márquez&quot;,
+  &quot;copias_disponibles&quot;: 3
+}</code></pre></div></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Respuesta <strong>403</strong> &quot;Requiere permisos de administrador&quot;.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> Estás autenticada (401 no aparece), pero <strong>no autorizada</strong> para esta acción. La diferencia 401 vs 403 en vivo.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 8 — Crear un usuario admin</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> Cómo se crea un admin (por vía controlada, ya que el registro siempre pone rol &quot;usuario&quot;).</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> En pgAdmin/DBeaver, sobre un usuario ya registrado, o creando uno nuevo.</p></div>
+<br>
+<div class="panel prose"><p><strong>Cómo.</strong> La forma más simple para clase: registra otro usuario (<code>admin@<wbr>correo.<wbr>com</code>) por <code>/<wbr>auth/<wbr>registro</code>, y luego en la base cambia su rol a <code>admin</code>:</p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="33"><div class="code-head"><div><span class="code-context">EJECUTAR EN POSTGRESQL</span><span class="code-file">pgAdmin o DBeaver</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-sql">UPDATE usuarios SET rol = 'admin' WHERE email = 'admin@correo.com';</code></pre></div></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> El usuario ahora tiene <code>rol =<wbr> 'admin'</code> en la tabla.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> Nadie se auto-nombra admin desde la API. El ascenso es una acción deliberada y controlada.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 9 — Login como admin y crear un libro</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> Que el admin sí puede crear libros.</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> <code>POST /<wbr>auth/<wbr>login</code> con <code>admin@<wbr>correo.<wbr>com</code>. Copia el nuevo token, ve a &quot;Authorize&quot;, reemplaza el token anterior. Luego <code>POST /<wbr>libros</code> con el mismo JSON de la Prueba 7.</p></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Respuesta <strong>200</strong> con el libro creado y su <code>id</code>.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> Mismo endpoint, distinto rol, distinto resultado. La autorización en acción.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 10 — Pedir un libro prestado (como usuario normal)</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> El flujo de negocio completo con seguridad.</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> Autorízate de nuevo como el usuario normal (<code>ana@<wbr>correo.<wbr>com</code>). Endpoint <code>POST /<wbr>prestamos</code>.</p></div>
+<br>
+<div class="panel prose"><p><strong>Qué enviar.</strong></p></div>
+<br>
+<div class="spa-nav" aria-label="Código desplazable"><div class="code-block" data-code-id="34"><div class="code-head"><div><span class="code-context">ENVIAR EN SWAGGER</span><span class="code-file">Prueba 10 — Pedir un libro prestado (como usuario normal)</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  &quot;libro_id&quot;: 1
+}</code></pre></div></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Respuesta <strong>200</strong> con el préstamo creado: <code>usuario_<wbr>id</code> es el de Ana (¡salió del token, no lo mandamos!), <code>estado:<wbr> &quot;activo&quot;</code>. Y en la base, <code>copias_<wbr>disponibles</code> del libro bajó en 1.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> El préstamo quedó a nombre de Ana sin que ella mandara su id. El token es la fuente de identidad.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 11 — Ver mis préstamos</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> Que cada usuario ve solo los suyos.</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> <code>GET /<wbr>prestamos/<wbr>mis-<wbr>prestamos</code>, autorizada como Ana.</p></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Respuesta <strong>200</strong> con la lista de préstamos de Ana, incluyendo el recién creado.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> No hay forma de pedir &quot;los préstamos del usuario 2&quot;. El filtro sale del token.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 12 — Devolver un préstamo ajeno (debe fallar)</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> La autorización a nivel de datos (el 403 del service).</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> Registra un tercer usuario, pídele un préstamo (anota su <code>prestamo_<wbr>id</code>). Luego, autorizada como Ana, intenta <code>PUT /<wbr>prestamos/<wbr>{ese_<wbr>id}/<wbr>devolver</code>.</p></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Respuesta <strong>403</strong> &quot;Este préstamo no es tuyo&quot;.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> Ni siquiera con token válido puedes tocar datos de otro. Autenticada, pero no autorizada sobre ese dato.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 13 — Devolver mi propio préstamo (debe funcionar)</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> El caso feliz de la devolución.</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> Autorizada como Ana, <code>PUT /<wbr>prestamos/<wbr>{id_<wbr>de_<wbr>ana}/<wbr>devolver</code>.</p></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Respuesta <strong>200</strong>, préstamo con <code>estado:<wbr> &quot;devuelto&quot;</code>, y <code>copias_<wbr>disponibles</code> del libro subió en 1.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> El círculo completo: pedir y devolver, todo protegido y coherente con el inventario.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Prueba 14 — Token expirado o manipulado (opcional, alto impacto)</h3></div>
+<br>
+<div class="panel prose"><p><strong>Qué probamos.</strong> Que un token alterado se rechaza.</p></div>
+<br>
+<div class="panel prose"><p><strong>Dónde.</strong> En &quot;Authorize&quot;, pega el token pero cámbiale <strong>una letra</strong> del final. Intenta cualquier endpoint protegido.</p></div>
+<br>
+<div class="callout" data-tone="success"><span class="component-label">Verificación observable</span><p><strong>Qué se espera ver.</strong> Respuesta <strong>401</strong> &quot;Token inválido o expirado&quot;.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>Lo importante.</strong> La firma detectó la alteración. Volvemos al concepto del sello: cambiar un carácter rompe la validez. La teoría del inicio, comprobada en vivo.</p></div></div></section>
+<section class="spa-section" id="sec-19"><header class="section-head"><span class="section-number">19</span><div><span class="section-kicker">Mapa reproducible</span><h2 class="section-title">MAPA DE ARCHIVOS DE LA CLASE</h2><p class="section-summary">Confirma cada archivo y su ruta final sin depender de instrucciones externas.</p></div></header><div><div class="panel prose"><p>Al terminar la clase, estos son todos los archivos que existen en el proyecto:</p></div>
+<br>
+<div class="spa-nav" aria-label="Tabla desplazable"><div class="panel prose"><table><thead><tr><th>Archivo</th><th>Ruta</th><th>Acción</th><th>Sección</th></tr></thead><tbody><tr><td><code>requirements.<wbr>txt</code></td><td><code>biblioteca_<wbr>api/<wbr></code></td><td>Crear</td><td>8</td></tr><tr><td><code>_<wbr>_<wbr>init_<wbr>_<wbr>.<wbr>py</code> (×6)</td><td>cada carpeta de <code>app/<wbr></code></td><td>Crear (vacíos)</td><td>8</td></tr><tr><td><code>database.<wbr>py</code></td><td><code>app/<wbr></code></td><td>Crear</td><td>9</td></tr><tr><td><code>usuario.<wbr>py</code></td><td><code>app/<wbr>models/<wbr></code></td><td>Crear</td><td>10</td></tr><tr><td><code>libro.<wbr>py</code></td><td><code>app/<wbr>models/<wbr></code></td><td>Crear</td><td>10</td></tr><tr><td><code>prestamo.<wbr>py</code></td><td><code>app/<wbr>models/<wbr></code></td><td>Crear</td><td>10</td></tr><tr><td><code>usuario.<wbr>py</code></td><td><code>app/<wbr>schemas/<wbr></code></td><td>Crear</td><td>11</td></tr><tr><td><code>libro.<wbr>py</code></td><td><code>app/<wbr>schemas/<wbr></code></td><td>Crear</td><td>11</td></tr><tr><td><code>prestamo.<wbr>py</code></td><td><code>app/<wbr>schemas/<wbr></code></td><td>Crear</td><td>11</td></tr><tr><td><code>seguridad.<wbr>py</code></td><td><code>app/<wbr>auth/<wbr></code></td><td>Crear</td><td>12</td></tr><tr><td><code>usuario_<wbr>service.<wbr>py</code></td><td><code>app/<wbr>services/<wbr></code></td><td>Crear</td><td>13</td></tr><tr><td><code>libro_<wbr>service.<wbr>py</code></td><td><code>app/<wbr>services/<wbr></code></td><td>Crear</td><td>13</td></tr><tr><td><code>prestamo_<wbr>service.<wbr>py</code></td><td><code>app/<wbr>services/<wbr></code></td><td>Crear</td><td>13</td></tr><tr><td><code>dependencias.<wbr>py</code></td><td><code>app/<wbr>auth/<wbr></code></td><td>Crear</td><td>14</td></tr><tr><td><code>auth_<wbr>router.<wbr>py</code></td><td><code>app/<wbr>routers/<wbr></code></td><td>Crear</td><td>15</td></tr><tr><td><code>usuario_<wbr>router.<wbr>py</code></td><td><code>app/<wbr>routers/<wbr></code></td><td>Crear</td><td>16</td></tr><tr><td><code>libro_<wbr>router.<wbr>py</code></td><td><code>app/<wbr>routers/<wbr></code></td><td>Crear</td><td>16</td></tr><tr><td><code>prestamo_<wbr>router.<wbr>py</code></td><td><code>app/<wbr>routers/<wbr></code></td><td>Crear</td><td>16</td></tr><tr><td><code>main.<wbr>py</code></td><td><code>app/<wbr></code></td><td>Crear</td><td>17</td></tr></tbody></table></div></div></div></section>
+<section class="spa-section" id="sec-20"><header class="section-head"><span class="section-number">20</span><div><span class="section-kicker">Cierre y continuidad</span><h2 class="section-title">CIERRE Y PUENTE</h2><p class="section-summary">Consolida lo aprendido y prepara autorización avanzada y refresh tokens.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Lo que logramos hoy</h3></div>
+<br>
+<div class="panel prose"><ul class="checklist"><li>Entendimos por qué una API sin seguridad es un riesgo de negocio, no solo técnico.</li><li>Distinguimos <strong>autenticación</strong> (quién eres) de <strong>autorización</strong> (qué puedes).</li><li>Comprendimos la anatomía de un <strong>JWT</strong> y por qué su firma lo hace confiable.</li><li>Aprendimos por qué <strong>nunca</strong> se guarda una contraseña en texto plano, y usamos <strong>bcrypt</strong>.</li><li>Implementamos <strong>registro, login y generación de token</strong> reales.</li><li>Protegimos endpoints con <strong><code>get_<wbr>current_<wbr>user</code></strong> y control por <strong>rol</strong>.</li><li>Aplicamos <strong>autorización a nivel de datos</strong>: cada usuario solo toca lo suyo.</li></ul></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Cómo quedó la arquitectura</h3></div>
+<br>
+<div class="panel prose"><p>Una API por capas, con una capa nueva de seguridad aislada (<code>auth/<wbr></code>), tokens JWT firmados, contraseñas hasheadas, y tres niveles de acceso: público, usuario autenticado y administrador.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Puente a la próxima clase</h3></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p>Hoy protegimos con roles fijos y tokens de una hora. La próxima clase profundiza en <strong>autorización avanzada</strong>: manejo fino de la expiración, el concepto de <strong>refresh tokens</strong> (renovar el acceso sin volver a escribir la contraseña), manejo elegante de errores de autenticación, y buenas prácticas para llevar esta seguridad a producción (como sacar la <code>SECRET_<wbr>KEY</code> del código a variables de entorno).</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Pregunta para pensar hasta la próxima clase</h3></div>
+<br>
+<div class="question-card"><span class="component-label">Pregunta guía</span><p class="question">Nuestro token vale una hora. Si un usuario está trabajando y a los 60 minutos el token expira en mitad de una operación, lo echamos abruptamente. ¿Cómo diseñarías un sistema que mantenga al usuario conectado cómodamente, <strong>sin</strong> hacer que el token dure para siempre (lo cual sería inseguro)?</p></div></div></section>
+<section class="spa-section" id="sec-21"><header class="section-head"><span class="section-number">21</span><div><span class="section-kicker">Soporte de implementación</span><h2 class="section-title">DIAGNÓSTICO Y PREGUNTAS FRECUENTES</h2><p class="section-summary">Interpreta fallos habituales y resuelve dudas de seguridad sin perder el criterio técnico.</p></div></header><div><div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Diagnóstico de errores y soluciones</h3></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p><strong>&quot;error reading bcrypt version&quot; / atributo <code>_<wbr>_<wbr>about_<wbr>_<wbr></code>.</strong> Incompatibilidad passlib + bcrypt nuevo. Solución: <code>pip install bcrypt=<wbr>=<wbr>4.<wbr>0.<wbr>1</code>. Ya está fijado en el requirements, pero si alguien instaló suelto, esto lo arregla.</p></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p><strong><code>ModuleNotFoundError:<wbr> No module named 'app'</code>.</strong> Están corriendo Uvicorn desde adentro de <code>app/<wbr></code>. Solución: <code>cd .<wbr>.<wbr></code> hasta <code>biblioteca_<wbr>api</code> y correr <code>uvicorn app.<wbr>main:<wbr>app -<wbr>-<wbr>reload</code>.</p></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p><strong><code>python-<wbr>multipart</code> no instalado / el login no aparece bien.</strong> Sin <code>python-<wbr>multipart</code>, el <code>OAuth2PasswordRequestForm</code> falla. Verificar que esté instalado.</p></div>
+<br>
+<div class="panel prose"><p><strong>El login pide JSON y no formulario / confusión con <code>username</code>.</strong> El login OAuth2 usa formulario, no JSON. Y el campo se llama <code>username</code> aunque metan el email. Es normal, es el estándar.</p></div>
+<br>
+<div class="callout" data-tone="danger"><span class="component-label">Diagnóstico</span><p><strong>Las tablas no se crean.</strong> Faltó importar los modelos en <code>main.<wbr>py</code> antes de <code>create_<wbr>all</code>. Verificar la línea <code>from app.<wbr>models import usuario,<wbr> libro,<wbr> prestamo</code>.</p></div>
+<br>
+<div class="panel prose"><p><strong>Copilot cambió la cadena de conexión a SQLite.</strong> Revisar <code>database.<wbr>py</code>: debe decir <code>postgresql+<wbr>psycopg:<wbr>/<wbr>/<wbr>.<wbr>.<wbr>.<wbr></code>, no <code>sqlite:<wbr>/<wbr>/<wbr>/<wbr></code>.</p></div>
+<br>
+<div class="panel prose"><p><strong>403 cuando esperaban 200 al crear libro.</strong> Están autenticados como usuario normal, no admin. Correcto: así debe ser. Cambiar al token de admin.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>Preguntas frecuentes</h3></div>
+<br>
+<div class="panel prose"><p><strong>&quot;¿El token se guarda en la base de datos?&quot;</strong> No. El token vive en el cliente. El servidor no lo guarda: solo verifica su firma. Esa es la gracia de JWT (sin estado en el servidor).</p></div>
+<br>
+<div class="panel prose"><p><strong>&quot;¿Puedo cerrar sesión / invalidar un token?&quot;</strong> Con JWT puro, no directamente: el token vale hasta que expira. Invalidar antes requiere una lista negra (se menciona como tema avanzado en la próxima clase). Es una limitación real de JWT que conviene nombrar.</p></div>
+<br>
+<div class="panel prose"><p><strong>&quot;¿Por qué el login usa <code>username</code> si yo mando el email?&quot;</strong> Porque <code>OAuth2PasswordRequestForm</code> define ese campo con ese nombre por el estándar OAuth2. Nosotros decidimos meter el email ahí. Es solo la etiqueta del campo.</p></div>
+<br>
+<div class="callout" data-tone="warning"><span class="component-label">Atención</span><p><strong>&quot;¿Dónde debería ir la <code>SECRET_<wbr>KEY</code> en un proyecto real?&quot;</strong> En una variable de entorno (archivo <code>.<wbr>env</code>), nunca en el código ni en Git. Lo veremos en la próxima clase. Hoy la dejamos en el código para no distraernos.</p></div>
+<br>
+<div class="panel prose"><p><strong>&quot;¿Por qué separamos <code>seguridad.<wbr>py</code> y <code>dependencias.<wbr>py</code>?&quot;</strong> <code>seguridad.<wbr>py</code> son las herramientas puras (hashear, crear token). <code>dependencias.<wbr>py</code> las conecta con FastAPI (extraer token de la petición, buscar usuario). Responsabilidades distintas, archivos distintos.</p></div>
+<br>
+<div class="panel prose"><p><strong>&quot;¿bcrypt y JWT son lo mismo?&quot;</strong> No, y es una confusión frecuente. bcrypt <strong>hashea contraseñas</strong> (para guardarlas seguras). JWT <strong>transporta la identidad</strong> después del login (la manilla). Uno protege el almacenamiento; el otro, la sesión.</p></div>
+<br>
+<div class="checkpoint"><span class="component-label">Punto de aprendizaje</span><h3>IA como copiloto — criterio de validación</h3></div>
+<br>
+<div class="panel prose"><p>Buen momento para recordar al grupo: la IA genera el patrón de JWT en segundos, pero <strong>no decide</strong> que el <code>rol</code> se fije en el servidor, ni que el mensaje de login sea ambiguo, ni que el <code>usuario_<wbr>id</code> salga del token. Esas son decisiones de ingeniería de seguridad. La IA escribe; el criterio lo pone el desarrollador. Esa es la diferencia entre copiar y entender.</p></div></div></section><footer class="footer">© 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · Todos los derechos reservados · linkedin.com/in/ana-alvarado-instructora-full-stack</footer></article>
+    </main>
+  </div>
+  <div class="watermark" aria-hidden="true">© 2026 ANA ALVARADO</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="ana-clase.js"></script>
+</body>
+</html>
