@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<!--
+  ANA LEARNING EXPERIENCE SYSTEM v8.0 · AULA VIVA
+  Recurso del estudiante · Módulo 3, clases 3 + 4
+  © 2026 Ana Alvarado
+-->
+<html lang="es" data-tema="oscuro" data-tema-base="oscuro" data-empresa="dev-senior"
+      data-paleta="custom" data-atmosfera="datos"
+      style="--a1:#35e6b4; --a2:#c87500; --a3:#d8556d; --a4:#8074f2; --a1-ink:#075b47;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Ana Alvarado">
+  <meta name="copyright" content="© 2026 Ana Alvarado — Todos los derechos reservados">
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+  <meta name="description" content="Guía visual para endurecer una API FastAPI con variables de entorno, refresh tokens y errores HTTP estándar.">
+  <title>Módulo 3 · Endurecimiento a producción · Ana Alvarado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&amp;family=Instrument+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <link rel="stylesheet" href="anaestilos.css">
+</head>
+<body>
+  <a class="skip-link" href="#s1">Saltar al contenido</a>
+  <div class="topline" id="topline" aria-hidden="true"></div>
+  <div class="controls" aria-label="Controles de visualización">
+    <button class="ctrl" id="temaBtn" type="button" aria-label="Cambiar tema">☀</button>
+    <button class="ctrl" id="fullscreenBtn" type="button" aria-label="Pantalla completa">⛶</button>
+  </div>
+
+  <div class="shell" id="shell" data-collapsed="false">
+    <aside class="sidebar" aria-label="Índice de la clase">
+      <div class="sb-top">
+        <span class="brand-mark">A</span>
+        <div class="sb-title"><b>Python Backend</b><span>Módulo 3 · Clases 3 + 4</span></div>
+      </div>
+      <button class="sb-toggle" id="collapseBtn" type="button" aria-label="Colapsar menú">‹</button>
+      <nav class="sb-nav" id="nav" aria-label="Secciones">
+        <a class="nav-item active" href="#s1"><span class="nav-index">01</span><span class="nav-label">Las llaves expuestas</span></a>
+        <a class="nav-item" href="#s2"><span class="nav-index">02</span><span class="nav-label">Punto de partida</span></a>
+        <a class="nav-item" href="#s3"><span class="nav-index">03</span><span class="nav-label">De práctica a producción</span></a>
+        <a class="nav-item" href="#s4"><span class="nav-index">04</span><span class="nav-label">Modelo mental</span></a>
+        <a class="nav-item" href="#s5"><span class="nav-index">05</span><span class="nav-label">Secretos fuera del código</span></a>
+        <a class="nav-item" href="#s6"><span class="nav-index">06</span><span class="nav-label">Expiración con criterio</span></a>
+        <a class="nav-item" href="#s7"><span class="nav-index">07</span><span class="nav-label">Sistema de dos tokens</span></a>
+        <a class="nav-item" href="#s8"><span class="nav-index">08</span><span class="nav-label">Login y renovación</span></a>
+        <a class="nav-item" href="#s9"><span class="nav-index">09</span><span class="nav-label">Pruebas en Swagger</span></a>
+        <a class="nav-item" href="#s10"><span class="nav-index">10</span><span class="nav-label">Checklist de seguridad</span></a>
+        <a class="nav-item" href="#s11"><span class="nav-index">11</span><span class="nav-label">IA como copiloto</span></a>
+        <a class="nav-item" href="#s12"><span class="nav-index">12</span><span class="nav-label">Mapa de archivos</span></a>
+        <a class="nav-item" href="#s13"><span class="nav-index">13</span><span class="nav-label">Diagnóstico profesional</span></a>
+        <a class="nav-item" href="#s14"><span class="nav-index">14</span><span class="nav-label">Cierre y puente</span></a>
+      </nav>
+      <div class="sb-prog">
+        <div class="lbl"><span>Progreso</span><span id="progPct">0%</span></div>
+        <div class="track"><div class="fill" id="progFill"></div></div>
+      </div>
+      <p class="sb-foot">© 2026 Ana Alvarado<br>Educadora Tech &amp; Desarrolladora Full Stack</p>
+    </aside>
+
+    <main class="main">
+      <header class="hero" data-variant="stat">
+        <div class="hero-inner">
+          <div>
+            <span class="eyebrow">Dev Senior · Biblioteca API · Módulo 3</span>
+            <h1 class="hero-title">Endurecimiento a <em>producción</em></h1>
+            <p class="hero-lead">Convierte una API que funciona en una API que un equipo profesional desplegaría con confianza: secretos fuera del código, sesiones renovables y errores HTTP consistentes.</p>
+            <div class="meta">
+              <span class="pill" data-hot>FastAPI</span>
+              <span class="pill">Pydantic v2</span>
+              <span class="pill">PostgreSQL</span>
+              <span class="pill">JWT · OAuth2</span>
+              <span class="pill">Nivel intermedio</span>
+            </div>
+          </div>
+          <div class="hero-bignum" aria-label="Dos tokens">2<small>tokens · una sesión segura</small></div>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="section" id="s1">
+          <div class="sec-head"><span class="sec-n">01 · Pregunta de negocio</span><h2 class="sec-t">Las llaves quedaron expuestas</h2><p class="sec-s">La seguridad no falla únicamente cuando el algoritmo está mal; también falla cuando una decisión de configuración entrega el control del sistema.</p></div>
+          <div class="body">
+            <div class="socratica">
+              <span class="component-label">Para pensar</span>
+              <p class="socratica-q">Tu API de biblioteca funciona y la subes a GitHub. Dentro del código quedaron la <code>SECRET_KEY</code> y la contraseña de PostgreSQL. ¿Qué acaba de pasar y qué tan grave es?</p>
+              <p class="socratica-hint">Pista: piensa qué podría hacer otra persona si tuviera las mismas llaves con las que el servidor confía en ti.</p>
+              <details class="reveal">
+                <summary>Ver respuesta</summary>
+                <div class="reveal-body">
+                  <p class="lead-answer">Acabas de entregar las llaves del sistema.</p>
+                  <p>La primera intuición suele ser “no pasa nada porque el repositorio es mío”. Sin embargo, un repositorio puede compartirse, clonarse, filtrarse o volverse público por error; además, existen bots que buscan secretos automáticamente.</p>
+                  <p>Con la <code>SECRET_KEY</code>, un atacante puede firmar tokens falsos y hacerse pasar por cualquier usuario, incluso el administrador. Con la contraseña de la base de datos, puede intentar entrar directamente a la información.</p>
+                </div>
+              </details>
+            </div>
+
+            <figure class="visual-figure">
+              <div class="figure-stage">
+                <svg viewBox="0 0 760 360" role="img" aria-labelledby="llaves-title llaves-desc">
+                  <title id="llaves-title">Ilustración de un repositorio abierto que expone una llave</title>
+                  <desc id="llaves-desc">Una ventana de código contiene una llave secreta visible y una alerta de riesgo.</desc>
+                  <rect x="74" y="58" width="486" height="252" rx="24" fill="var(--surf-1)" stroke="var(--a4)" stroke-width="5"/>
+                  <path d="M75 116h484" stroke="var(--line-str)" stroke-width="4"/>
+                  <circle cx="112" cy="88" r="9" fill="var(--a3)"/>
+                  <circle cx="142" cy="88" r="9" fill="var(--a2)"/>
+                  <circle cx="172" cy="88" r="9" fill="var(--a1)"/>
+                  <path d="M116 156h136M116 194h202M116 232h164M116 270h235" stroke="var(--ink-mute)" stroke-width="12" stroke-linecap="round"/>
+                  <circle cx="502" cy="220" r="64" fill="var(--surf-3)" stroke="var(--a1)" stroke-width="6"/>
+                  <circle cx="486" cy="206" r="18" fill="none" stroke="var(--a1)" stroke-width="8"/>
+                  <path d="M500 220l52 52M529 249l18-18M544 264l18-18" stroke="var(--a1)" stroke-width="10" stroke-linecap="round"/>
+                  <path d="M626 78l76 132H550z" fill="var(--a3)"/>
+                  <path d="M626 119v43" stroke="var(--surf-1)" stroke-width="12" stroke-linecap="round"/>
+                  <circle cx="626" cy="183" r="7" fill="var(--surf-1)"/>
+                </svg>
+              </div>
+              <figcaption>El repositorio puede mostrar la puerta; nunca debe contener las llaves que autorizan el acceso.</figcaption>
+            </figure>
+
+            <div class="callout" data-tone="danger">
+              <span class="callout-icon">!</span>
+              <div><h3>Regla de producción</h3><p>Los secretos nunca viven en el código. La solución comienza separando configuración y lógica antes de añadir más mecanismos.</p></div>
+            </div>
+          </div>
+        </section>
+        <section class="section" id="s2">
+          <div class="sec-head"><span class="sec-n">02 · Reconexión</span><h2 class="sec-t">El sistema que ya construiste</h2><p class="sec-s">Partimos de una API con autenticación y autorización funcionales. Hoy no la desechamos: la hacemos evolucionar.</p></div>
+          <div class="body">
+            <div class="cards">
+              <div class="card" data-accent="1"><span class="orb" data-accent="1"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><b>Usuarios</b><p>Contraseñas protegidas con bcrypt y un campo <code>rol</code>.</p></div>
+              <div class="card" data-accent="2"><span class="orb" data-accent="2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M12 15v2"/></svg></span><b>Login</b><p>Verifica credenciales y entrega un token JWT firmado.</p></div>
+              <div class="card" data-accent="3"><span class="orb" data-accent="3"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></span><b>Endpoints protegidos</b><p>Cada petición sensible exige una credencial válida.</p></div>
+              <div class="card" data-accent="4"><span class="orb" data-accent="4"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 6v14M17 6v14M4 20h16"/><path d="M10 10h4M10 14h4"/></svg></span><b>Roles</b><p><code>admin</code> gestiona usuarios y libros; <code>usuario</code>, sus préstamos.</p></div>
+            </div>
+
+            <div class="mindmap">
+              <div class="mindmap-core"><strong>Seguridad construida</strong><span>La base que hoy endurecemos</span></div>
+              <div class="mindmap-branches">
+                <div class="mindmap-node" data-accent="1"><strong>Autenticación</strong><p>Responde “¿quién eres?” mediante el login.</p></div>
+                <div class="mindmap-node" data-accent="2"><strong>Autorización</strong><p>Responde “¿qué puedes hacer?” con roles y permisos.</p></div>
+                <div class="mindmap-node" data-accent="3"><strong>JWT</strong><p>Es una manilla firmada: el servidor verifica la firma sin guardar la sesión.</p></div>
+                <div class="mindmap-node" data-accent="4"><strong>bcrypt</strong><p>Guarda un hash y compara hashes; nunca reconstruye la contraseña original.</p></div>
+              </div>
+            </div>
+
+            <div class="checkpoint">
+              <span class="component-label">Arquitectura de entrada</span>
+              <h3>El proyecto continúa; no empieza desde cero</h3>
+            </div>
+            <p>Esta estructura mantiene separadas seguridad, contratos, lógica de negocio y rutas. Esa separación permite endurecer autenticación sin reescribir el sistema completo.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Referencia</span><span class="code-file">biblioteca_api/ · estructura existente</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-plaintext">biblioteca_api/
+├── app/
+│   ├── auth/
+│   │   ├── seguridad.py      ← hashear, verificar, crear/verificar token
+│   │   └── dependencias.py   ← obtener_usuario_actual, requerir_admin
+│   ├── models/               ← Usuario, Libro, Prestamo
+│   ├── schemas/              ← contratos de entrada/salida
+│   ├── services/             ← lógica de negocio
+│   ├── routers/              ← auth, usuarios, libros, prestamos
+│   ├── database.py
+│   └── main.py
+└── requirements.txt</code></pre>
+            </div>
+            <p>El árbol ubica cada responsabilidad. En esta clase se modifican piezas de configuración y autenticación; modelos, servicios y los demás routers permanecen intactos.</p>
+
+            <div class="socratica">
+              <span class="component-label">Reconecta con la sesión anterior</span>
+              <p class="socratica-q">El token actual vale una hora. Si expira mientras el usuario trabaja, ¿cómo mantienes la sesión cómoda sin convertir el token en una credencial eterna?</p>
+              <p class="socratica-hint">Hacer una sola credencial más larga también extiende el daño si alguien la roba.</p>
+              <details class="reveal">
+                <summary>Ver respuesta</summary>
+                <div class="reveal-body">
+                  <p class="lead-answer">Se necesitan dos tokens con funciones y duraciones diferentes.</p>
+                  <p>Alargar el token parece cómodo, pero un token largo robado representa un riesgo largo. Un access token corto atiende las operaciones diarias y un refresh token largo solicita accesos nuevos.</p>
+                  <p>Así se conserva una sesión cómoda sin ampliar innecesariamente la ventana de ataque de la credencial que viaja en cada petición.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </section>
+        <section class="section" id="s3">
+          <div class="sec-head"><span class="sec-n">03 · Problema real</span><h2 class="sec-t">Funcionar no es estar listo para producción</h2><p class="sec-s">Tres debilidades separan una demostración local de un servicio que puede vivir frente a usuarios reales.</p></div>
+          <div class="body">
+            <div class="shape-board">
+              <div class="shape-card" data-accent="3"><span class="emoji" role="img" aria-label="Llave expuesta">🗝️</span><strong>Secretos en el código</strong><p>La firma JWT y la conexión a la base quedan visibles en archivos compartidos.</p></div>
+              <div class="shape-card" data-accent="2"><span class="emoji" role="img" aria-label="Reloj">⏳</span><strong>Sesiones frágiles</strong><p>El token dura una hora fija y expulsa al usuario cuando vence.</p></div>
+              <div class="shape-card" data-accent="4"><span class="emoji" role="img" aria-label="Señales distintas">🚦</span><strong>Errores inconsistentes</strong><p>Cada fallo de autenticación responde distinto y no sigue un contrato uniforme.</p></div>
+            </div>
+
+            <div class="callout" data-tone="warning">
+              <span class="callout-icon">!</span>
+              <div><h3>La diferencia crítica</h3><p>Que algo funcione en tu computador no significa que esté listo para el mundo real.</p></div>
+            </div>
+
+            <div class="cards">
+              <div class="card" data-accent="3"><span class="orb" data-accent="3"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v13H3z"/><path d="M3 10h18M7 6V4h10v2"/></svg></span><b>Repositorios vigilados</b><p>Claves filtradas han provocado incidentes reales. Atacantes automatizados pueden encontrarlas en cuestión de horas y GitHub escanea secretos para alertar sobre exposiciones.</p></div>
+              <div class="card" data-accent="1"><span class="orb" data-accent="1"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></span><b>Netflix, Gmail y banca</b><p>El usuario casi nunca vuelve a iniciar sesión porque el acceso corto se renueva por detrás con una credencial de refresco más duradera.</p></div>
+              <div class="card" data-accent="4"><span class="orb" data-accent="4"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg></span><b>El idioma de HTTP</b><p>Una banca no improvisa mensajes: responde con un 401 y un formato estándar que clientes distintos pueden interpretar.</p></div>
+            </div>
+
+            <div class="stat-panel">
+              <span class="stat-value">3</span>
+              <span class="stat-label">frentes de endurecimiento</span>
+              <p class="stat-note">Configuración segura · sesión robusta · errores interoperables.</p>
+            </div>
+
+            <p>El objetivo es convertir una API que “funciona” en una API que un equipo profesional desplegaría con confianza. Cada debilidad se resuelve de forma incremental y verificable.</p>
+          </div>
+        </section>
+        <section class="section" id="s4">
+          <div class="sec-head"><span class="sec-n">04 · Modelo mental</span><h2 class="sec-t">Una casa, dos credenciales y señales universales</h2><p class="sec-s">Antes del código, construimos una intuición para decidir qué protege cada pieza y por qué existe.</p></div>
+          <div class="body">
+            <div class="shape-board">
+              <div class="shape-card" data-accent="2"><span class="emoji" role="img" aria-label="Casa con llave">🏠</span><strong>Secretos = llaves</strong><p>El código es la puerta visible; <code>SECRET_KEY</code> y contraseñas van en un bolsillo aparte: <code>.env</code>.</p></div>
+              <div class="shape-card" data-accent="1"><span class="emoji" role="img" aria-label="Pase de entrada">🎟️</span><strong>Access = pase diario</strong><p>Dura poco y entra a la API. Si se pierde, su ventana de daño es reducida.</p></div>
+              <div class="shape-card" data-accent="4"><span class="emoji" role="img" aria-label="Carnet de socio">🪪</span><strong>Refresh = carnet</strong><p>Dura más, se guarda con mayor cuidado y solo solicita un pase nuevo.</p></div>
+              <div class="shape-card" data-accent="3"><span class="emoji" role="img" aria-label="Señal de pare">🛑</span><strong>401 = señal universal</strong><p>Un cliente entiende el código HTTP sin depender del idioma de un mensaje improvisado.</p></div>
+            </div>
+
+            <div class="visual-panel">
+              <div class="chart-title">La experiencia que buscamos</div>
+              <div class="flow">
+                <div class="flow-step"><span class="fs-index">01</span><strong>Inicia sesión</strong><span>Presenta credenciales</span></div>
+                <div class="flow-arrow" aria-hidden="true">→</div>
+                <div class="flow-step" data-emphasis><span class="fs-index">02</span><strong>Recibe dos tokens</strong><span>Acceso + refresco</span></div>
+                <div class="flow-arrow" aria-hidden="true">→</div>
+                <div class="flow-step"><span class="fs-index">03</span><strong>Trabaja</strong><span>Usa el acceso corto</span></div>
+                <div class="flow-arrow" aria-hidden="true">→</div>
+                <div class="flow-step" data-emphasis><span class="fs-index">04</span><strong>Renueva</strong><span>Sin escribir la clave otra vez</span></div>
+              </div>
+            </div>
+
+            <div class="callout" data-tone="info">
+              <span class="callout-icon">i</span>
+              <div><h3>Idea ancla</h3><p>La ingeniería de sesiones no elige entre seguridad y comodidad: asigna una responsabilidad y una exposición distintas a cada credencial.</p></div>
+            </div>
+          </div>
+        </section>
+        <section class="section" id="s5">
+          <div class="sec-head"><span class="sec-n">05 · Tema 1</span><h2 class="sec-t">Sacar los secretos del código</h2><p class="sec-s">La misma aplicación debe correr en desarrollo y producción con configuraciones diferentes, sin reescribir una sola línea.</p></div>
+          <div class="body">
+            <div class="cards">
+              <div class="card" data-accent="1"><span class="orb" data-accent="1"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 10h3M8 14h8"/></svg></span><b>Definición técnica</b><p>Una variable de entorno es configuración que vive fuera del código, en el sistema donde corre la aplicación. El programa la lee al arrancar.</p></div>
+              <div class="card" data-accent="2"><span class="orb" data-accent="2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><b>Explicación sencilla</b><p>Es una nota que dejas por fuera: el programa la lee, pero la clave no queda escrita dentro de la puerta.</p></div>
+              <div class="card" data-accent="4"><span class="orb" data-accent="4"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M4 8h16M6 16h12"/></svg></span><b>Aplicación profesional</b><p>Conexiones a bases, claves de pagos, correo y firmas se inyectan por entorno. El mismo código sirve en desarrollo y producción.</p></div>
+            </div>
+
+            <div class="panel">
+              <h3>El archivo <code>.env</code></h3>
+              <p>Es un archivo de texto con pares <code>CLAVE=valor</code> para un entorno específico. Funciona como el bolsillo de las llaves y nunca se sube al control de versiones.</p>
+            </div>
+
+            <div class="compare">
+              <div class="compare-card" data-side="negative">
+                <h3><code>os.getenv()</code> sin contrato</h3>
+                <ul><li>Todo llega como texto.</li><li>Un valor faltante puede fallar tarde.</li><li>El mensaje aparece lejos de la causa real.</li></ul>
+              </div>
+              <div class="compare-card" data-side="positive">
+                <h3><code>pydantic-settings</code></h3>
+                <ul><li>Declara tipos y valores obligatorios.</li><li>Convierte la configuración.</li><li>Detiene la aplicación temprano y explica qué falta.</li></ul>
+              </div>
+            </div>
+
+            <div class="callout" data-tone="info">
+              <span class="callout-icon">i</span>
+              <div><h3>Review and extend</h3><p>En el Módulo 1, Pydantic validaba requests. Aquí valida la configuración de la aplicación con el mismo modelo mental: datos tipados que deben cumplir un contrato.</p></div>
+            </div>
+
+            <div class="checkpoint">
+              <span class="component-label">Paso 1 de 7 · Instalar</span>
+              <h3>Añade el lector tipado y el soporte para <code>.env</code></h3>
+            </div>
+            <p><code>pydantic-settings</code> se separó de Pydantic en la versión 2. <code>python-dotenv</code> realiza la lectura del archivo por debajo. Ejecuta el comando desde la raíz de <code>biblioteca_api</code>, con el entorno virtual activo.</p>
+            <div class="code-block" data-tipo="terminal">
+              <div class="code-head"><div><span class="code-context">Ejecutar</span><span class="code-file">biblioteca_api/ · terminal</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-bash">pip install pydantic-settings python-dotenv</code></pre>
+            </div>
+            <div class="callout" data-tone="success"><span class="callout-icon">✓</span><div><h3>Señal observable</h3><p>La instalación termina con <code>Successfully installed pydantic-settings ... python-dotenv ...</code>.</p></div></div>
+
+            <div class="checkpoint">
+              <span class="component-label">Paso 2 de 7 · Documentar dependencias</span>
+              <h3>Actualiza <code>requirements.txt</code></h3>
+            </div>
+            <p>Editarás el archivo de la raíz y agregarás dos líneas. El objetivo es que otra persona pueda reconstruir el entorno del proyecto sin depender de tu máquina.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Editar · +2 líneas</span><span class="code-file">biblioteca_api/requirements.txt</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-plaintext">fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg[binary]
+pydantic[email]
+pydantic-settings
+python-dotenv
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt==4.0.1
+python-multipart</code></pre>
+            </div>
+            <p><code>pydantic-settings</code> y <code>python-dotenv</code> son las dos incorporaciones. El resto del contrato de dependencias se conserva.</p>
+
+            <div class="checkpoint">
+              <span class="component-label">Paso 3 de 7 · Configurar</span>
+              <h3>Crea el archivo privado <code>.env</code></h3>
+            </div>
+            <p>Este archivo se crea desde cero en la raíz, junto a <code>requirements.txt</code>. Contiene las cuatro decisiones de configuración que necesita la sesión.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">biblioteca_api/.env</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-plaintext">SECRET_KEY=clave-secreta-larga-y-aleatoria-cambiar-en-produccion
+DATABASE_URL=postgresql+psycopg://postgres:TU_CLAVE@localhost:5432/biblioteca
+ACCESS_TOKEN_EXPIRE_MINUTES=15
+REFRESH_TOKEN_EXPIRE_DAYS=7</code></pre>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <caption>Cómo leer cada variable</caption>
+                <thead><tr><th>Variable</th><th>Responsabilidad</th><th>Criterio</th></tr></thead>
+                <tbody>
+                  <tr><td data-emphasis><code>SECRET_KEY</code></td><td>Firma y verifica tokens.</td><td>En producción debe ser larga y aleatoria.</td></tr>
+                  <tr><td data-emphasis><code>DATABASE_URL</code></td><td>Conecta con PostgreSQL.</td><td>La contraseña también sale del código.</td></tr>
+                  <tr><td data-emphasis><code>ACCESS_TOKEN_EXPIRE_MINUTES</code></td><td>Define el acceso diario.</td><td>15 minutos: corto a propósito.</td></tr>
+                  <tr><td data-emphasis><code>REFRESH_TOKEN_EXPIRE_DAYS</code></td><td>Define la ventana de renovación.</td><td>7 días: comodidad controlada.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>La clave de ejemplo solo sirve para clase. Para generar una <code>SECRET_KEY</code> robusta, usa el módulo criptográfico <code>secrets</code> en una terminal de Python.</p>
+            <div class="code-block" data-tipo="terminal">
+              <div class="code-head"><div><span class="code-context">Ejecutar en Python</span><span class="code-file">Generar SECRET_KEY</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-bash">import secrets; print(secrets.token_hex(32))</code></pre>
+            </div>
+            <p>El resultado es una clave aleatoria de alta entropía. Sustituye el valor de ejemplo; no copies una palabra fácil de adivinar.</p>
+
+            <div class="checkpoint">
+              <span class="component-label">Paso 4 de 7 · Proteger</span>
+              <h3>Excluye <code>.env</code> con <code>.gitignore</code></h3>
+            </div>
+            <p>Este paso es crítico: un <code>.env</code> comprometido dentro de Git da una falsa sensación de seguridad. Crea o edita el archivo de la raíz.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear o editar</span><span class="code-file">biblioteca_api/.gitignore</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-plaintext">venv/
+__pycache__/
+*.pyc
+.env</code></pre>
+            </div>
+            <p><code>venv/</code> ya se excluía desde el Módulo 2. La línea <code>.env</code> evita que el archivo con secretos entre al historial del repositorio.</p>
+
+            <div class="checkpoint">
+              <span class="component-label">Paso 5 de 7 · Validar</span>
+              <h3>Crea la clase de configuración</h3>
+            </div>
+            <p>Construirás un contrato tipado que lee el entorno, valida los campos y crea una sola instancia reutilizable. El archivo se crea desde cero dentro de <code>app/</code>.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">biblioteca_api/app/config.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class Settings(BaseSettings):
+    SECRET_KEY: str
+    DATABASE_URL: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    ALGORITHM: str = "HS256"
+
+    model_config = SettingsConfigDict(env_file=".env")
+
+settings = Settings()</code></pre>
+            </div>
+            <div class="timeline">
+              <div class="timeline-item"><h3><code>BaseSettings</code></h3><p>Es la variante de Pydantic que lee variables de entorno automáticamente.</p></div>
+              <div class="timeline-item"><h3>Campos obligatorios</h3><p><code>SECRET_KEY: str</code> y <code>DATABASE_URL: str</code> no tienen valor por defecto. Si faltan, la aplicación no arranca.</p></div>
+              <div class="timeline-item"><h3>Conversión de tipos</h3><p>El texto <code>"15"</code> se convierte en <code>int</code>. Si alguien escribe <code>"quince"</code>, Pydantic lo detecta.</p></div>
+              <div class="timeline-item"><h3>Configuración no secreta</h3><p><code>ALGORITHM = "HS256"</code> puede vivir en la clase porque no entrega una llave.</p></div>
+              <div class="timeline-item"><h3>Fuente e instancia</h3><p><code>SettingsConfigDict</code> señala el archivo y <code>settings = Settings()</code> lo lee una sola vez para toda la aplicación.</p></div>
+            </div>
+            <div class="callout" data-tone="success"><span class="callout-icon">✓</span><div><h3>Error temprano, lectura clara</h3><p>Si falta un secreto, el sistema se detiene al arrancar y muestra qué campo incumplió el contrato. Es preferible a fallar tarde y lejos de la causa.</p></div></div>
+
+            <div class="socratica">
+              <span class="component-label">Colaboración segura</span>
+              <p class="socratica-q">Si <code>.env</code> no se sube a GitHub, ¿cómo sabe otra persona del equipo qué variables necesita para ejecutar el proyecto?</p>
+              <p class="socratica-hint">La documentación debe describir la forma del secreto sin publicar su valor real.</p>
+              <details class="reveal">
+                <summary>Ver respuesta</summary>
+                <div class="reveal-body">
+                  <p class="lead-answer">El repositorio incluye un <code>.env.example</code> sin secretos reales.</p>
+                  <p>Preguntar al autor cada vez no escala. La plantilla usa las mismas claves con valores vacíos o de ejemplo; cada integrante la copia a <code>.env</code> y completa su propia configuración.</p>
+                  <p>Así se documenta el contrato operativo del proyecto sin exponer credenciales.</p>
+                </div>
+              </details>
+            </div>
+
+            <div class="checkpoint">
+              <span class="component-label">Paso 6 de 7 · Consumir configuración</span>
+              <h3>Prepara <code>seguridad.py</code></h3>
+            </div>
+            <p>Donde antes existía una <code>SECRET_KEY</code> escrita a mano, usarás <code>settings.SECRET_KEY</code>. El algoritmo y las duraciones también salen de <code>settings</code>.</p>
+            <p>La versión consolidada de este archivo aparece en el sistema de refresh tokens. Allí se integran en un solo cambio la configuración externa y las dos credenciales para evitar una edición parcial.</p>
+
+            <div class="checkpoint">
+              <span class="component-label">Paso 7 de 7 · Conectar PostgreSQL</span>
+              <h3>Reemplaza la URL escrita en <code>database.py</code></h3>
+            </div>
+            <p>Editarás el archivo existente para que el motor reciba la conexión validada por Pydantic. El resto del manejo de sesiones no cambia.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Editar · reemplazar URL</span><span class="code-file">biblioteca_api/app/database.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+from app.config import settings
+
+engine = create_engine(settings.DATABASE_URL)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()</code></pre>
+            </div>
+            <p><code>from app.config import settings</code> trae el contrato ya validado y <code>create_engine(settings.DATABASE_URL)</code> elimina la contraseña del archivo fuente.</p>
+            <div class="callout" data-tone="success"><span class="callout-icon">✓</span><div><h3>Resultado del tema 1</h3><p><code>database.py</code> y, después, <code>seguridad.py</code> podrán subirse al repositorio sin contener contraseñas ni claves de firma.</p></div></div>
+          </div>
+        </section>
+        <section class="section" id="s6">
+          <div class="sec-head"><span class="sec-n">06 · Tema 2</span><h2 class="sec-t">La expiración es una decisión de ingeniería</h2><p class="sec-s">La duración de un token define cuánto riesgo acepta el negocio y qué experiencia recibe el usuario.</p></div>
+          <div class="body">
+            <div class="metrics">
+              <div class="m"><b>15</b><span>minutos de acceso</span></div>
+              <div class="m"><b>7</b><span>días de refresco</span></div>
+              <div class="m"><b>2</b><span>roles distintos</span></div>
+            </div>
+
+            <div class="panel">
+              <h3>¿Qué significa que un token expire?</h3>
+              <p>Al crear el JWT se incorpora <code>exp</code>, una fecha y hora exactas que viajan dentro del token firmado.</p>
+              <p>Cuando el servidor lo recibe, <code>python-jose</code> compara <code>exp</code> con la hora actual. Si ya pasó, <code>jwt.decode</code> lanza el error y el token se rechaza automáticamente.</p>
+            </div>
+
+            <div class="compare">
+              <div class="compare-card" data-side="negative">
+                <h3>Token muy largo · 30 días</h3>
+                <ul><li>El usuario casi nunca vuelve a iniciar sesión.</li><li>Si lo roban, el atacante conserva acceso durante 30 días.</li><li>La comodidad amplía la ventana de riesgo.</li></ul>
+              </div>
+              <div class="compare-card" data-side="positive">
+                <h3>Token muy corto · 5 minutos</h3>
+                <ul><li>Una credencial robada deja de servir pronto.</li><li>Sin renovación, el usuario iniciaría sesión constantemente.</li><li>La seguridad aislada deteriora la experiencia.</li></ul>
+              </div>
+            </div>
+
+            <div class="socratica">
+              <span class="component-label">Decisión de ingeniería</span>
+              <p class="socratica-q">Si reducimos el access token a 15 minutos, ¿no empeoramos la experiencia al obligar al usuario a iniciar sesión cada 15 minutos?</p>
+              <p class="socratica-hint">La respuesta cambia cuando una segunda credencial puede renovar la primera sin repetir el login.</p>
+              <details class="reveal">
+                <summary>Ver respuesta</summary>
+                <div class="reveal-body">
+                  <p class="lead-answer">Solo sería molesto si el access token fuera la única credencial.</p>
+                  <p>Cuando vence, la aplicación usa el refresh token —que dura días— para solicitar un access token nuevo automáticamente. El usuario no vuelve a escribir sus datos cada 15 minutos.</p>
+                  <p>El diseño combina la seguridad de una exposición corta con la comodidad de una sesión larga.</p>
+                </div>
+              </details>
+            </div>
+
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Regla de la industria</h3><p>La duración no es un número al azar. Responde al riesgo del negocio, a la frecuencia de uso de la credencial y a la experiencia que se desea sostener.</p></div></div>
+          </div>
+        </section>
+        <section class="section" id="s7">
+          <div class="sec-head"><span class="sec-n">07 · Tema 3</span><h2 class="sec-t">El sistema de dos tokens</h2><p class="sec-s">Acceso corto para reducir el daño; refresco largo para renovar la sesión sin pedir credenciales una y otra vez.</p></div>
+          <div class="body">
+            <div class="visual-panel">
+              <div class="chart-title">Flujo completo de renovación</div>
+              <div class="stepper">
+                <div class="step-item"><span class="step-num">1</span><h4>Login</h4><p>El usuario recibe access + refresh.</p></div>
+                <div class="step-item"><span class="step-num">2</span><h4>Trabajo</h4><p>Envía access en cada petición.</p></div>
+                <div class="step-item"><span class="step-num">3</span><h4>Expira</h4><p>A los 15 minutos recibe 401.</p></div>
+                <div class="step-item"><span class="step-num">4</span><h4>Renueva</h4><p>Manda refresh a <code>/auth/refresh</code>.</p></div>
+                <div class="step-item"><span class="step-num">5</span><h4>Verifica</h4><p>El servidor valida firma, fecha y tipo.</p></div>
+                <div class="step-item"><span class="step-num">6</span><h4>Continúa</h4><p>Recibe un access nuevo sin notar el cambio.</p></div>
+              </div>
+            </div>
+            <p>Solo cuando el refresh token expira, a los siete días, el usuario vuelve a iniciar sesión de verdad.</p>
+
+            <div class="table-wrap">
+              <table class="data-table">
+                <caption>Dos JWT firmados, dos responsabilidades</caption>
+                <thead><tr><th>Criterio</th><th>Access token</th><th>Refresh token</th></tr></thead>
+                <tbody>
+                  <tr><td data-emphasis>Dura</td><td>15 minutos</td><td>7 días</td></tr>
+                  <tr><td data-emphasis>Sirve para</td><td>Usar la API</td><td>Pedir access tokens nuevos</td></tr>
+                  <tr><td data-emphasis>Se envía a</td><td>Todos los endpoints protegidos</td><td>Solo a <code>/auth/refresh</code></td></tr>
+                  <tr><td data-emphasis>Marca <code>tipo</code></td><td><code>"access"</code></td><td><code>"refresh"</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout" data-tone="danger"><span class="callout-icon">!</span><div><h3>La marca <code>tipo</code> cierra el uso cruzado</h3><p>Sin ella, un access token podría pedir refrescos o un refresh token podría abrir endpoints de datos. Cada credencial debe servir únicamente para su responsabilidad.</p></div></div>
+
+            <div class="checkpoint">
+              <span class="component-label">Construcción 1 de 2</span>
+              <h3>Reemplaza <code>seguridad.py</code> por la versión consolidada</h3>
+            </div>
+            <p>Este archivo integra la configuración del <code>.env</code>, conserva el hash de contraseñas y crea/verifica los dos tipos de token. Reemplaza todo el contenido existente.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Editar · reemplazar todo</span><span class="code-file">biblioteca_api/app/auth/seguridad.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from datetime import datetime, timedelta, timezone
+from jose import jwt, JWTError
+from passlib.context import CryptContext
+from app.config import settings
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hashear_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+def verificar_password(password_plano: str, password_hash: str) -> bool:
+    return pwd_context.verify(password_plano, password_hash)
+
+def crear_access_token(datos: dict) -> str:
+    datos_a_codificar = datos.copy()
+    expira = datetime.now(timezone.utc) + timedelta(
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
+    datos_a_codificar.update({"exp": expira, "tipo": "access"})
+    return jwt.encode(datos_a_codificar, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+def crear_refresh_token(datos: dict) -> str:
+    datos_a_codificar = datos.copy()
+    expira = datetime.now(timezone.utc) + timedelta(
+        days=settings.REFRESH_TOKEN_EXPIRE_DAYS
+    )
+    datos_a_codificar.update({"exp": expira, "tipo": "refresh"})
+    return jwt.encode(datos_a_codificar, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+def verificar_token(token: str, tipo_esperado: str):
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        if payload.get("tipo") != tipo_esperado:
+            return None
+        return payload
+    except JWTError:
+        return None</code></pre>
+            </div>
+
+            <div class="timeline">
+              <div class="timeline-item"><h3>Los secretos desaparecen del archivo</h3><p><code>settings.SECRET_KEY</code>, <code>settings.ALGORITHM</code> y las duraciones vienen de la configuración validada.</p></div>
+              <div class="timeline-item"><h3>El acceso usa minutos</h3><p><code>crear_access_token</code> añade <code>exp</code> y la marca <code>"tipo": "access"</code>.</p></div>
+              <div class="timeline-item"><h3>El refresco usa días</h3><p><code>crear_refresh_token</code> comparte la estructura, pero cambia duración y marca.</p></div>
+              <div class="timeline-item"><h3>La verificación exige contexto</h3><p><code>tipo_esperado</code> permite rechazar un JWT válido cuando se intenta usar en la puerta equivocada.</p></div>
+            </div>
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Horizonte profesional: revocación</h3><p>En sistemas de alta seguridad, el refresh token también se guarda en base de datos para revocarlo al cerrar sesión. Aquí se implementa el patrón fundamental sin estado adicional.</p></div></div>
+
+            <div class="checkpoint">
+              <span class="component-label">Construcción 2 de 2</span>
+              <h3>Actualiza la dependencia que consume el token</h3>
+            </div>
+            <p><code>verificar_token</code> ahora exige el tipo esperado. La dependencia debe pedir explícitamente un access token y producir respuestas 401 consistentes.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Editar · versión final</span><span class="code-file">biblioteca_api/app/auth/dependencias.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.auth.seguridad import verificar_token
+from app.models.usuario import Usuario
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+def obtener_usuario_actual(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> Usuario:
+    credenciales_invalidas = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="No se pudo validar el token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    payload = verificar_token(token, tipo_esperado="access")
+    if payload is None:
+        raise credenciales_invalidas
+
+    usuario_id = payload.get("sub")
+    if usuario_id is None:
+        raise credenciales_invalidas
+
+    usuario = db.query(Usuario).filter(Usuario.id == int(usuario_id)).first()
+    if usuario is None:
+        raise credenciales_invalidas
+
+    return usuario
+
+def requerir_admin(usuario: Usuario = Depends(obtener_usuario_actual)) -> Usuario:
+    if usuario.rol != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Requiere permisos de administrador"
+        )
+    return usuario</code></pre>
+            </div>
+
+            <div class="cards">
+              <div class="card" data-accent="1"><span class="orb" data-accent="1"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3 8-8 9-5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></span><b>Tipo obligatorio</b><p><code>tipo_esperado="access"</code> impide abrir datos con el token de refresco.</p></div>
+              <div class="card" data-accent="3"><span class="orb" data-accent="3"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h14v12H5z"/><path d="M8 10h8M8 14h5"/></svg></span><b>Un error coherente</b><p>La misma excepción cubre payload inválido, <code>sub</code> ausente y usuario inexistente. Reduce filtraciones y repetición.</p></div>
+              <div class="card" data-accent="2"><span class="orb" data-accent="2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h16M4 16h16M8 4v16"/></svg></span><b>HTTP profesional</b><p><code>WWW-Authenticate: Bearer</code> comunica el esquema esperado y las constantes de <code>status</code> hacen el código legible.</p></div>
+            </div>
+
+            <div class="socratica">
+              <span class="component-label">Riesgo y función</span>
+              <p class="socratica-q">¿Por qué el refresh token dura 7 días y no 15 minutos también, si una duración corta parece más segura?</p>
+              <p class="socratica-hint">Pregunta qué trabajo dejaría de cumplir si expirara al mismo tiempo que el access token.</p>
+              <details class="reveal">
+                <summary>Ver respuesta</summary>
+                <div class="reveal-body">
+                  <p class="lead-answer">Si ambos duraran lo mismo, el refresh token no evitaría ningún login.</p>
+                  <p>Su trabajo exige una ventana mayor. Su seguridad proviene de que se usa poco, viaja solo a <code>/auth/refresh</code> y debe guardarse con más cuidado.</p>
+                  <p>Seguridad no significa siempre “más corto”; significa diseñar la exposición correcta para la responsabilidad de cada pieza.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </section>
+        <section class="section" id="s8">
+          <div class="sec-head"><span class="sec-n">08 · Tema 4</span><h2 class="sec-t">Login dual y endpoint de renovación</h2><p class="sec-s">El cliente recibe dos credenciales con responsabilidades distintas y usa cada una únicamente en su puerta correcta.</p></div>
+          <div class="body">
+            <div class="checkpoint">
+              <span class="component-label">Paso 1 de 2 · Contrato</span>
+              <h3>Crea el schema del refresh token</h3>
+            </div>
+            <p>El endpoint recibirá el refresh token en el cuerpo de la petición. Necesita un contrato mínimo y explícito, creado desde cero dentro de <code>app/schemas/</code>.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">biblioteca_api/app/schemas/token.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from pydantic import BaseModel
+
+class TokenRefresh(BaseModel):
+    refresh_token: str</code></pre>
+            </div>
+            <p><code>TokenRefresh</code> reutiliza el patrón de Pydantic del Módulo 1: una entrada concreta tiene un contrato concreto y solo contiene el texto que el cliente envía para renovar.</p>
+
+            <div class="checkpoint">
+              <span class="component-label">Paso 2 de 2 · Flujo HTTP</span>
+              <h3>Reemplaza el router de autenticación</h3>
+            </div>
+            <p>La versión final conserva el registro, amplía el login para entregar dos tokens y añade <code>POST /auth/refresh</code>. Reemplaza todo el contenido del router.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Editar · versión final</span><span class="code-file">biblioteca_api/app/routers/auth_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.schemas.usuario import UsuarioCreate, UsuarioRespuesta
+from app.schemas.token import TokenRefresh
+from app.services.usuario_service import registrar_usuario
+from app.models.usuario import Usuario
+from app.auth.seguridad import (
+    verificar_password,
+    crear_access_token,
+    crear_refresh_token,
+    verificar_token,
+)
+
+router = APIRouter(prefix="/auth", tags=["Autenticación"])
+
+@router.post("/registro", response_model=UsuarioRespuesta)
+def registro(datos: UsuarioCreate, db: Session = Depends(get_db)):
+    return registrar_usuario(db, datos)
+
+@router.post("/login")
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
+    usuario = db.query(Usuario).filter(Usuario.email == form_data.username).first()
+
+    if not usuario or not verificar_password(form_data.password, usuario.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Correo o contraseña incorrectos",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    datos_token = {"sub": str(usuario.id)}
+    access_token = crear_access_token(datos_token)
+    refresh_token = crear_refresh_token(datos_token)
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+    }
+
+@router.post("/refresh")
+def refrescar(datos: TokenRefresh, db: Session = Depends(get_db)):
+    payload = verificar_token(datos.refresh_token, tipo_esperado="refresh")
+
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token inválido o expirado",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    usuario_id = payload.get("sub")
+    usuario = db.query(Usuario).filter(Usuario.id == int(usuario_id)).first()
+    if usuario is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario no encontrado",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    nuevo_access = crear_access_token({"sub": str(usuario.id)})
+    return {"access_token": nuevo_access, "token_type": "bearer"}</code></pre>
+            </div>
+
+            <div class="mindmap">
+              <div class="mindmap-core"><strong><code>auth_router.py</code></strong><span>Dos puertas, una identidad</span></div>
+              <div class="mindmap-branches">
+                <div class="mindmap-node" data-accent="1"><strong><code>/registro</code></strong><p>No cambia; continúa delegando en <code>registrar_usuario</code>.</p></div>
+                <div class="mindmap-node" data-accent="2"><strong><code>/login</code></strong><p>Verifica correo y clave; crea access + refresh con el mismo <code>sub</code>.</p></div>
+                <div class="mindmap-node" data-accent="4"><strong><code>/refresh</code></strong><p>Valida firma, expiración y <code>tipo="refresh"</code>; luego busca al usuario.</p></div>
+                <div class="mindmap-node" data-accent="3"><strong>Errores 401</strong><p>Incluyen <code>WWW-Authenticate: Bearer</code> y mensajes coherentes.</p></div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h3>Cómo leer el login actualizado</h3>
+              <p>Antes se creaba un solo token. Ahora <code>crear_access_token</code> y <code>crear_refresh_token</code> reciben el mismo <code>sub</code> —el id del usuario— y devuelven credenciales con duración y tipo diferentes.</p>
+              <p>El cliente usa el access para trabajar y reserva el refresh para renovar. El mensaje ambiguo de credenciales evita revelar si existe el correo, y el error adopta el header estándar.</p>
+            </div>
+
+            <div class="panel">
+              <h3>Cómo leer <code>/refresh</code></h3>
+              <p>Recibe JSON mediante <code>TokenRefresh</code>. Si la firma, la fecha o el tipo fallan, devuelve 401. Si el usuario ya no existe, también rechaza la renovación.</p>
+              <p>Cuando todo es válido, crea únicamente un access token nuevo. El refresh se reutiliza hasta que expire.</p>
+            </div>
+
+            <div class="compare">
+              <div class="compare-card" data-side="positive"><h3>Patrón de esta clase</h3><ul><li>El refresh se reutiliza durante 7 días.</li><li>No requiere guardar tokens en base de datos.</li><li>Es el patrón base adecuado para comprender el flujo.</li></ul></div>
+              <div class="compare-card" data-side="negative"><h3>Rotación avanzada</h3><ul><li>Cada uso entrega un refresh nuevo.</li><li>El anterior se invalida.</li><li>Exige persistencia y control de revocación.</li></ul></div>
+            </div>
+
+            <div class="socratica">
+              <span class="component-label">La llave correcta</span>
+              <p class="socratica-q"><code>/auth/refresh</code> no usa <code>Depends(obtener_usuario_actual)</code>. ¿Es un error de seguridad dejarlo sin esa dependencia?</p>
+              <p class="socratica-hint">Recuerda en qué momento se llama este endpoint y cuál credencial ya dejó de ser válida.</p>
+              <details class="reveal">
+                <summary>Ver respuesta</summary>
+                <div class="reveal-body">
+                  <p class="lead-answer">No es un error: está protegido con una credencial diferente.</p>
+                  <p>No puede exigir un access token válido porque se invoca justo cuando ese token expiró. Su protección consiste en verificar internamente un refresh token válido.</p>
+                  <p>Aplicar la dependencia de access rompería la renovación. El criterio profesional es proteger cada puerta con la llave adecuada, no repetir la misma llave en todas.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </section>
+        <section class="section" id="s9">
+          <div class="sec-head"><span class="sec-n">09 · Evidencia observable</span><h2 class="sec-t">Nueve pruebas guiadas en Swagger</h2><p class="sec-s">No confiamos en que “parece funcionar”: provocamos escenarios correctos e incorrectos y leemos las respuestas del sistema.</p></div>
+          <div class="body">
+            <div class="callout" data-tone="info">
+              <span class="callout-icon">i</span>
+              <div><h3>Punto de prueba</h3><p>Usa <code>http://127.0.0.1:8000/docs</code>. Antes de comenzar, levanta el servidor desde la raíz de <code>biblioteca_api</code>.</p></div>
+            </div>
+            <div class="code-block" data-tipo="terminal">
+              <div class="code-head"><div><span class="code-context">Ejecutar</span><span class="code-file">biblioteca_api/ · terminal</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-bash">uvicorn app.main:app --reload</code></pre>
+            </div>
+            <p>El servidor debe arrancar sin errores. Si falta una variable del <code>.env</code>, la aplicación se detiene e identifica el campo: esa es la validación de Pydantic protegiendo el arranque.</p>
+
+            <div class="checkpoint"><span class="component-label">Prueba 1 de 9 · Configuración</span><h3>La aplicación arranca leyendo <code>.env</code></h3></div>
+            <div class="panel"><h3>Qué haces y qué observas</h3><p>Levanta el servidor normalmente. La señal correcta es <code>Application startup complete</code>: <code>SECRET_KEY</code> y <code>DATABASE_URL</code> llegaron desde el entorno.</p><p>Prueba extra: renombra temporalmente <code>.env</code> y vuelve a arrancar. Debe fallar indicando campos faltantes. Devuelve luego el nombre original.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Prueba 2 de 9 · Login</span><h3>Recibes dos tokens</h3></div>
+            <div class="panel"><h3>Entrada</h3><p>Abre <code>POST /auth/login</code> y pulsa “Try it out”. El login sigue siendo formulario: usa como <code>username</code> el correo de un usuario registrado, por ejemplo <code>ana@correo.com</code>, y escribe su contraseña.</p></div>
+            <p>La respuesta esperada es 200 con tres campos. Copia ambos tokens: el access se usa para trabajar y el refresh se reserva para la Prueba 5.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Respuesta 200</span><span class="code-file">POST /auth/login</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-json">{
+  "access_token": "eyJhbGci...",
+  "refresh_token": "eyJhbGci...",
+  "token_type": "bearer"
+}</code></pre>
+            </div>
+
+            <div class="checkpoint"><span class="component-label">Prueba 3 de 9 · Inspección</span><h3>Los payloads muestran responsabilidades distintas</h3></div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <caption>Pega cada token en jwt.io y compara</caption>
+                <thead><tr><th>Token</th><th><code>sub</code></th><th><code>tipo</code></th><th><code>exp</code></th></tr></thead>
+                <tbody><tr><td data-emphasis>Access</td><td>Mismo id de usuario</td><td><code>"access"</code></td><td>Cercano · 15 min</td></tr><tr><td data-emphasis>Refresh</td><td>Mismo id de usuario</td><td><code>"refresh"</code></td><td>Lejano · 7 días</td></tr></tbody>
+              </table>
+            </div>
+            <p>El mismo sujeto recibe dos credenciales. La diferencia observable está en la marca y la expiración.</p>
+
+            <div class="checkpoint"><span class="component-label">Prueba 4 de 9 · Camino correcto</span><h3>El access token abre un endpoint protegido</h3></div>
+            <div class="panel"><h3>Entrada y resultado</h3><p>En “Authorize”, pega el access token. Ejecuta <code>GET /prestamos/mis-prestamos</code>.</p><p>La respuesta debe ser 200 con los préstamos del usuario. Nada de la función normal se rompió: la credencial hace el mismo trabajo, pero ahora dura menos.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Prueba 5 de 9 · Renovación</span><h3>Obtienes acceso nuevo sin repetir credenciales</h3></div>
+            <p>Abre <code>POST /auth/refresh</code>. Esta entrada sí es JSON. Pega en el cuerpo el refresh token que guardaste en la Prueba 2.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Cuerpo JSON</span><span class="code-file">POST /auth/refresh</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-json">{
+  "refresh_token": "PEGA_AQUI_EL_REFRESH_TOKEN_DE_LA_PRUEBA_2"
+}</code></pre>
+            </div>
+            <p>La respuesta esperada es 200 con un access token nuevo. No enviaste correo ni contraseña: la renovación usó únicamente la credencial destinada a esa operación.</p>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Respuesta 200</span><span class="code-file">POST /auth/refresh</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-json">{
+  "access_token": "eyJhbGci...NUEVO...",
+  "token_type": "bearer"
+}</code></pre>
+            </div>
+            <div class="callout" data-tone="success"><span class="callout-icon">✓</span><div><h3>El corazón del sistema</h3><p>Esto es lo que ocurre por detrás en servicios como Netflix: el acceso vence, se renueva y el usuario continúa sin interrupción visible.</p></div></div>
+
+            <div class="checkpoint"><span class="component-label">Prueba 6 de 9 · Uso cruzado</span><h3>Un access token no puede refrescar</h3></div>
+            <div class="panel"><h3>Provoca el fallo correcto</h3><p>En <code>POST /auth/refresh</code>, pega el access token dentro del campo <code>refresh_token</code>.</p><p>Debe responder 401: <code>Refresh token inválido o expirado</code>. El JWT tiene firma válida, pero su <code>tipo</code> es <code>"access"</code>; la marca evita usarlo en la puerta equivocada.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Prueba 7 de 9 · Uso cruzado inverso</span><h3>Un refresh token no abre los datos</h3></div>
+            <div class="panel"><h3>Provoca el fallo correcto</h3><p>En “Authorize”, pega el refresh token e intenta <code>GET /prestamos/mis-prestamos</code>.</p><p>Debe responder 401: <code>No se pudo validar el token</code>. El refresh sirve únicamente en <code>/refresh</code>; no sustituye la credencial de acceso.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Prueba 8 de 9 · Contrato HTTP</span><h3>El 401 comunica el esquema esperado</h3></div>
+            <div class="panel"><h3>Lee los headers</h3><p>Provoca un 401 —puedes reutilizar la Prueba 7— y revisa “Response headers” en Swagger.</p><p>Debe aparecer <code>www-authenticate: Bearer</code>. Ese header permite que cualquier cliente entienda qué autenticación exige el servidor.</p></div>
+
+            <div class="checkpoint"><span class="component-label">Prueba 9 de 9 · Tiempo real</span><h3>El access token expira y el refresh recupera la sesión</h3></div>
+            <div class="cards">
+              <div class="card" data-accent="2"><span class="orb" data-accent="2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg></span><b>Con paciencia</b><p>Espera 15 minutos con un access token y vuelve a usarlo.</p></div>
+              <div class="card" data-accent="4"><span class="orb" data-accent="4"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><b>Versión rápida</b><p>Cambia temporalmente <code>ACCESS_TOKEN_EXPIRE_MINUTES=1</code>, reinicia, inicia sesión y espera un minuto.</p></div>
+            </div>
+            <p>El resultado debe ser un 401 por expiración. Después, la Prueba 5 debe entregar un token nuevo: acceso expira → refresh renueva → el usuario continúa.</p>
+
+            <div class="callout" data-tone="success"><span class="callout-icon">✓</span><div><h3>Evidencia de punta a punta</h3><p>La sesión profesional funciona cuando los caminos correctos responden 200, los tokens cruzados responden 401 y la renovación no solicita usuario ni contraseña.</p></div></div>
+          </div>
+        </section>
+        <section class="section" id="s10">
+          <div class="sec-head"><span class="sec-n">10 · Entregable reutilizable</span><h2 class="sec-t">Checklist para cualquier API</h2><p class="sec-s">Un control incompleto significa que la API todavía conserva una superficie de riesgo que debe resolverse.</p></div>
+          <div class="body">
+            <div class="mindmap">
+              <div class="mindmap-core"><strong>API lista para producción</strong><span>Cinco frentes verificables</span></div>
+              <div class="mindmap-branches">
+                <div class="mindmap-node" data-accent="1"><strong>Contraseñas</strong><p>Hash, privacidad y mensajes ambiguos.</p></div>
+                <div class="mindmap-node" data-accent="2"><strong>Secretos</strong><p>Fuera del código y documentados sin exponer.</p></div>
+                <div class="mindmap-node" data-accent="4"><strong>Tokens</strong><p>Duración, tipo y uso correcto.</p></div>
+                <div class="mindmap-node" data-accent="3"><strong>Errores</strong><p>401/403 consistentes y sin filtraciones.</p></div>
+                <div class="mindmap-node" data-accent="1"><strong>Autorización</strong><p>Rol y propiedad de los datos.</p></div>
+              </div>
+            </div>
+
+            <div class="cards">
+              <div class="card" data-accent="1">
+                <span class="emoji-orb" role="img" aria-label="Contraseña protegida">🔐</span><b>Contraseñas</b>
+                <ul class="checklist"><li>Nunca se guardan en texto plano; solo su hash con bcrypt.</li><li>El hash nunca sale en una respuesta de la API.</li><li>El mensaje de login es ambiguo: no revela si falló el correo o la clave.</li></ul>
+              </div>
+              <div class="card" data-accent="2">
+                <span class="emoji-orb" role="img" aria-label="Llave secreta">🗝️</span><b>Secretos y configuración</b>
+                <ul class="checklist"><li><code>SECRET_KEY</code> y contraseñas viven en <code>.env</code>, no en el código.</li><li><code>.env</code> está en <code>.gitignore</code> y nunca se sube.</li><li>Existe un <code>.env.example</code> como plantilla para el equipo.</li><li><code>SECRET_KEY</code> es larga y aleatoria, no una palabra adivinable.</li></ul>
+              </div>
+              <div class="card" data-accent="4">
+                <span class="emoji-orb" role="img" aria-label="Dos pases">🎟️</span><b>Tokens</b>
+                <ul class="checklist"><li>El access token es corto: dura minutos.</li><li>Existe un refresh token largo para renovar sin reloguear.</li><li>Cada token está marcado por tipo y se valida que se use en su lugar.</li><li>Todos los tokens expiran; ninguno es eterno.</li></ul>
+              </div>
+            </div>
+
+            <div class="cards">
+              <div class="card" data-accent="3">
+                <span class="emoji-orb" role="img" aria-label="Señal de error">🚦</span><b>Errores y respuestas</b>
+                <ul class="checklist"><li>Los fallos de autenticación devuelven 401 con <code>WWW-Authenticate</code>.</li><li>Se distingue 401 —no sé quién eres— de 403 —sé quién eres, pero no puedes hacer esto—.</li><li>Los mensajes no filtran información interna del sistema.</li></ul>
+              </div>
+              <div class="card" data-accent="1">
+                <span class="emoji-orb" role="img" aria-label="Control de acceso">🛡️</span><b>Autorización</b>
+                <ul class="checklist"><li>Los endpoints sensibles verifican el rol.</li><li>Un usuario solo accede a sus propios datos.</li><li>El cliente no decide el rol; se asigna de forma controlada.</li></ul>
+              </div>
+            </div>
+
+            <div class="callout" data-tone="danger"><span class="callout-icon">!</span><div><h3>Regla final</h3><p>Si un solo control queda pendiente, la API todavía no está lista para producción. Este checklist funciona como brújula para cualquier servicio que construyas.</p></div></div>
+          </div>
+        </section>
+        <section class="section" id="s11">
+          <div class="sec-head"><span class="sec-n">11 · Criterio con IA</span><h2 class="sec-t">La IA escribe el patrón; tú decides si es seguro</h2><p class="sec-s">En autenticación, un error puede no verse durante la demostración y aun así dejar un hueco en producción.</p></div>
+          <div class="body">
+            <div class="panel">
+              <h3>Un prompt útil para este problema</h3>
+              <p>“Implementa refresh tokens en FastAPI con python-jose: access token corto y refresh token largo, cada uno marcado por tipo, leyendo la configuración desde variables de entorno con pydantic-settings.”</p>
+            </div>
+
+            <div class="shape-board">
+              <div class="shape-card" data-accent="1"><span class="emoji" role="img" aria-label="Reloj mundial">🌐</span><strong>Tiempo correcto</strong><p>¿Usa <code>datetime.now(timezone.utc)</code> y evita <code>utcnow()</code>, que está en desuso?</p></div>
+              <div class="shape-card" data-accent="4"><span class="emoji" role="img" aria-label="Dos credenciales">🎫</span><strong>Tipos separados</strong><p>¿Diferencia access y refresh o los trata igual y deja un hueco?</p></div>
+              <div class="shape-card" data-accent="2"><span class="emoji" role="img" aria-label="Llave escondida">🗝️</span><strong>Secreto externo</strong><p>¿Dejó una <code>SECRET_KEY</code> de ejemplo escrita en el código?</p></div>
+              <div class="shape-card" data-accent="3"><span class="emoji" role="img" aria-label="Señal 401">🚫</span><strong>401 estándar</strong><p>¿Incluye <code>WWW-Authenticate</code> en los fallos de autenticación?</p></div>
+              <div class="shape-card" data-accent="1"><span class="emoji" role="img" aria-label="Archivo protegido">📁</span><strong><code>.env</code> protegido</strong><p>¿Sugiere subirlo o lo excluye mediante <code>.gitignore</code>?</p></div>
+            </div>
+
+            <div class="compare">
+              <div class="compare-card" data-side="negative"><h3>Copiar sin evaluar</h3><ul><li>El patrón puede ejecutar y aun así dejar una brecha.</li><li>Los valores de ejemplo suelen sobrevivir hasta producción.</li><li>Una respuesta plausible no conoce el riesgo de tu negocio.</li></ul></div>
+              <div class="compare-card" data-side="positive"><h3>Usar IA con criterio</h3><ul><li>Resuelves primero las responsabilidades del sistema.</li><li>Delegas la escritura y verificas cada decisión.</li><li>Provocas caminos de error para buscar alucinaciones.</li></ul></div>
+            </div>
+
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>La diferencia profesional</h3><p>La IA genera el patrón en segundos. Sacar la clave del código, separar tipos y estandarizar errores son decisiones tuyas. Ese criterio forma a una ingeniera, no a una persona que copia.</p></div></div>
+          </div>
+        </section>
+        <section class="section" id="s12">
+          <div class="sec-head"><span class="sec-n">12 · Arquitectura resultante</span><h2 class="sec-t">Mapa exacto de archivos</h2><p class="sec-s">Nueve cambios endurecen la seguridad sin invadir modelos, servicios ni la lógica de negocio.</p></div>
+          <div class="body">
+            <div class="table-wrap">
+              <table class="data-table">
+                <caption>Archivos creados o modificados en esta clase</caption>
+                <thead><tr><th>Archivo</th><th>Ruta</th><th>Acción</th><th>Sección original</th></tr></thead>
+                <tbody>
+                  <tr><td data-emphasis><code>requirements.txt</code></td><td><code>biblioteca_api/</code></td><td>Editar · 2 líneas nuevas</td><td>5</td></tr>
+                  <tr><td data-emphasis><code>.env</code></td><td><code>biblioteca_api/</code></td><td>Crear</td><td>5</td></tr>
+                  <tr><td data-emphasis><code>.gitignore</code></td><td><code>biblioteca_api/</code></td><td>Crear o editar</td><td>5</td></tr>
+                  <tr><td data-emphasis><code>config.py</code></td><td><code>app/</code></td><td>Crear</td><td>5</td></tr>
+                  <tr><td data-emphasis><code>database.py</code></td><td><code>app/</code></td><td>Editar · usa settings</td><td>5</td></tr>
+                  <tr><td data-emphasis><code>seguridad.py</code></td><td><code>app/auth/</code></td><td>Editar · env + 2 tokens</td><td>7</td></tr>
+                  <tr><td data-emphasis><code>dependencias.py</code></td><td><code>app/auth/</code></td><td>Editar · tipo + WWW-Auth</td><td>7</td></tr>
+                  <tr><td data-emphasis><code>token.py</code></td><td><code>app/schemas/</code></td><td>Crear</td><td>8</td></tr>
+                  <tr><td data-emphasis><code>auth_router.py</code></td><td><code>app/routers/</code></td><td>Editar · 2 tokens + refresh</td><td>8</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="shape-board">
+              <div class="shape-card" data-accent="2"><span class="emoji" role="img" aria-label="Configuración">⚙️</span><strong>Configuración</strong><p><code>requirements.txt</code>, <code>.env</code>, <code>.gitignore</code>, <code>config.py</code> y <code>database.py</code>.</p></div>
+              <div class="shape-card" data-accent="4"><span class="emoji" role="img" aria-label="Seguridad">🛡️</span><strong>Seguridad</strong><p><code>seguridad.py</code> y <code>dependencias.py</code> crean, validan y exigen credenciales.</p></div>
+              <div class="shape-card" data-accent="1"><span class="emoji" role="img" aria-label="Contrato HTTP">🔄</span><strong>Contrato HTTP</strong><p><code>token.py</code> define la entrada y <code>auth_router.py</code> expone login y renovación.</p></div>
+            </div>
+
+            <div class="callout" data-tone="success"><span class="callout-icon">✓</span><div><h3>Una señal de buen diseño</h3><p>Los modelos, servicios y routers de usuarios, libros y préstamos no cambian. La seguridad se endurece sin tocar la lógica de negocio porque las responsabilidades estaban separadas —una consecuencia práctica de SOLID.</p></div></div>
+          </div>
+        </section>
+        <section class="section" id="s13">
+          <div class="sec-head"><span class="sec-n">13 · Lectura de errores</span><h2 class="sec-t">Diagnóstico y preguntas profesionales</h2><p class="sec-s">Un error es una señal interpretable: identifica qué contrato falló, dónde vive la pieza y qué decisión lo corrige.</p></div>
+          <div class="body">
+            <div class="table-wrap">
+              <table class="data-table">
+                <caption>Errores frecuentes: qué significan y qué revisar</caption>
+                <thead><tr><th>Señal</th><th>Cómo se lee</th><th>Acción</th></tr></thead>
+                <tbody>
+                  <tr><td data-emphasis><code>field required</code> en Settings</td><td>Falta una variable o su nombre no coincide con el contrato.</td><td>Revisa que <code>.env</code> esté en la raíz y contenga las cuatro claves.</td></tr>
+                  <tr><td data-emphasis><code>could not import app.config</code> / <code>ModuleNotFoundError</code></td><td>Python no encuentra el módulo en la ruta esperada.</td><td><code>config.py</code> va en <code>app/</code> y se importa con <code>from app.config import settings</code>.</td></tr>
+                  <tr><td data-emphasis><code>.env</code> no se lee / valores vacíos</td><td>El archivo no tiene el nombre que el lector busca.</td><td>Comprueba que Windows no lo haya guardado como <code>.env.txt</code>.</td></tr>
+                  <tr><td data-emphasis>El valor nuevo no aparece</td><td>La aplicación conserva la configuración cargada al arrancar.</td><td>Reinicia Uvicorn después de editar <code>.env</code>, incluso si usas <code>--reload</code>.</td></tr>
+                  <tr><td data-emphasis>Swagger rechaza el formato en refresh</td><td><code>/auth/refresh</code> espera un cuerpo diferente al login.</td><td>Envía JSON: <code>{"refresh_token": "..."}</code>; el login sí usa formulario.</td></tr>
+                  <tr><td data-emphasis><code>tipo</code> no coincide</td><td>La credencial llegó a la puerta equivocada.</td><td>Usa refresh solo en <code>/refresh</code> y access en endpoints protegidos.</td></tr>
+                  <tr><td data-emphasis>El login todavía devuelve 2 campos</td><td>El router conserva la versión anterior.</td><td>Actualiza <code>auth_router.py</code>: ahora entrega access + refresh + <code>token_type</code>.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="callout" data-tone="warning"><span class="callout-icon">!</span><div><h3>La validación que detiene el arranque no es un bug</h3><p>Es el contrato protegiendo la aplicación antes de que una configuración incompleta produzca un fallo más difícil de rastrear.</p></div></div>
+
+            <div class="cards">
+              <div class="card" data-accent="2"><span class="orb" data-accent="2"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8"/></svg></span><b>¿Se sube <code>.env</code>?</b><p>Nunca. Va en <code>.gitignore</code>. El repositorio comparte <code>.env.example</code> sin valores reales.</p></div>
+              <div class="card" data-accent="1"><span class="orb" data-accent="1"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v10H4z"/><path d="M8 11h8"/></svg></span><b>¿Por qué no <code>os.getenv()</code>?</b><p>Puede usarse, pero <code>pydantic-settings</code> tipa, valida y avisa al arrancar si falta un secreto.</p></div>
+              <div class="card" data-accent="4"><span class="orb" data-accent="4"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v16H7z"/><path d="M10 17h4"/></svg></span><b>¿Dónde guarda refresh el cliente?</b><p>En web, idealmente en una cookie HttpOnly. En móvil, en el almacenamiento seguro del sistema.</p></div>
+              <div class="card" data-accent="3"><span class="orb" data-accent="3"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M12 4v16"/><circle cx="12" cy="12" r="9"/></svg></span><b>¿Se invalida antes de expirar?</b><p>Con JWT puro, no directamente. Necesitas una lista de revocación en base de datos o Redis.</p></div>
+              <div class="card" data-accent="4"><span class="orb" data-accent="4"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12v8H6z"/><path d="M9 8V5h6v3M9 16v3h6v-3"/></svg></span><b>¿Refresh debe ser JWT?</b><p>No necesariamente. También puede ser texto opaco y aleatorio guardado en base de datos. JWT es más simple para este escalón.</p></div>
+              <div class="card" data-accent="1"><span class="orb" data-accent="1"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><b>¿15 minutos es una regla fija?</b><p>No. 15–30 minutos es un rango común; banca y una app de notas aceptan riesgos distintos.</p></div>
+            </div>
+
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Trade-off de JWT</h3><p>Invalidar inmediatamente exige guardar estado en el servidor. Ese control adicional sacrifica parte de la ventaja de una sesión JWT puramente stateless.</p></div></div>
+          </div>
+        </section>
+        <section class="section" id="s14">
+          <div class="sec-head"><span class="sec-n">14 · Cierre de módulo</span><h2 class="sec-t">De API de práctica a base profesional</h2><p class="sec-s">La seguridad deja de ser una función aislada y se convierte en un conjunto coherente de decisiones verificables.</p></div>
+          <div class="body">
+            <div class="checklist">
+              <li>Sacaste los secretos del código a <code>.env</code> y los validaste con <code>pydantic-settings</code>.</li>
+              <li>Protegiste <code>.env</code> con <code>.gitignore</code> y entendiste la función de <code>.env.example</code>.</li>
+              <li>Convertiste la expiración de tokens en una decisión explícita de ingeniería.</li>
+              <li>Implementaste access corto y refresh largo para combinar seguridad y comodidad.</li>
+              <li>Separaste los tokens por <code>tipo</code> y cerraste los usos cruzados.</li>
+              <li>Estandarizaste autenticación con 401 y <code>WWW-Authenticate</code>.</li>
+              <li>Construiste un checklist reutilizable para futuras APIs.</li>
+            </div>
+
+            <div class="stat-panel">
+              <span class="stat-value">API</span>
+              <span class="stat-label">base profesional</span>
+              <p class="stat-note">Ya no es una API de práctica: es una API que un equipo podría desplegar con confianza.</p>
+            </div>
+
+            <div class="mindmap">
+              <div class="mindmap-core"><strong>Módulo 3 completo</strong><span>Seguridad de punta a punta</span></div>
+              <div class="mindmap-branches">
+                <div class="mindmap-node" data-accent="1"><strong>Identidad</strong><p>Registro, login y contraseñas hasheadas.</p></div>
+                <div class="mindmap-node" data-accent="2"><strong>Acceso</strong><p>JWT, roles y autorización a nivel de datos.</p></div>
+                <div class="mindmap-node" data-accent="3"><strong>Configuración</strong><p>Producción sin secretos dentro del código.</p></div>
+                <div class="mindmap-node" data-accent="4"><strong>Sesión</strong><p>Refresh tokens con usos y duraciones separados.</p></div>
+                <div class="mindmap-node" data-accent="1"><strong>Interoperabilidad</strong><p>Errores de autenticación en el estándar HTTP.</p></div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h3>Puente al Módulo 4</h3>
+              <p>El proyecto final integrador construirá un sistema completo de usuarios, productos y ventas. Unirá FastAPI del Módulo 1, PostgreSQL del Módulo 2 y la seguridad del Módulo 3.</p>
+              <p>Todo lo endurecido aquí será la base de seguridad para ese sistema. Ya sabes proteger una API; el siguiente paso es construir la solución completa de punta a punta.</p>
+            </div>
+
+            <div class="socratica">
+              <span class="component-label">Pregunta de transferencia</span>
+              <p class="socratica-q">Cuando alguien “cierra sesión”, su JWT sigue siendo válido hasta expirar. ¿Qué tendrías que guardar para invalidarlo de inmediato y qué ventaja de JWT perderías?</p>
+              <p class="socratica-hint">La respuesta exige que el servidor recuerde qué credenciales ya no acepta.</p>
+              <details class="reveal">
+                <summary>Ver respuesta</summary>
+                <div class="reveal-body">
+                  <p class="lead-answer">Necesitarías una lista de revocación en base de datos o Redis.</p>
+                  <p>Cada petición tendría que consultar si el token fue invalidado. Eso permite cerrar la sesión de inmediato, pero introduce estado y una consulta adicional.</p>
+                  <p>El intercambio es claro: ganas control de revocación y pierdes parte de la simplicidad stateless que caracteriza a JWT puro.</p>
+                </div>
+              </details>
+            </div>
+
+            <div class="callout" data-tone="success"><span class="callout-icon">✓</span><div><h3>Evidencia final de aprendizaje</h3><p>Puedes explicar por qué existe cada pieza, implementar el flujo completo, provocar fallos controlados y justificar cuándo una decisión de sesión debe cambiar según el riesgo del negocio.</p></div></div>
+          </div>
+          <p class="doc-foot">© 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · Todos los derechos reservados · linkedin.com/in/ana-alvarado-instructora-full-stack</p>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="watermark" aria-hidden="true">© 2026 ANA ALVARADO</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="anaclase.js?v=8.0.1"></script>
+</body>
+</html>
