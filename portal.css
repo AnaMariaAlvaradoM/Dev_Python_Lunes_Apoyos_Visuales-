@@ -316,3 +316,6 @@ footer p { margin: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
 }
+
+.clase--pendiente { opacity: .58; cursor: default; }
+.clase--pendiente .flecha { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .04em; text-transform: uppercase; }

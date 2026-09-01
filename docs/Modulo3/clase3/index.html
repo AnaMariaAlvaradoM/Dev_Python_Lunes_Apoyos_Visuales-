@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro" data-tema-base="oscuro" data-empresa="dev-senior" data-paleta="caribe" data-atmosfera="tecnica">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Ana Alvarado">
+  <meta name="copyright" content="© 2026 Ana Alvarado — Todos los derechos reservados">
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+  <title>DevAcademy · Fundación y autenticación · Ana Alvarado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <link rel="stylesheet" href="anaestilos-v9.css">
+</head>
+<body>
+  <a class="skip-link" href="#s1">Saltar al contenido</a>
+  <div class="topline" id="topline" aria-hidden="true"></div>
+  <div class="controls" aria-label="Controles">
+    <button class="ctrl" id="temaBtn" type="button" aria-label="Cambiar tema">☀</button>
+    <button class="ctrl" id="fullscreenBtn" type="button" aria-label="Pantalla completa">⛶</button>
+  </div>
+
+  <div class="shell" id="shell" data-collapsed="false">
+    <aside class="sidebar" aria-label="Índice de la clase">
+      <div class="sb-top">
+        <span class="brand-mark">DS</span>
+        <div class="sb-title"><b>Python Backend Developer</b><span>Módulo 3 · Sesión extra 1</span></div>
+      </div>
+      <button class="sb-toggle" id="collapseBtn" type="button" aria-label="Colapsar menú">‹</button>
+      <nav class="sb-nav" id="nav" aria-label="Secciones">
+        <a class="nav-item active" data-icon="✦" href="#portada"><span class="nav-index">00</span><span class="nav-label">Portada</span></a>
+        <a class="nav-item" data-icon="📨" href="#s1"><span class="nav-index">01</span><span class="nav-label">El encargo</span></a>
+        <a class="nav-item" data-icon="🧭" href="#s2"><span class="nav-index">02</span><span class="nav-label">Traducir el negocio</span></a>
+        <a class="nav-item" data-icon="🏗️" href="#s3"><span class="nav-index">03</span><span class="nav-label">Montaje</span></a>
+        <a class="nav-item" data-icon="🔐" href="#s4"><span class="nav-index">04</span><span class="nav-label">Config y base</span></a>
+        <a class="nav-item" data-icon="🗺️" href="#s5"><span class="nav-index">05</span><span class="nav-label">Mapa del dominio</span></a>
+        <a class="nav-item" data-icon="👤" href="#s6"><span class="nav-index">06</span><span class="nav-label">Usuario y Curso</span></a>
+        <a class="nav-item" data-icon="🔗" href="#s7"><span class="nav-index">07</span><span class="nav-label">Lección e Inscripción</span></a>
+        <a class="nav-item" data-icon="📄" href="#s8"><span class="nav-index">08</span><span class="nav-label">Schemas I</span></a>
+        <a class="nav-item" data-icon="🧾" href="#s9"><span class="nav-index">09</span><span class="nav-label">Schemas II</span></a>
+        <a class="nav-item" data-icon="🛡️" href="#s10"><span class="nav-index">10</span><span class="nav-label">Seguridad</span></a>
+        <a class="nav-item" data-icon="🧑‍💻" href="#s11"><span class="nav-index">11</span><span class="nav-label">Registro</span></a>
+        <a class="nav-item" data-icon="🎟️" href="#s12"><span class="nav-index">12</span><span class="nav-label">Login</span></a>
+        <a class="nav-item" data-icon="🚀" href="#s13"><span class="nav-index">13</span><span class="nav-label">Arranque</span></a>
+        <a class="nav-item" data-icon="🧪" href="#s14"><span class="nav-index">14</span><span class="nav-label">Pruebas I</span></a>
+        <a class="nav-item" data-icon="🔎" href="#s15"><span class="nav-index">15</span><span class="nav-label">Pruebas II</span></a>
+        <a class="nav-item" data-icon="🧯" href="#s16"><span class="nav-index">16</span><span class="nav-label">Diagnóstico</span></a>
+        <a class="nav-item" data-icon="🌉" href="#s17"><span class="nav-index">17</span><span class="nav-label">Cierre</span></a>
+      </nav>
+      <div class="sb-prog">
+        <div class="lbl"><span>Progreso</span><span id="progPct">0%</span></div>
+        <div class="track"><div class="fill" id="progFill"></div></div>
+      </div>
+      <p class="sb-foot">© 2026 Ana Alvarado<br>Educadora Tech &amp; Desarrolladora Full Stack</p>
+    </aside>
+
+    <main class="main">
+      <header class="hero view" id="portada" data-accent="1">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <span class="eyebrow">Dev Senior · Módulo 3 · Proyecto real</span>
+            <h1 class="hero-title">DevAcademy: de un brief a una <em>identidad verificable</em></h1>
+            <p class="hero-lead">Montaremos el backend, modelaremos cuatro entidades y entregaremos registro + login con JWT. Hoy la plataforma sabrá quién eres; la autorización vendrá después.</p>
+            <div class="meta">
+              <span class="pill" data-hot>FastAPI + PostgreSQL</span>
+              <span class="pill">SQLAlchemy</span>
+              <span class="pill">JWT + bcrypt</span>
+              <span class="pill">3 horas · Intermedio</span>
+            </div>
+          </div>
+          <figure class="hero-visual">
+            <svg viewBox="0 0 420 420" role="img" aria-label="Una identidad protegida por un token que conecta con la plataforma DevAcademy">
+              <circle cx="210" cy="210" r="154" fill="none" stroke="var(--a2)" stroke-width="2" stroke-dasharray="7 12"/>
+              <circle cx="210" cy="210" r="112" fill="var(--surf-1)" stroke="var(--a1)" stroke-width="4"/>
+              <path d="M210 116l72 29v58c0 50-30 91-72 112-42-21-72-62-72-112v-58z" fill="none" stroke="var(--a1)" stroke-width="10" stroke-linejoin="round"/>
+              <circle cx="210" cy="188" r="26" fill="var(--a3)"/>
+              <path d="M164 264c8-31 25-47 46-47s38 16 46 47" fill="none" stroke="var(--a4)" stroke-width="12" stroke-linecap="round"/>
+              <circle cx="95" cy="122" r="28" fill="var(--a2)"/>
+              <path d="M84 122l8 8 16-18" fill="none" stroke="var(--a1-ink)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="326" cy="300" r="30" fill="var(--a4)"/>
+              <path d="M313 300h26M326 287v26" stroke="var(--a1-ink)" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+            <figcaption class="hero-note">Segundo proyecto de seguridad: trasladamos el patrón, no memorizamos un dominio.</figcaption>
+          </figure>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="section view" id="s1" data-accent="1" data-layout="split" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">📨</span>
+            <div class="sec-copy">
+              <span class="sec-n">01 · El encargo</span>
+              <h2 class="sec-t">Antes del código: entender al cliente</h2>
+              <p class="sec-s">DevAcademy necesita una plataforma donde instructores enseñan, estudiantes se inscriben y cada persona actúa dentro de sus permisos.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="panel">
+              <span class="component-label">Correo de Dirección</span>
+              <h3>Necesitamos el backend de nuestra plataforma</h3>
+              <p>Tenemos <strong>instructores</strong> que publican cursos; cada curso contiene <strong>lecciones</strong>. Los <strong>estudiantes</strong> se registran, exploran el catálogo, se inscriben y acceden al contenido.</p>
+              <p>Cada quien debe hacer solo lo que le corresponde: un instructor no modifica cursos ajenos y un estudiante no ve contenido de cursos donde no está inscrito. Un <strong>administrador</strong> supervisa todo.</p>
+            </div>
+            <div class="socratica">
+              <span class="component-label">Primera decisión del equipo</span>
+              <p class="socratica-q">El cliente no mencionó JWT, hash ni tokens. ¿Por qué nosotros sí?</p>
+              <p class="socratica-hint">Pista: el cliente expresa resultados; el equipo traduce esas necesidades a mecanismos técnicos.</p>
+              <details class="reveal">
+                <summary>Ver respuesta</summary>
+                <div class="reveal-body">
+                  <p class="lead-answer">“Saber quién es cada quien” exige autenticación; “que cada quien haga solo lo suyo” exige autorización.</p>
+                  <p>JWT y login verifican identidad. Roles y permisos por dato controlarán acciones. Elegir la herramienta correcta sin obligar al cliente a nombrarla es parte del oficio.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s2" data-accent="2" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🧭</span>
+            <div class="sec-copy">
+              <span class="sec-n">02 · Traducción técnica</span>
+              <h2 class="sec-t">Del lenguaje del negocio al diseño</h2>
+              <p class="sec-s">Cada campo y relación nace de una regla concreta. Nada está “porque sí”.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="mindmap">
+              <div class="mindmap-core"><strong>“Cada quien hace lo suyo”</strong><span>La necesidad central del cliente</span></div>
+              <div class="mindmap-branches">
+                <div class="mindmap-node"><strong>Identidad</strong><p>Registro, login, hash y JWT para saber quién hace la petición.</p></div>
+                <div class="mindmap-node" data-accent="2"><strong>Roles</strong><p>Estudiante, instructor y admin habilitan permisos distintos.</p></div>
+                <div class="mindmap-node" data-accent="3"><strong>Propiedad</strong><p><code>instructor_id</code> e inscripciones permiten autorizar por dato.</p></div>
+              </div>
+            </div>
+            <div class="visual-panel">
+              <div class="chart-title">La historia técnica de esta sesión</div>
+              <div class="flow">
+                <div class="flow-step"><span class="fs-index">01</span><strong>Brief</strong><span>Reglas reales</span></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step"><span class="fs-index">02</span><strong>Modelo</strong><span>4 entidades</span></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step"><span class="fs-index">03</span><strong>Seguridad</strong><span>Hash + tokens</span></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step" data-emphasis><span class="fs-index">04</span><strong>Entrega</strong><span>Registro + login</span></div>
+              </div>
+            </div>
+            <div class="callout" data-tone="info">
+              <span class="callout-icon">i</span>
+              <div><h3>Tres ideas que guían todo</h3><p>Traducir reglas de negocio, reutilizar una base de seguridad probada y verificar el resultado con señales observables.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s3" data-accent="3" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🏗️</span>
+            <div class="sec-copy">
+              <span class="sec-n">03 · Montaje</span>
+              <h2 class="sec-t">El esqueleto completo, en minutos</h2>
+              <p class="sec-s">La terminal crea el andamiaje; el código se entiende y se escribe archivo por archivo.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="code-block" data-tipo="terminal">
+              <div class="code-head"><div><span class="code-context">Ejecutar</span><span class="code-file">PowerShell · carpeta de proyectos</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-powershell">mkdir devacademy_api
+cd devacademy_api
+py -m venv venv
+venv\Scripts\activate
+pip install fastapi "uvicorn[standard]" sqlalchemy "psycopg[binary]" "pydantic[email]" pydantic-settings python-dotenv "python-jose[cryptography]" "passlib[bcrypt]" bcrypt==4.0.1 python-multipart
+pip freeze &gt; requirements.txt</code></pre>
+            </div>
+            <div class="callout" data-tone="warning">
+              <span class="callout-icon">!</span>
+              <div><h3>Dependencia fijada a propósito</h3><p><code>bcrypt==4.0.1</code> evita la incompatibilidad conocida con passlib. Al activar el entorno debe aparecer <code>(venv)</code>; la instalación debe terminar sin errores rojos.</p></div>
+            </div>
+            <div class="code-block" data-tipo="terminal">
+              <div class="code-head"><div><span class="code-context">Ejecutar</span><span class="code-file">PowerShell · raíz de devacademy_api</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-powershell">mkdir app, app\models, app\schemas, app\services, app\routers, app\auth
+New-Item app\__init__.py, app\main.py, app\database.py, app\config.py -ItemType File
+New-Item app\models\__init__.py, app\models\usuario.py, app\models\curso.py, app\models\leccion.py, app\models\inscripcion.py -ItemType File
+New-Item app\schemas\__init__.py, app\schemas\usuario.py, app\schemas\curso.py, app\schemas\leccion.py, app\schemas\inscripcion.py, app\schemas\token.py -ItemType File
+New-Item app\services\__init__.py, app\services\usuario_service.py, app\services\curso_service.py, app\services\leccion_service.py, app\services\inscripcion_service.py -ItemType File
+New-Item app\routers\__init__.py, app\routers\auth_router.py, app\routers\curso_router.py, app\routers\leccion_router.py, app\routers\inscripcion_router.py -ItemType File
+New-Item app\auth\__init__.py, app\auth\seguridad.py, app\auth\dependencias.py -ItemType File</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Verificar</span><span class="code-file">Árbol esperado</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-plaintext">devacademy_api/
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── database.py
+│   ├── config.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── usuario.py
+│   │   ├── curso.py
+│   │   ├── leccion.py
+│   │   └── inscripcion.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── usuario.py
+│   │   ├── curso.py
+│   │   ├── leccion.py
+│   │   ├── inscripcion.py
+│   │   └── token.py
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── usuario_service.py
+│   │   ├── curso_service.py
+│   │   ├── leccion_service.py
+│   │   └── inscripcion_service.py
+│   ├── routers/
+│   │   ├── __init__.py
+│   │   ├── auth_router.py
+│   │   ├── curso_router.py
+│   │   ├── leccion_router.py
+│   │   └── inscripcion_router.py
+│   └── auth/
+│       ├── __init__.py
+│       ├── seguridad.py
+│       └── dependencias.py
+└── requirements.txt</code></pre>
+            </div>
+            <div class="checkpoint"><span class="component-label">Checkpoint</span><h3>Proyecto montado, entorno activo y arquitectura por capas lista.</h3></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s4" data-accent="4" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🔐</span>
+            <div class="sec-copy">
+              <span class="sec-n">04 · Configuración</span>
+              <h2 class="sec-t">Secretos fuera del código, conexión bajo control</h2>
+              <p class="sec-s">Pydantic valida la configuración y SQLAlchemy administra una sesión de base de datos por petición.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="code-block" data-tipo="terminal">
+              <div class="code-head"><div><span class="code-context">Ejecutar</span><span class="code-file">PowerShell · raíz de devacademy_api</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-powershell">New-Item .env, .gitignore -ItemType File
+py -c "import secrets; print(secrets.token_hex(32))"</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">.env · raíz del proyecto</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-plaintext">SECRET_KEY=pega-aqui-tu-clave-generada
+DATABASE_URL=postgresql+psycopg://postgres:TU_CLAVE@localhost:5432/devacademy
+ACCESS_TOKEN_EXPIRE_MINUTES=15
+REFRESH_TOKEN_EXPIRE_DAYS=7</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">.gitignore · raíz del proyecto</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-plaintext">venv/
+__pycache__/
+*.pyc
+.env</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Ejecutar</span><span class="code-file">pgAdmin o DBeaver</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-sql">CREATE DATABASE devacademy;</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/config.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class Settings(BaseSettings):
+    SECRET_KEY: str
+    DATABASE_URL: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    ALGORITHM: str = "HS256"
+
+    model_config = SettingsConfigDict(env_file=".env")
+
+settings = Settings()</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/database.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+from app.config import settings
+
+engine = create_engine(settings.DATABASE_URL)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()</code></pre>
+            </div>
+            <div class="callout" data-tone="success"><span class="callout-icon">✓</span><div><h3>Señal de diseño sano</h3><p>Si falta una clave, la aplicación no arranca silenciosamente: Settings la valida. <code>get_db()</code> garantiza que cada sesión se cierre.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s5" data-accent="1" data-layout="split" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🗺️</span>
+            <div class="sec-copy">
+              <span class="sec-n">05 · Mapa del dominio</span>
+              <h2 class="sec-t">Cuatro entidades, cuatro piezas de autorización</h2>
+              <p class="sec-s">Modelamos hoy los datos que mañana permitirán decidir quién puede hacer qué.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="er-board">
+              <div class="entity" data-emphasis>
+                <div class="entity-name"><span class="entity-emoji">👤</span> usuarios</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li class="is-key"><span class="key uq">UQ</span> email</li><li>nombre</li><li>password_hash</li><li>rol</li></ul>
+              </div>
+              <div class="entity" data-accent="2">
+                <div class="entity-name"><span class="entity-emoji">📚</span> cursos</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li>titulo</li><li>descripcion</li><li class="is-key"><span class="key fk">FK</span> instructor_id</li></ul>
+              </div>
+              <div class="entity" data-accent="3">
+                <div class="entity-name"><span class="entity-emoji">🎬</span> lecciones</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li>titulo</li><li>contenido</li><li class="is-key"><span class="key fk">FK</span> curso_id</li></ul>
+              </div>
+              <div class="entity" data-accent="4">
+                <div class="entity-name"><span class="entity-emoji">📝</span> inscripciones</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li class="is-key"><span class="key fk">FK</span> estudiante_id</li><li class="is-key"><span class="key fk">FK</span> curso_id</li><li>estado</li></ul>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>El requisito crea el campo</h3>
+              <p><strong>“Un instructor no toca cursos ajenos”</strong> crea <code>cursos.instructor_id</code>.</p>
+              <p><strong>“Un estudiante ve solo cursos inscritos”</strong> crea la entidad <code>Inscripcion</code>.</p>
+              <p><strong>“Cada curso tiene lecciones”</strong> crea <code>lecciones.curso_id</code> y una autorización anidada: usuario → curso → lección.</p>
+              <div class="socratica">
+                <span class="component-label">Transferencia</span>
+                <p class="socratica-q">¿Por qué Inscripción se parece al Préstamo de biblioteca_api?</p>
+                <details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">Es el mismo patrón: una relación muchos-a-muchos con información propia.</p><p>Cambió el negocio, no la estructura. Reconocer patrones reutilizables es más valioso que memorizar un proyecto.</p></div></details>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s6" data-accent="2" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">👤</span>
+            <div class="sec-copy">
+              <span class="sec-n">06 · Modelos I</span>
+              <h2 class="sec-t">Usuario y Curso: identidad + propiedad</h2>
+              <p class="sec-s">El rol habilita capacidades; <code>instructor_id</code> registra quién es dueño de cada curso.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/models/usuario.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Usuario(Base):
+    __tablename__ = "usuarios"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=False, index=True)
+    password_hash = Column(String, nullable=False)
+    rol = Column(String, nullable=False, default="estudiante")
+
+    cursos = relationship("Curso", back_populates="instructor")
+    inscripciones = relationship("Inscripcion", back_populates="estudiante")</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/models/curso.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Curso(Base):
+    __tablename__ = "cursos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    titulo = Column(String, nullable=False)
+    descripcion = Column(String, nullable=False)
+    instructor_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
+
+    instructor = relationship("Usuario", back_populates="cursos")
+    lecciones = relationship("Leccion", back_populates="curso")</code></pre>
+            </div>
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Qué observar</h3><p><code>rol</code> comienza como estudiante. <code>instructor_id</code> será comparado con el usuario identificado por el token: esa comparación implementará la propiedad del curso.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s7" data-accent="3" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🔗</span>
+            <div class="sec-copy">
+              <span class="sec-n">07 · Modelos II</span>
+              <h2 class="sec-t">Lección e Inscripción: relaciones que protegen</h2>
+              <p class="sec-s">Una lección pertenece a un curso; una inscripción conecta al estudiante con el contenido que puede consultar.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="rel-pair">
+              <div class="entity">
+                <div class="entity-name">cursos</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li class="is-key"><span class="key fk">FK</span> instructor_id</li></ul>
+              </div>
+              <div class="rel-link"><span class="rel-card">1 : n</span><span class="rel-desc">un curso contiene muchas lecciones</span></div>
+              <div class="entity" data-emphasis data-accent="3">
+                <div class="entity-name">lecciones</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li class="is-key"><span class="key fk">FK</span> curso_id</li></ul>
+              </div>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/models/leccion.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Leccion(Base):
+    __tablename__ = "lecciones"
+
+    id = Column(Integer, primary_key=True, index=True)
+    titulo = Column(String, nullable=False)
+    contenido = Column(String, nullable=False)
+    curso_id = Column(Integer, ForeignKey("cursos.id"), nullable=False)
+
+    curso = relationship("Curso", back_populates="lecciones")</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/models/inscripcion.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from sqlalchemy import Column, Integer, ForeignKey, String
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+class Inscripcion(Base):
+    __tablename__ = "inscripciones"
+
+    id = Column(Integer, primary_key=True, index=True)
+    estudiante_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
+    curso_id = Column(Integer, ForeignKey("cursos.id"), nullable=False)
+    estado = Column(String, nullable=False, default="activa")
+
+    estudiante = relationship("Usuario", back_populates="inscripciones")
+    curso = relationship("Curso")</code></pre>
+            </div>
+            <div class="callout" data-tone="warning"><span class="callout-icon">!</span><div><h3>La autorización anidada ya se ve</h3><p>Para agregar una lección no bastará con ser instructor: el curso elegido deberá tener su mismo <code>instructor_id</code>. El permiso viaja usuario → curso → lección.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s8" data-accent="4" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">📄</span>
+            <div class="sec-copy">
+              <span class="sec-n">08 · Contratos I</span>
+              <h2 class="sec-t">Lo que entra no es lo mismo que sale</h2>
+              <p class="sec-s">Los schemas de creación reciben intención; los schemas de respuesta exponen solo datos seguros.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="compare">
+              <div class="compare-card" data-side="positive"><h3>UsuarioCreate</h3><ul><li>Recibe nombre, email y contraseña.</li><li>La contraseña existe solo para ser transformada.</li></ul></div>
+              <div class="compare-card" data-side="negative"><h3>UsuarioRespuesta</h3><ul><li>Nunca incluye contraseña ni hash.</li><li>Expone id, nombre, email y rol.</li></ul></div>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/schemas/usuario.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from pydantic import BaseModel, EmailStr
+
+class UsuarioCreate(BaseModel):
+    nombre: str
+    email: EmailStr
+    password: str
+
+class UsuarioRespuesta(BaseModel):
+    id: int
+    nombre: str
+    email: EmailStr
+    rol: str
+
+    class Config:
+        from_attributes = True</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/schemas/curso.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from pydantic import BaseModel
+
+class CursoCreate(BaseModel):
+    titulo: str
+    descripcion: str
+
+class CursoRespuesta(BaseModel):
+    id: int
+    titulo: str
+    descripcion: str
+    instructor_id: int
+
+    class Config:
+        from_attributes = True</code></pre>
+            </div>
+            <div class="callout" data-tone="danger"><span class="callout-icon">!</span><div><h3>El dueño no viene del cliente</h3><p><code>CursoCreate</code> no recibe <code>instructor_id</code>. En la siguiente sesión, ese valor saldrá del token; así nadie crea cursos a nombre de otra persona.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s9" data-accent="1" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🧾</span>
+            <div class="sec-copy">
+              <span class="sec-n">09 · Contratos II</span>
+              <h2 class="sec-t">La intención entra; la identidad se deriva</h2>
+              <p class="sec-s">El instructor elige el curso de una lección. El estudiante elige el curso donde se inscribe. Los ids de identidad vendrán del token.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/schemas/leccion.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from pydantic import BaseModel
+
+class LeccionCreate(BaseModel):
+    titulo: str
+    contenido: str
+    curso_id: int
+
+class LeccionRespuesta(BaseModel):
+    id: int
+    titulo: str
+    contenido: str
+    curso_id: int
+
+    class Config:
+        from_attributes = True</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/schemas/inscripcion.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from pydantic import BaseModel
+
+class InscripcionCreate(BaseModel):
+    curso_id: int
+
+class InscripcionRespuesta(BaseModel):
+    id: int
+    estudiante_id: int
+    curso_id: int
+    estado: str
+
+    class Config:
+        from_attributes = True</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/schemas/token.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from pydantic import BaseModel
+
+class TokenRefresh(BaseModel):
+    refresh_token: str</code></pre>
+            </div>
+            <div class="checkpoint"><span class="component-label">Checkpoint</span><h3>Modelos y contratos listos: la API ya distingue datos de entrada, salida e identidad.</h3></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s10" data-accent="2" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🛡️</span>
+            <div class="sec-copy">
+              <span class="sec-n">10 · Capa de seguridad</span>
+              <h2 class="sec-t">Una herramienta transversal y reutilizable</h2>
+              <p class="sec-s">Hasheamos contraseñas y emitimos dos tokens con propósito y expiración explícitos.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="cards">
+              <div class="card" data-accent="1"><span class="orb" data-accent="1">#</span><b>Hash</b><p>La contraseña se transforma antes de persistir.</p></div>
+              <div class="card" data-accent="2"><span class="orb" data-accent="2">A</span><b>Access token</b><p>Identidad de corta duración: 15 minutos.</p></div>
+              <div class="card" data-accent="3"><span class="orb" data-accent="3">R</span><b>Refresh token</b><p>Renovación de sesión: 7 días.</p></div>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/auth/seguridad.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from datetime import datetime, timedelta, timezone
+from jose import jwt, JWTError
+from passlib.context import CryptContext
+from app.config import settings
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hashear_password(password: str) -&gt; str:
+    return pwd_context.hash(password[:72])
+
+def verificar_password(password_plano: str, password_hash: str) -&gt; bool:
+    return pwd_context.verify(password_plano[:72], password_hash)
+
+def crear_access_token(datos: dict) -&gt; str:
+    datos_a_codificar = datos.copy()
+    expira = datetime.now(timezone.utc) + timedelta(
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
+    datos_a_codificar.update({"exp": expira, "tipo": "access"})
+    return jwt.encode(datos_a_codificar, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+def crear_refresh_token(datos: dict) -&gt; str:
+    datos_a_codificar = datos.copy()
+    expira = datetime.now(timezone.utc) + timedelta(
+        days=settings.REFRESH_TOKEN_EXPIRE_DAYS
+    )
+    datos_a_codificar.update({"exp": expira, "tipo": "refresh"})
+    return jwt.encode(datos_a_codificar, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+def verificar_token(token: str, tipo_esperado: str):
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        if payload.get("tipo") != tipo_esperado:
+            return None
+        return payload
+    except JWTError:
+        return None</code></pre>
+            </div>
+            <div class="callout" data-tone="warning"><span class="callout-icon">!</span><div><h3>Dos defensas intencionales</h3><p><code>password[:72]</code> evita el límite de bcrypt. El claim <code>tipo</code> impide aceptar un refresh token donde se espera uno de acceso.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s11" data-accent="3" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🧑‍💻</span>
+            <div class="sec-copy">
+              <span class="sec-n">11 · Registro</span>
+              <h2 class="sec-t">Crear cuentas sin regalar privilegios</h2>
+              <p class="sec-s">Validamos unicidad, hasheamos la clave y fijamos el rol del autoservicio en <code>estudiante</code>.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="visual-panel">
+              <div class="flow">
+                <div class="flow-step"><span class="fs-index">01</span><strong>Datos</strong><span>nombre + email + clave</span></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step"><span class="fs-index">02</span><strong>Unicidad</strong><span>email disponible</span></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step"><span class="fs-index">03</span><strong>Hash</strong><span>nunca texto plano</span></div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step" data-emphasis><span class="fs-index">04</span><strong>Usuario</strong><span>rol estudiante</span></div>
+              </div>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/services/usuario_service.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from fastapi import HTTPException
+from app.models.usuario import Usuario
+from app.schemas.usuario import UsuarioCreate
+from app.auth.seguridad import hashear_password
+
+def registrar_usuario(db: Session, datos: UsuarioCreate) -&gt; Usuario:
+    existente = db.query(Usuario).filter(Usuario.email == datos.email).first()
+    if existente:
+        raise HTTPException(status_code=400, detail="El email ya está registrado")
+
+    nuevo_usuario = Usuario(
+        nombre=datos.nombre,
+        email=datos.email,
+        password_hash=hashear_password(datos.password),
+        rol="estudiante"
+    )
+    db.add(nuevo_usuario)
+    db.commit()
+    db.refresh(nuevo_usuario)
+    return nuevo_usuario</code></pre>
+            </div>
+            <div class="callout" data-tone="danger"><span class="callout-icon">!</span><div><h3>Nunca confiar el rol al registro público</h3><p>Si el cliente pudiera enviar <code>"rol": "admin"</code>, cualquiera podría tomar el control. Instructores y administradores requieren una vía controlada.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s12" data-accent="4" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🎟️</span>
+            <div class="sec-copy">
+              <span class="sec-n">12 · Login</span>
+              <h2 class="sec-t">Credenciales válidas → dos tokens</h2>
+              <p class="sec-s">OAuth2 recibe formulario, compara el hash y devuelve un access token junto con un refresh token.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/routers/auth_router.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.schemas.usuario import UsuarioCreate, UsuarioRespuesta
+from app.services.usuario_service import registrar_usuario
+from app.models.usuario import Usuario
+from app.auth.seguridad import verificar_password, crear_access_token, crear_refresh_token
+
+router = APIRouter(prefix="/auth", tags=["Autenticación"])
+
+@router.post("/registro", response_model=UsuarioRespuesta)
+def registro(datos: UsuarioCreate, db: Session = Depends(get_db)):
+    return registrar_usuario(db, datos)
+
+@router.post("/login")
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
+    usuario = db.query(Usuario).filter(Usuario.email == form_data.username).first()
+
+    if not usuario or not verificar_password(form_data.password, usuario.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Correo o contraseña incorrectos",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    datos_token = {"sub": str(usuario.id)}
+    access_token = crear_access_token(datos_token)
+    refresh_token = crear_refresh_token(datos_token)
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+    }</code></pre>
+            </div>
+            <div class="cards">
+              <div class="card" data-accent="1"><b><code>response_model</code></b><p>Filtra la respuesta del registro; el hash nunca sale.</p></div>
+              <div class="card" data-accent="2"><b><code>username</code></b><p>El estándar OAuth2 llama así al campo, aunque enviemos el email.</p></div>
+              <div class="card" data-accent="3"><b><code>sub</code></b><p>Guarda el id del usuario que después usaremos para autorizar.</p></div>
+              <div class="card" data-accent="4"><b>Error ambiguo</b><p>No revela si falló el correo o la contraseña.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s13" data-accent="1" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🚀</span>
+            <div class="sec-copy">
+              <span class="sec-n">13 · Integración</span>
+              <h2 class="sec-t">Conectar modelos, router y aplicación</h2>
+              <p class="sec-s">Importamos todos los modelos antes de crear tablas y publicamos el router de autenticación.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/main.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from fastapi import FastAPI
+from app.database import Base, engine
+
+from app.models import usuario, curso, leccion, inscripcion
+
+from app.routers import auth_router
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(title="DevAcademy API", description="Backend de la plataforma DevAcademy")
+
+app.include_router(auth_router.router)
+
+@app.get("/")
+def raiz():
+    return {"mensaje": "DevAcademy API funcionando"}</code></pre>
+            </div>
+            <div class="code-block" data-tipo="terminal">
+              <div class="code-head"><div><span class="code-context">Ejecutar</span><span class="code-file">PowerShell · raíz de devacademy_api</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-powershell">uvicorn app.main:app --reload</code></pre>
+            </div>
+            <div class="callout" data-tone="success"><span class="callout-icon">✓</span><div><h3>Qué debe observar el equipo</h3><p>La terminal muestra <code>Application startup complete</code>. PostgreSQL contiene las tablas <code>usuarios</code>, <code>cursos</code>, <code>lecciones</code> e <code>inscripciones</code>. La raíz responde “DevAcademy API funcionando”.</p></div></div>
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Entrega incremental</h3><p>Hoy solo conectamos <code>auth_router</code>. Los routers de cursos, lecciones e inscripciones entrarán cuando implementemos sus permisos en la Sesión 2.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s14" data-accent="2" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🧪</span>
+            <div class="sec-copy">
+              <span class="sec-n">14 · Pruebas guiadas I</span>
+              <h2 class="sec-t">Registro: salida segura y reglas de negocio</h2>
+              <p class="sec-s">Servidor activo en <code>http://127.0.0.1:8000</code>. Probamos en Postman primero.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="stepper">
+              <div class="step-item"><span class="step-num">1</span><h4>Registrar</h4><p>POST JSON a <code>/auth/registro</code>.</p></div>
+              <div class="step-item"><span class="step-num">2</span><h4>Inspeccionar</h4><p>El hash existe en la base; la clave no sale.</p></div>
+              <div class="step-item"><span class="step-num">3</span><h4>Repetir</h4><p>El mismo email debe producir 400.</p></div>
+            </div>
+            <div class="panel">
+              <h3>Prueba 1 · Registrar a Laura</h3>
+              <p><strong>Método:</strong> POST · <strong>URL:</strong> <code>http://127.0.0.1:8000/auth/registro</code> · <strong>Body:</strong> raw → JSON.</p>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Enviar</span><span class="code-file">Postman · Body JSON</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-json">{
+  "nombre": "Laura Estudiante",
+  "email": "laura@correo.com",
+  "password": "clave1234"
+}</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Esperar 200</span><span class="code-file">Respuesta JSON</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-json">{
+  "id": 1,
+  "nombre": "Laura Estudiante",
+  "email": "laura@correo.com",
+  "rol": "estudiante"
+}</code></pre>
+            </div>
+            <div class="cards">
+              <div class="card" data-accent="1"><b>Prueba 2 · Base</b><p>En <code>usuarios.password_hash</code> debe verse un valor como <code>$2b$12$...</code>, nunca <code>clave1234</code>.</p></div>
+              <div class="card" data-accent="3"><b>Prueba 3 · Duplicado</b><p>Repite el registro con <code>laura@correo.com</code>. Debe responder 400: “El email ya está registrado”.</p></div>
+            </div>
+            <div class="checkpoint"><span class="component-label">Verificación</span><h3>La contraseña no sale, el rol nace como estudiante y el email es único.</h3></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s15" data-accent="3" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🔎</span>
+            <div class="sec-copy">
+              <span class="sec-n">15 · Pruebas guiadas II</span>
+              <h2 class="sec-t">Login: formulario, tokens y payload</h2>
+              <p class="sec-s">El login OAuth2 no recibe JSON: usa <code>x-www-form-urlencoded</code> y el campo estándar <code>username</code>.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="table-wrap">
+              <table class="data-table">
+                <caption>Prueba 4 · Solicitud de login en Postman</caption>
+                <thead><tr><th>Elemento</th><th>Valor exacto</th><th>Observación</th></tr></thead>
+                <tbody>
+                  <tr><td data-emphasis>Método</td><td><code>POST</code></td><td>No usar GET.</td></tr>
+                  <tr><td data-emphasis>URL</td><td><code>http://127.0.0.1:8000/auth/login</code></td><td>Router de autenticación.</td></tr>
+                  <tr><td data-emphasis>Body</td><td><code>x-www-form-urlencoded</code></td><td>No raw/JSON.</td></tr>
+                  <tr><td data-emphasis>username</td><td><code>laura@correo.com</code></td><td>Aquí enviamos el email.</td></tr>
+                  <tr><td data-emphasis>password</td><td><code>clave1234</code></td><td>Clave original.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Esperar 200</span><span class="code-file">Respuesta JSON</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-json">{
+  "access_token": "eyJhbGci...",
+  "refresh_token": "eyJhbGci...",
+  "token_type": "bearer"
+}</code></pre>
+            </div>
+            <div class="cards">
+              <div class="card" data-accent="1"><b>Prueba 5 · Rechazo</b><p>Usa <code>malamala999</code>. Espera 401 y “Correo o contraseña incorrectos”.</p></div>
+              <div class="card" data-accent="2"><b>Prueba 6 · jwt.io</b><p>Pega el access token. Debes ver <code>sub: "1"</code>, <code>tipo: "access"</code> y <code>exp</code>.</p></div>
+              <div class="card" data-accent="3"><b>Prueba 7 · Swagger</b><p>Abre <code>http://127.0.0.1:8000/docs</code> y registra, por ejemplo, <code>carlos@correo.com</code>.</p></div>
+            </div>
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>La pieza que usaremos después</h3><p>El claim <code>sub</code> identifica al usuario. En la Sesión 2 se convertirá en el punto de partida para comprobar roles, propiedad de cursos e inscripciones.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s16" data-accent="4" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🧯</span>
+            <div class="sec-copy">
+              <span class="sec-n">16 · Diagnóstico</span>
+              <h2 class="sec-t">Los errores también son señales</h2>
+              <p class="sec-s">Leer el mensaje correcto permite intervenir en la capa correcta sin adivinar.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="table-wrap">
+              <table class="data-table">
+                <caption>Mapa rápido de fallos frecuentes</caption>
+                <thead><tr><th>Señal</th><th>Causa probable</th><th>Acción</th></tr></thead>
+                <tbody>
+                  <tr><td data-emphasis><code>password cannot be longer than 72 bytes</code></td><td>Versión de bcrypt o falta el corte <code>[:72]</code>.</td><td>Verifica el código y reinstala <code>bcrypt==4.0.1</code>.</td></tr>
+                  <tr><td data-emphasis><code>field required</code> en Settings</td><td>Variable ausente o <code>.env</code> fuera de la raíz.</td><td>Confirma las cuatro claves y la ubicación.</td></tr>
+                  <tr><td data-emphasis><code>connection timeout expired</code></td><td>PostgreSQL detenido, URL incorrecta o base ausente.</td><td>Revisa el servicio, la clave y <code>devacademy</code>.</td></tr>
+                  <tr><td data-emphasis><code>(venv) (base)</code></td><td>Anaconda y venv activos al tiempo.</td><td>Ejecuta <code>conda deactivate</code> hasta dejar solo <code>(venv)</code>.</td></tr>
+                  <tr><td data-emphasis><code>No module named 'app'</code></td><td>Uvicorn se ejecutó desde dentro de <code>app/</code>.</td><td>Vuelve a la raíz de <code>devacademy_api</code>.</td></tr>
+                  <tr><td data-emphasis>Las tablas no aparecen</td><td>Los modelos no se importaron antes de <code>create_all</code>.</td><td>Revisa los cuatro imports de <code>main.py</code>.</td></tr>
+                  <tr><td data-emphasis>Login rechaza el formato</td><td>Se envió JSON.</td><td>Usa <code>x-www-form-urlencoded</code>.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-block" data-tipo="terminal">
+              <div class="code-head"><div><span class="code-context">Corregir</span><span class="code-file">PowerShell · entorno virtual activo</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-powershell">pip install bcrypt==4.0.1 --force-reinstall</code></pre>
+            </div>
+            <div class="panel">
+              <h3>Preparar los tres roles para la Sesión 2</h3>
+              <p>Registra también a Carlos. Luego cambia los roles desde una vía controlada en la base.</p>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Ejecutar</span><span class="code-file">pgAdmin o DBeaver · SQL</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-sql">UPDATE usuarios SET rol = 'instructor' WHERE email = 'carlos@correo.com';
+UPDATE usuarios SET rol = 'admin' WHERE email = 'laura@correo.com';</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s17" data-accent="1" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🌉</span>
+            <div class="sec-copy">
+              <span class="sec-n">17 · Cierre y puente</span>
+              <h2 class="sec-t">DevAcademy ya sabe quién eres</h2>
+              <p class="sec-s">La identidad está resuelta. La próxima frontera es convertirla en permisos concretos.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="metrics">
+              <div class="m"><b>4</b><span>entidades modeladas</span></div>
+              <div class="m"><b>3</b><span>roles del negocio</span></div>
+              <div class="m"><b>2</b><span>tipos de token</span></div>
+              <div class="m"><b>1</b><span>identidad verificable</span></div>
+            </div>
+            <div class="cards">
+              <div class="card" data-accent="1"><b>Problema resuelto</b><p>La plataforma puede registrar usuarios con contraseñas protegidas y reconocerlos al iniciar sesión.</p></div>
+              <div class="card" data-accent="2"><b>Qué construimos</b><p>Arquitectura por capas, configuración segura, cuatro modelos, cinco contratos, hash, JWT, registro y login.</p></div>
+              <div class="card" data-accent="3"><b>Qué cambió</b><p>Pasamos de un brief ambiguo a una API que emite una identidad verificable mediante <code>sub</code>.</p></div>
+              <div class="card" data-accent="4"><b>Necesidad abierta</b><p>Todavía no existen endpoints protegidos: saber quién eres no decide aún qué puedes hacer.</p></div>
+            </div>
+            <div class="mindmap">
+              <div class="mindmap-core"><strong>Tres ideas que quedan</strong><span>El criterio profesional de la sesión</span></div>
+              <div class="mindmap-branches">
+                <div class="mindmap-node"><strong>Traducir</strong><p>Las reglas del negocio crean campos, relaciones y controles.</p></div>
+                <div class="mindmap-node" data-accent="2"><strong>Reutilizar</strong><p>La seguridad probada es transversal; la lógica de negocio se piensa de nuevo.</p></div>
+                <div class="mindmap-node" data-accent="3"><strong>Verificar</strong><p>Un resultado existe cuando podemos observarlo en API, token y base de datos.</p></div>
+              </div>
+            </div>
+            <div class="socratica">
+              <span class="component-label">Puente a la Sesión 2</span>
+              <p class="socratica-q">Tenemos <code>curso.instructor_id</code> y el <code>sub</code> del token. ¿Cómo decidirías si un instructor puede editar un curso concreto?</p>
+              <p class="socratica-hint">La respuesta cabe en una comparación.</p>
+              <details class="reveal"><summary>Ver hipótesis</summary><div class="reveal-body"><p class="lead-answer">El id autenticado debe coincidir con el <code>instructor_id</code> del curso.</p><p>La siguiente sesión convertirá esa comparación en autorización por rol, por propiedad y a través de relaciones anidadas.</p></div></details>
+            </div>
+            <p class="doc-foot">© 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · Todos los derechos reservados · linkedin.com/in/ana-alvarado-instructora-full-stack</p>
+          </div>
+        </section>
+      </div>
+
+      <nav class="view-controls" id="viewControls" aria-label="Navegación entre secciones">
+        <button class="view-btn" id="prevView" type="button" aria-label="Sección anterior">←</button>
+        <span class="view-position" id="viewPosition" aria-live="polite">Portada</span>
+        <button class="view-btn" id="nextView" type="button" aria-label="Sección siguiente">→</button>
+      </nav>
+    </main>
+  </div>
+
+  <div class="watermark" aria-hidden="true">© 2026 ANA ALVARADO</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+  <script src="anaclase-v9.js"></script>
+</body>
+</html>
