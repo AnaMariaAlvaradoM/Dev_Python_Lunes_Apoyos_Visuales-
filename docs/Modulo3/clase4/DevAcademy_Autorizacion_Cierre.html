@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro" data-tema-base="oscuro" data-empresa="dev-senior" data-paleta="cobalto" data-atmosfera="tecnica">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Ana Alvarado">
+  <meta name="copyright" content="© 2026 Ana Alvarado — Todos los derechos reservados">
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+  <title>Módulo 3 · DevAcademy: autorización y cierre · Ana Alvarado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <link rel="stylesheet" href="anaestilos-v11.css">
+</head>
+<body>
+  <a class="skip-link" href="#s1">Saltar al contenido</a>
+  <div class="topline" id="topline" aria-hidden="true"></div>
+  <div class="controls" aria-label="Controles">
+    <button class="ctrl" id="temaBtn" type="button" aria-label="Cambiar tema">☀</button>
+    <button class="ctrl" id="fullscreenBtn" type="button" aria-label="Pantalla completa">⛶</button>
+  </div>
+
+  <div class="shell" id="shell" data-collapsed="false">
+    <aside class="sidebar" aria-label="Índice de la clase">
+      <div class="sb-top">
+        <span class="brand-mark">A</span>
+        <div class="sb-title"><b>Python Backend Developer</b><span>Módulo 3 · Sesión extra 2</span></div>
+      </div>
+      <button class="sb-toggle" id="collapseBtn" type="button" aria-label="Colapsar menú">‹</button>
+      <nav class="sb-nav" id="nav" aria-label="Secciones">
+        <a class="nav-item active" data-icon="✦" href="#portada"><span class="nav-index">00</span><span class="nav-label">Portada</span></a>
+        <a class="nav-item" data-icon="🎯" href="#s1"><span class="nav-index">01</span><span class="nav-label">El encargo</span></a>
+        <a class="nav-item" data-icon="🧭" href="#s2"><span class="nav-index">02</span><span class="nav-label">Mapa mental</span></a>
+        <a class="nav-item" data-icon="🎫" href="#s3"><span class="nav-index">03</span><span class="nav-label">Usuario actual</span></a>
+        <a class="nav-item" data-icon="🔄" href="#s4"><span class="nav-index">04</span><span class="nav-label">Refresh</span></a>
+        <a class="nav-item" data-icon="📗" href="#s5"><span class="nav-index">05</span><span class="nav-label">Cursos: service</span></a>
+        <a class="nav-item" data-icon="🛡️" href="#s6"><span class="nav-index">06</span><span class="nav-label">Cursos: router</span></a>
+        <a class="nav-item" data-icon="🔗" href="#s7"><span class="nav-index">07</span><span class="nav-label">Permiso anidado</span></a>
+        <a class="nav-item" data-icon="📘" href="#s8"><span class="nav-index">08</span><span class="nav-label">Lecciones</span></a>
+        <a class="nav-item" data-icon="📙" href="#s9"><span class="nav-index">09</span><span class="nav-label">Inscripciones</span></a>
+        <a class="nav-item" data-icon="🧩" href="#s10"><span class="nav-index">10</span><span class="nav-label">Conectar</span></a>
+        <a class="nav-item" data-icon="🧪" href="#s11"><span class="nav-index">11</span><span class="nav-label">Roles y dueño</span></a>
+        <a class="nav-item" data-icon="🔬" href="#s12"><span class="nav-index">12</span><span class="nav-label">Flujo completo</span></a>
+        <a class="nav-item" data-icon="⚠️" href="#s13"><span class="nav-index">13</span><span class="nav-label">Diagnóstico</span></a>
+        <a class="nav-item" data-icon="✅" href="#s14"><span class="nav-index">14</span><span class="nav-label">Cierre</span></a>
+      </nav>
+      <div class="sb-prog">
+        <div class="lbl"><span>Progreso</span><span id="progPct">0%</span></div>
+        <div class="track"><div class="fill" id="progFill"></div></div>
+      </div>
+      <p class="sb-foot">© 2026 Ana Alvarado<br>Educadora Tech &amp; Desarrolladora Full Stack</p>
+    </aside>
+
+    <main class="main">
+      <header class="hero view" id="portada" data-accent="1">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <span class="eyebrow">Dev Senior · DevAcademy API · 3 horas</span>
+            <h1 class="hero-title">Que cada quien haga <em>solo lo suyo</em></h1>
+            <p class="hero-lead">Al terminar, la API reconocerá al usuario del token y aplicará autorización por rol, por propiedad y por relación.</p>
+            <div class="meta">
+              <span class="pill" data-hot>FastAPI</span>
+              <span class="pill">JWT</span>
+              <span class="pill">SQLAlchemy</span>
+              <span class="pill">PostgreSQL</span>
+            </div>
+          </div>
+          <figure class="hero-visual">
+            <svg viewBox="0 0 420 420" role="img" aria-label="Un token abre tres capas de autorización: identidad, rol y propiedad">
+              <circle cx="210" cy="210" r="154" fill="none" stroke="var(--a2)" stroke-width="2" stroke-dasharray="8 12"/>
+              <circle cx="210" cy="210" r="116" fill="var(--surf-1)" stroke="var(--a1)" stroke-width="4"/>
+              <path d="M172 188a38 38 0 1 1 76 0v20h12v68H160v-68h12z" fill="none" stroke="var(--a3)" stroke-width="10" stroke-linejoin="round"/>
+              <circle cx="210" cy="238" r="11" fill="var(--a2)"/>
+              <path d="M210 249v13" stroke="var(--a2)" stroke-width="8" stroke-linecap="round"/>
+              <circle cx="92" cy="112" r="31" fill="var(--a2)"/>
+              <path d="M78 112l9 9 20-22" fill="none" stroke="var(--a1-ink)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="330" cy="129" r="34" fill="var(--a3)"/>
+              <path d="M315 129h30M330 114v30" stroke="var(--a1-ink)" stroke-width="6" stroke-linecap="round"/>
+              <circle cx="320" cy="326" r="28" fill="var(--a4)"/>
+              <path d="M307 326h26" stroke="var(--a1-ink)" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+            <figcaption class="hero-note">Autenticar responde “¿quién eres?”. Autorizar responde “¿puedes hacer esto sobre este dato?”.</figcaption>
+          </figure>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="section view" id="s1" data-accent="1" data-layout="split" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🎯</span>
+            <div class="sec-copy">
+              <span class="sec-n">01 · Punto de partida</span>
+              <h2 class="sec-t">El rol no responde toda la pregunta</h2>
+              <p class="sec-s">La sesión anterior dejó autenticación lista. Hoy convertimos identidad en decisiones de acceso.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="socratica">
+              <span class="component-label">Decide antes de revelar</span>
+              <p class="socratica-q">Carlos y Pedro tienen rol de instructor. El curso pertenece a Carlos. ¿Basta comprobar el rol para permitir que Pedro lo edite?</p>
+              <p class="socratica-hint">Compara quién hace la petición con quién figura como dueño del dato.</p>
+              <details class="reveal">
+                <summary>Ver respuesta</summary>
+                <div class="reveal-body">
+                  <p class="lead-answer">No. El rol habilita la clase de acción; la propiedad decide si puede ejecutarla sobre ese curso.</p>
+                  <p>La regla concreta compara <code>curso.instructor_id</code> con el <code>sub</code> del access token. Si no coinciden, la respuesta correcta es 403.</p>
+                </div>
+              </details>
+            </div>
+            <div class="cards">
+              <div class="card" data-accent="1"><b>Ya existe</b><p>Cuatro entidades, registro, login, hash y access/refresh tokens.</p></div>
+              <div class="card" data-accent="2"><b>Falta hoy</b><p>Reconocer al usuario, aplicar permisos y conectar los nuevos routers.</p></div>
+              <div class="card" data-accent="3"><b>Resultado observable</b><p>Mismo endpoint, distinto usuario, distinta respuesta según rol y dueño.</p></div>
+            </div>
+            <div class="callout" data-tone="info">
+              <span class="callout-icon">i</span>
+              <div><h3>La idea que amarra la sesión</h3><p>Autenticación: “¿quién eres?”. Autorización: “¿qué puedes hacer sobre este recurso concreto?”.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s2" data-accent="2" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🧭</span>
+            <div class="sec-copy">
+              <span class="sec-n">02 · Modelo mental</span>
+              <h2 class="sec-t">Tres filtros, una sola petición</h2>
+              <p class="sec-s">Cada filtro responde una pregunta distinta y puede detener el flujo.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="cards">
+              <div class="card" data-accent="1"><span class="orb" data-accent="1">1</span><b>Identidad</b><p>¿El access token es válido y corresponde a un usuario existente? Si no: 401.</p></div>
+              <div class="card" data-accent="2"><span class="orb" data-accent="2">2</span><b>Rol</b><p>¿El usuario pertenece al conjunto permitido para esta operación? Si no: 403.</p></div>
+              <div class="card" data-accent="3"><span class="orb" data-accent="3">3</span><b>Dato o relación</b><p>¿Es dueño del curso o del curso padre de la lección? Si no: 403.</p></div>
+            </div>
+            <div class="mermaid-panel">
+              <div class="chart-title">Recorrido de una petición protegida</div>
+              <div class="mermaid">
+flowchart LR
+  A[Bearer token] --> B{Access válido}
+  B -- no --> X[401]
+  B -- sí --> C[Usuario en BD]
+  C --> D{Rol permitido}
+  D -- no --> Y[403]
+  D -- sí --> E{Dueño directo o heredado}
+  E -- no --> Z[403]
+  E -- sí --> F[Ejecutar operación]
+              </div>
+            </div>
+            <div class="compare">
+              <div class="compare-card"><span class="component-label">401 · No autenticado</span><p>No se pudo demostrar una identidad válida.</p></div>
+              <div class="compare-card"><span class="component-label">403 · No autorizado</span><p>La identidad es válida, pero no tiene permiso para esa acción o ese dato.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s3" data-accent="3" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🎫</span>
+            <div class="sec-copy">
+              <span class="sec-n">03 · Autenticación reutilizable</span>
+              <h2 class="sec-t">Del token al usuario actual</h2>
+              <p class="sec-s">Una dependencia valida el access token; otras dos agregan la decisión de rol.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="micro-task">
+              <span class="component-label">Predice · 30 segundos</span>
+              <p class="micro-task-q">¿Por qué no conviene revisar el rol dentro de la misma función que obtiene al usuario?</p>
+              <p class="micro-task-hint">Piensa en un endpoint que solo necesita “cualquier usuario autenticado”.</p>
+              <details class="micro-reveal">
+                <summary>Comprobar razonamiento</summary>
+                <p class="micro-answer"><strong>Responsabilidad única:</strong> una dependencia identifica; las demás autorizan. Así se combinan según la necesidad de cada endpoint.</p>
+              </details>
+            </div>
+            <div class="active-build">
+              <div class="build-step">
+                <span class="build-step-index">01</span>
+                <div class="build-step-copy"><h3 class="build-step-title">Extraer y validar identidad</h3><p class="build-step-purpose"><code>OAuth2PasswordBearer</code> obtiene el token. <code>verificar_token</code> exige tipo <code>access</code>. El <code>sub</code> se convierte a entero de forma segura antes de consultar la base.</p></div>
+              </div>
+              <div class="build-step">
+                <span class="build-step-index">02</span>
+                <div class="build-step-copy"><h3 class="build-step-title">Encadenar permisos de rol</h3><p class="build-step-purpose"><code>requerir_instructor</code> y <code>requerir_admin</code> dependen del usuario ya autenticado; no vuelven a decodificar el token.</p></div>
+              </div>
+            </div>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver dependencias.py completo</span><span class="code-reveal-note">Reemplazar · app/auth/dependencias.py · Python · listo para copiar</span></span></summary>
+              <div class="code-reveal-body">
+                <div class="code-block">
+                  <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">app/auth/dependencias.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div>
+                  <pre class="line-numbers"><code class="language-python">from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.auth.seguridad import verificar_token
+from app.models.usuario import Usuario
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+def obtener_usuario_actual(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -&gt; Usuario:
+    credenciales_invalidas = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="No se pudo validar el token",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    payload = verificar_token(token, tipo_esperado="access")
+    if payload is None:
+        raise credenciales_invalidas
+
+    try:
+        usuario_id = int(payload.get("sub"))
+    except (TypeError, ValueError):
+        raise credenciales_invalidas
+
+    usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+    if usuario is None:
+        raise credenciales_invalidas
+
+    return usuario
+
+def requerir_instructor(
+    usuario: Usuario = Depends(obtener_usuario_actual)
+) -&gt; Usuario:
+    if usuario.rol not in ("instructor", "admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Requiere permisos de instructor"
+        )
+    return usuario
+
+def requerir_admin(
+    usuario: Usuario = Depends(obtener_usuario_actual)
+) -&gt; Usuario:
+    if usuario.rol != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Requiere permisos de administrador"
+        )
+    return usuario</code></pre>
+                </div>
+              </div>
+            </details>
+            <div class="checkpoint"><span class="component-label">Checkpoint</span><h3>Señal de éxito</h3><p>Sin token, un endpoint protegido responde 401. Con un access token válido, recibe el objeto <code>Usuario</code>.</p></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s4" data-accent="4" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🔄</span>
+            <div class="sec-copy">
+              <span class="sec-n">04 · Sesión</span>
+              <h2 class="sec-t">Un refresh token solo renueva acceso</h2>
+              <p class="sec-s">El endpoint nuevo reutiliza las piezas construidas en la sesión anterior.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="micro-task">
+              <span class="component-label">Detecta el error</span>
+              <p class="micro-task-q">¿Qué debe ocurrir si enviamos un access token al endpoint de refresh?</p>
+              <details class="micro-reveal"><summary>Ver criterio</summary><p class="micro-answer">Debe responder 401: la firma puede ser válida, pero el tipo del token no coincide con <code>refresh</code>.</p></details>
+            </div>
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Archivo que ya existe</h3><p>En <code>app/routers/auth_router.py</code> se conservan registro y login. Agrega exactamente estos imports y el endpoint al final; no reemplaces el archivo.</p></div></div>
+            <div class="code-block" data-role="fragment">
+              <div class="code-head"><div><span class="code-context">Agregar imports</span><span class="code-file">app/routers/auth_router.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">from app.schemas.token import TokenRefresh
+from app.auth.seguridad import (
+    verificar_password,
+    crear_access_token,
+    crear_refresh_token,
+    verificar_token,
+)</code></pre>
+            </div>
+            <div class="code-block" data-role="fragment">
+              <div class="code-head"><div><span class="code-context">Agregar al final</span><span class="code-file">app/routers/auth_router.py · Python</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre class="line-numbers"><code class="language-python">@router.post("/refresh")
+def refrescar(datos: TokenRefresh, db: Session = Depends(get_db)):
+    payload = verificar_token(
+        datos.refresh_token,
+        tipo_esperado="refresh"
+    )
+
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token inválido o expirado",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    try:
+        usuario_id = int(payload.get("sub"))
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token inválido o expirado",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+    if usuario is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario no encontrado",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    nuevo_access = crear_access_token({"sub": str(usuario.id)})
+    return {"access_token": nuevo_access, "token_type": "bearer"}</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Probar</span><span class="code-file">POST /auth/refresh · JSON</span></div><button class="copy-btn" type="button">Copiar payload</button></div>
+              <pre><code class="language-json">{
+  "refresh_token": "REFRESH_TOKEN_DE_ALGUN_LOGIN"
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s5" data-accent="1" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">📗</span>
+            <div class="sec-copy">
+              <span class="sec-n">05 · Autorización por dato</span>
+              <h2 class="sec-t">El service de cursos protege la propiedad</h2>
+              <p class="sec-s">El id del dueño llega desde el token; el cliente nunca decide quién figura como instructor.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Crear archivos</span><span class="code-file">Raíz de devacademy_api · PowerShell</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-powershell">New-Item app\services\curso_service.py, app\routers\curso_router.py -ItemType File</code></pre>
+            </div>
+            <div class="micro-task">
+              <span class="component-label">Predice · 20 segundos</span>
+              <p class="micro-task-q">¿Qué dato debe comparar el service antes de actualizar un curso?</p>
+              <details class="micro-reveal"><summary>Comprobar</summary><p class="micro-answer"><code>curso.instructor_id</code> contra el id del usuario autenticado. El rol ya fue comprobado en el router.</p></details>
+            </div>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver curso_service.py completo</span><span class="code-reveal-note">Crear · app/services/curso_service.py · Python · listo para copiar</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block">
+                <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/services/curso_service.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div>
+                <pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
+from app.models.curso import Curso
+
+def crear_curso(
+    db: Session,
+    titulo: str,
+    descripcion: str,
+    instructor_id: int
+) -&gt; Curso:
+    nuevo_curso = Curso(
+        titulo=titulo,
+        descripcion=descripcion,
+        instructor_id=instructor_id
+    )
+    db.add(nuevo_curso)
+    db.commit()
+    db.refresh(nuevo_curso)
+    return nuevo_curso
+
+def listar_cursos(db: Session):
+    return db.query(Curso).all()
+
+def obtener_curso(db: Session, curso_id: int) -&gt; Curso:
+    curso = db.query(Curso).filter(Curso.id == curso_id).first()
+    if not curso:
+        raise HTTPException(status_code=404, detail="Curso no encontrado")
+    return curso
+
+def actualizar_curso(
+    db: Session,
+    curso_id: int,
+    titulo: str,
+    descripcion: str,
+    usuario_id: int
+) -&gt; Curso:
+    curso = obtener_curso(db, curso_id)
+
+    if curso.instructor_id != usuario_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Este curso no es tuyo"
+        )
+
+    curso.titulo = titulo
+    curso.descripcion = descripcion
+    db.commit()
+    db.refresh(curso)
+    return curso</code></pre>
+              </div></div>
+            </details>
+            <div class="checkpoint"><span class="component-label">Checkpoint</span><h3>La decisión central</h3><p>Ser instructor habilita la operación. Coincidir con <code>instructor_id</code> habilita ese curso concreto.</p></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s6" data-accent="2" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🛡️</span>
+            <div class="sec-copy">
+              <span class="sec-n">06 · Puerta HTTP</span>
+              <h2 class="sec-t">Cada endpoint recibe la protección justa</h2>
+              <p class="sec-s">Consultar el catálogo es público; crear exige rol; editar exige rol y propiedad.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="cards">
+              <div class="card" data-accent="1"><b>GET /cursos/</b><p>Público. Permite explorar la oferta sin una cuenta.</p></div>
+              <div class="card" data-accent="2"><b>POST /cursos/</b><p><code>requerir_instructor</code>. El dueño sale del token.</p></div>
+              <div class="card" data-accent="3"><b>PUT /cursos/{id}</b><p>Rol en el router y propiedad dentro del service.</p></div>
+            </div>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver curso_router.py completo</span><span class="code-reveal-note">Crear · app/routers/curso_router.py · Python · listo para copiar</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block">
+                <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/routers/curso_router.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div>
+                <pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.schemas.curso import CursoCreate, CursoRespuesta
+from app.services.curso_service import (
+    crear_curso,
+    listar_cursos,
+    obtener_curso,
+    actualizar_curso,
+)
+from app.auth.dependencias import requerir_instructor
+from app.models.usuario import Usuario
+
+router = APIRouter(prefix="/cursos", tags=["Cursos"])
+
+@router.get("/", response_model=list[CursoRespuesta])
+def get_cursos(db: Session = Depends(get_db)):
+    return listar_cursos(db)
+
+@router.get("/{curso_id}", response_model=CursoRespuesta)
+def get_curso(curso_id: int, db: Session = Depends(get_db)):
+    return obtener_curso(db, curso_id)
+
+@router.post("/", response_model=CursoRespuesta)
+def post_curso(
+    datos: CursoCreate,
+    db: Session = Depends(get_db),
+    instructor: Usuario = Depends(requerir_instructor)
+):
+    return crear_curso(
+        db,
+        datos.titulo,
+        datos.descripcion,
+        instructor.id
+    )
+
+@router.put("/{curso_id}", response_model=CursoRespuesta)
+def put_curso(
+    curso_id: int,
+    datos: CursoCreate,
+    db: Session = Depends(get_db),
+    instructor: Usuario = Depends(requerir_instructor)
+):
+    return actualizar_curso(
+        db,
+        curso_id,
+        datos.titulo,
+        datos.descripcion,
+        instructor.id
+    )</code></pre>
+              </div></div>
+            </details>
+            <div class="callout" data-tone="warning"><span class="callout-icon">!</span><div><h3>Frontera exacta del admin</h3><p>El admin pasa <code>requerir_instructor</code>, pero el código actual no le permite editar cursos ajenos: la comparación de propiedad sigue aplicando. Un bypass global de admin requeriría una regla adicional explícita.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s7" data-accent="3" data-layout="split" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🔗</span>
+            <div class="sec-copy">
+              <span class="sec-n">07 · Concepto central</span>
+              <h2 class="sec-t">La lección hereda el permiso del curso</h2>
+              <p class="sec-s">La lección no tiene dueño directo; su acceso de escritura se decide atravesando la relación.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="rel-pair">
+              <div class="entity" data-emphasis>
+                <div class="entity-name"><span class="entity-emoji">👤</span> usuario</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li>rol</li></ul>
+              </div>
+              <div class="rel-link"><span class="rel-card">es dueño</span><span class="rel-desc">usuario.id = curso.instructor_id</span></div>
+              <div class="entity" data-accent="2">
+                <div class="entity-name">curso</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li class="is-key"><span class="key fk">FK</span> instructor_id</li></ul>
+              </div>
+            </div>
+            <div class="rel-pair">
+              <div class="entity" data-accent="2">
+                <div class="entity-name">curso</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li></ul>
+              </div>
+              <div class="rel-link"><span class="rel-card">1 : n</span><span class="rel-desc">un curso contiene muchas lecciones</span></div>
+              <div class="entity" data-emphasis data-accent="3">
+                <div class="entity-name">lección</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li class="is-key"><span class="key fk">FK</span> curso_id</li></ul>
+              </div>
+            </div>
+            <div class="socratica">
+              <span class="component-label">Para pensar</span>
+              <p class="socratica-q">Pedro quiere crear una lección dentro del curso de Carlos. Pedro sí es instructor. ¿Dónde debe buscarse el dueño?</p>
+              <details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">En el curso padre.</p><p>Primero cargamos el curso con <code>curso_id</code>; después comparamos su <code>instructor_id</code> con el usuario del token. El permiso viaja usuario → curso → lección.</p></div></details>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s8" data-accent="4" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">📘</span>
+            <div class="sec-copy">
+              <span class="sec-n">08 · Implementación anidada</span>
+              <h2 class="sec-t">Crear lecciones exige mirar el curso</h2>
+              <p class="sec-s">El service toma la decisión; el router aporta identidad y rol.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="code-block"><div class="code-head"><div><span class="code-context">Crear archivos</span><span class="code-file">Raíz de devacademy_api · PowerShell</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-powershell">New-Item app\services\leccion_service.py, app\routers\leccion_router.py -ItemType File</code></pre></div>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver leccion_service.py completo</span><span class="code-reveal-note">Crear · app/services/leccion_service.py · Python · listo para copiar</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block">
+                <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/services/leccion_service.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div>
+                <pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
+from app.models.leccion import Leccion
+from app.services.curso_service import obtener_curso
+
+def crear_leccion(
+    db: Session,
+    titulo: str,
+    contenido: str,
+    curso_id: int,
+    usuario_id: int
+) -&gt; Leccion:
+    curso = obtener_curso(db, curso_id)
+
+    if curso.instructor_id != usuario_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No puedes agregar lecciones a un curso que no es tuyo"
+        )
+
+    nueva_leccion = Leccion(
+        titulo=titulo,
+        contenido=contenido,
+        curso_id=curso_id
+    )
+    db.add(nueva_leccion)
+    db.commit()
+    db.refresh(nueva_leccion)
+    return nueva_leccion
+
+def listar_lecciones_de_curso(db: Session, curso_id: int):
+    obtener_curso(db, curso_id)
+    return db.query(Leccion).filter(
+        Leccion.curso_id == curso_id
+    ).all()</code></pre>
+              </div></div>
+            </details>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver leccion_router.py completo</span><span class="code-reveal-note">Crear · app/routers/leccion_router.py · Python · listo para copiar</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block">
+                <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/routers/leccion_router.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div>
+                <pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.schemas.leccion import LeccionCreate, LeccionRespuesta
+from app.services.leccion_service import (
+    crear_leccion,
+    listar_lecciones_de_curso,
+)
+from app.auth.dependencias import (
+    obtener_usuario_actual,
+    requerir_instructor,
+)
+from app.models.usuario import Usuario
+
+router = APIRouter(prefix="/lecciones", tags=["Lecciones"])
+
+@router.post("/", response_model=LeccionRespuesta)
+def post_leccion(
+    datos: LeccionCreate,
+    db: Session = Depends(get_db),
+    instructor: Usuario = Depends(requerir_instructor)
+):
+    return crear_leccion(
+        db,
+        datos.titulo,
+        datos.contenido,
+        datos.curso_id,
+        instructor.id
+    )
+
+@router.get(
+    "/curso/{curso_id}",
+    response_model=list[LeccionRespuesta]
+)
+def get_lecciones_de_curso(
+    curso_id: int,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(obtener_usuario_actual)
+):
+    return listar_lecciones_de_curso(db, curso_id)</code></pre>
+              </div></div>
+            </details>
+            <div class="callout" data-tone="warning"><span class="callout-icon">!</span><div><h3>Alcance actual</h3><p><code>GET /lecciones/curso/{id}</code> exige autenticación, pero todavía no comprueba inscripción. La regla “solo inscritos, dueño o admin” queda como siguiente incremento; no está implementada por este código.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s9" data-accent="1" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">📙</span>
+            <div class="sec-copy">
+              <span class="sec-n">09 · Datos propios</span>
+              <h2 class="sec-t">La inscripción pertenece al usuario del token</h2>
+              <p class="sec-s">El cliente elige el curso; la API decide quién se inscribe.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="code-block"><div class="code-head"><div><span class="code-context">Crear archivos</span><span class="code-file">Raíz de devacademy_api · PowerShell</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-powershell">New-Item app\services\inscripcion_service.py, app\routers\inscripcion_router.py -ItemType File</code></pre></div>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver inscripcion_service.py completo</span><span class="code-reveal-note">Crear · app/services/inscripcion_service.py · Python · listo para copiar</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block">
+                <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/services/inscripcion_service.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div>
+                <pre class="line-numbers"><code class="language-python">from sqlalchemy.orm import Session
+from fastapi import HTTPException
+from app.models.inscripcion import Inscripcion
+from app.services.curso_service import obtener_curso
+
+def inscribir(
+    db: Session,
+    estudiante_id: int,
+    curso_id: int
+) -&gt; Inscripcion:
+    obtener_curso(db, curso_id)
+
+    existente = db.query(Inscripcion).filter(
+        Inscripcion.estudiante_id == estudiante_id,
+        Inscripcion.curso_id == curso_id
+    ).first()
+    if existente:
+        raise HTTPException(
+            status_code=400,
+            detail="Ya estás inscrito en este curso"
+        )
+
+    nueva = Inscripcion(
+        estudiante_id=estudiante_id,
+        curso_id=curso_id,
+        estado="activa"
+    )
+    db.add(nueva)
+    db.commit()
+    db.refresh(nueva)
+    return nueva
+
+def listar_mis_inscripciones(db: Session, estudiante_id: int):
+    return db.query(Inscripcion).filter(
+        Inscripcion.estudiante_id == estudiante_id
+    ).all()</code></pre>
+              </div></div>
+            </details>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver inscripcion_router.py completo</span><span class="code-reveal-note">Crear · app/routers/inscripcion_router.py · Python · listo para copiar</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block">
+                <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">app/routers/inscripcion_router.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div>
+                <pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.schemas.inscripcion import (
+    InscripcionCreate,
+    InscripcionRespuesta,
+)
+from app.services.inscripcion_service import (
+    inscribir,
+    listar_mis_inscripciones,
+)
+from app.auth.dependencias import obtener_usuario_actual
+from app.models.usuario import Usuario
+
+router = APIRouter(
+    prefix="/inscripciones",
+    tags=["Inscripciones"]
+)
+
+@router.post("/", response_model=InscripcionRespuesta)
+def post_inscripcion(
+    datos: InscripcionCreate,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(obtener_usuario_actual)
+):
+    return inscribir(db, usuario.id, datos.curso_id)
+
+@router.get(
+    "/mis-inscripciones",
+    response_model=list[InscripcionRespuesta]
+)
+def get_mis_inscripciones(
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(obtener_usuario_actual)
+):
+    return listar_mis_inscripciones(db, usuario.id)</code></pre>
+              </div></div>
+            </details>
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Decisión de negocio</h3><p>Se exige autenticación, no rol de estudiante. Así un instructor también puede inscribirse en un curso ajeno. Si el negocio lo prohíbe, la dependencia debe cambiar.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s10" data-accent="2" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🧩</span>
+            <div class="sec-copy">
+              <span class="sec-n">10 · Integración</span>
+              <h2 class="sec-t">Registrar los routers en la aplicación</h2>
+              <p class="sec-s">El código existe, pero no recibe tráfico hasta quedar incluido en <code>main.py</code>.</p>
+            </div>
+          </div>
+          <div class="body">
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver main.py completo</span><span class="code-reveal-note">Reemplazar · app/main.py · Python · listo para copiar</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block">
+                <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">app/main.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div>
+                <pre class="line-numbers"><code class="language-python">from fastapi import FastAPI
+from app.database import Base, engine
+
+from app.models import usuario, curso, leccion, inscripcion
+from app.routers import (
+    auth_router,
+    curso_router,
+    leccion_router,
+    inscripcion_router,
+)
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title="DevAcademy API",
+    description="Backend de la plataforma DevAcademy"
+)
+
+app.include_router(auth_router.router)
+app.include_router(curso_router.router)
+app.include_router(leccion_router.router)
+app.include_router(inscripcion_router.router)
+
+@app.get("/")
+def raiz():
+    return {"mensaje": "DevAcademy API funcionando"}</code></pre>
+              </div></div>
+            </details>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">Ejecutar</span><span class="code-file">Raíz de devacademy_api · PowerShell</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-powershell">uvicorn app.main:app --reload</code></pre></div>
+            <div class="checkpoint"><span class="component-label">Checkpoint</span><h3>Qué debe verse</h3><p>La terminal muestra <code>Application startup complete</code>. En <code>/docs</code> aparecen Autenticación, Cursos, Lecciones e Inscripciones.</p></div>
+            <div class="callout" data-tone="warning"><span class="callout-icon">!</span><div><h3>Si aparece ImportError</h3><p>Se lee como un módulo o nombre que Python no pudo importar. Verifica que los seis archivos creados existan y que los nombres del import coincidan exactamente.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s11" data-accent="3" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🧪</span>
+            <div class="sec-copy">
+              <span class="sec-n">11 · Pruebas 1–5</span>
+              <h2 class="sec-t">Mismo recurso, usuarios distintos</h2>
+              <p class="sec-s">Postman revela la diferencia entre estar autenticado, tener rol y ser dueño.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="code-block"><div class="code-head"><div><span class="code-context">Preparar roles</span><span class="code-file">PostgreSQL · SQL</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-sql">UPDATE usuarios SET rol = 'instructor' WHERE email = 'carlos@correo.com';
+UPDATE usuarios SET rol = 'admin' WHERE email = 'laura@correo.com';</code></pre></div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">Crear curso</span><span class="code-file">POST /cursos/ · Bearer Carlos · JSON</span></div><button class="copy-btn" type="button">Copiar payload</button></div><pre><code class="language-json">{
+  "titulo": "Python desde cero",
+  "descripcion": "Curso introductorio de Python"
+}</code></pre></div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>#</th><th>Acción</th><th>Identidad</th><th>Esperado</th><th>Qué demuestra</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>POST /auth/login · form: <code>username</code> y <code>password</code></td><td>Carlos</td><td>200 + dos tokens</td><td>Autenticación</td></tr>
+                  <tr><td>2</td><td>POST /cursos/</td><td>Carlos</td><td>200; <code>instructor_id</code> de Carlos</td><td>Dueño tomado del token</td></tr>
+                  <tr><td>3</td><td>POST /cursos/</td><td>Ana, estudiante</td><td>403 · Requiere permisos de instructor</td><td>Barrera de rol</td></tr>
+                  <tr><td>4</td><td>PUT /cursos/{id de Carlos}</td><td>Pedro, instructor</td><td>403 · Este curso no es tuyo</td><td>Barrera de propiedad</td></tr>
+                  <tr><td>5</td><td>PUT /cursos/{id de Carlos}</td><td>Carlos</td><td>200</td><td>El dueño sí puede</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="code-block"><div class="code-head"><div><span class="code-context">Actualizar curso</span><span class="code-file">PUT /cursos/{id de Carlos} · JSON</span></div><button class="copy-btn" type="button">Copiar payload</button></div><pre><code class="language-json">{
+  "titulo": "Python desde cero — actualizado",
+  "descripcion": "Curso introductorio de Python"
+}</code></pre></div>
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Usa la ruta canónica</h3><p>Los endpoints declarados con <code>@router.post("/")</code> usan barra final: <code>/cursos/</code>, <code>/lecciones/</code> e <code>/inscripciones/</code>. Así evitas depender de redirecciones 307 del cliente.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s12" data-accent="4" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🔬</span>
+            <div class="sec-copy">
+              <span class="sec-n">12 · Pruebas 6–10</span>
+              <h2 class="sec-t">La identidad recorre relaciones y respuestas</h2>
+              <p class="sec-s">Ahora comprobamos lecciones, inscripciones, catálogo público y renovación.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="columns">
+              <div class="column">
+                <span class="component-label">Lección · POST /lecciones/ · usa el id real; aquí es 1</span>
+                <div class="code-block"><div class="code-head"><div><span class="code-context">Payload</span><span class="code-file">JSON</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-json">{
+  "titulo": "Variables en Python",
+  "contenido": "Contenido de la lección",
+  "curso_id": 1
+}</code></pre></div>
+              </div>
+              <div class="column">
+                <span class="component-label">Inscripción · POST /inscripciones/ · usa el id real; aquí es 1</span>
+                <div class="code-block"><div class="code-head"><div><span class="code-context">Payload</span><span class="code-file">JSON</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-json">{
+  "curso_id": 1
+}</code></pre></div>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>#</th><th>Prueba</th><th>Esperado</th><th>Lectura técnica</th></tr></thead>
+                <tbody>
+                  <tr><td>6A</td><td>Carlos crea lección en su curso</td><td>200</td><td>Rol y dueño heredado coinciden</td></tr>
+                  <tr><td>6B</td><td>Pedro crea lección en curso de Carlos</td><td>403</td><td>El permiso falla al mirar el curso padre</td></tr>
+                  <tr><td>7</td><td>Ana se inscribe</td><td>200; id de Ana y estado activa</td><td>El estudiante sale del token</td></tr>
+                  <tr><td>7B</td><td>Ana repite la inscripción</td><td>400 · Ya estás inscrito</td><td>Regla de negocio</td></tr>
+                  <tr><td>8</td><td>GET /inscripciones/mis-inscripciones</td><td>Solo datos de Ana</td><td>Filtro por identidad</td></tr>
+                  <tr><td>9</td><td>GET /cursos/ sin token</td><td>200</td><td>Catálogo público</td></tr>
+                  <tr><td>10</td><td>POST /auth/refresh con refresh token</td><td>200 + access nuevo</td><td>Renovación sin contraseña</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="checkpoint"><span class="component-label">Núcleo irrenunciable</span><h3>Si el tiempo se reduce</h3><p>Conserva las pruebas 2, 3, 4, 6, 7 y 8. Juntas demuestran rol, propiedad, anidación e identidad.</p></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s13" data-accent="2" data-layout="split" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">⚠️</span>
+            <div class="sec-copy">
+              <span class="sec-n">13 · Verificación y diagnóstico</span>
+              <h2 class="sec-t">Leer el resultado antes de cambiar código</h2>
+              <p class="sec-s">Cada señal apunta a una capa distinta del flujo.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Swagger con OAuth2PasswordBearer</h3><p>En <code>/docs</code>, abre <strong>Authorize</strong> y autentícate con <code>username</code> (el correo) y <code>password</code>. Swagger solicita y guarda el access token. La opción de pegar un Bearer manual corresponde a un esquema HTTPBearer distinto.</p></div></div>
+            <div class="cards">
+              <div class="card" data-accent="1"><b>“Not authenticated” · 401</b><p>Falta el Bearer, expiró el access token o se envió un token de tipo incorrecto.</p></div>
+              <div class="card" data-accent="2"><b>403 al crear curso</b><p>El token pertenece a un estudiante. Cambia al usuario instructor esperado.</p></div>
+              <div class="card" data-accent="3"><b>403 al crear lección</b><p>El curso no pertenece al instructor autenticado. Revisa el <code>curso_id</code>.</p></div>
+              <div class="card" data-accent="4"><b>ImportError al arrancar</b><p>Un módulo o nombre no coincide. Revisa rutas, archivos e imports.</p></div>
+              <div class="card" data-accent="1"><b>Refresh responde 401</b><p>Se envió un access token o el refresh expiró. Cada token tiene su endpoint.</p></div>
+              <div class="card" data-accent="2"><b>200 donde esperabas 403</b><p>Probablemente probaste con el dueño real. Confirma la identidad del token.</p></div>
+            </div>
+            <div class="callout" data-tone="warning"><span class="callout-icon">!</span><div><h3>Dos límites que no debemos ocultar</h3><p>El admin no tiene bypass de propiedad en la implementación actual. Además, listar lecciones no valida inscripción. Son decisiones pendientes, no comportamientos ya entregados.</p></div></div>
+            <div class="socratica">
+              <span class="component-label">Transferencia</span>
+              <p class="socratica-q">¿Cómo harías que solo un inscrito, el dueño del curso o un admin pueda leer sus lecciones?</p>
+              <details class="reveal"><summary>Ver criterio de diseño</summary><div class="reveal-body"><p class="lead-answer">La decisión necesita usuario, curso e inscripción.</p><p>El service debe recibir el usuario, cargar el curso, permitir dueño o admin y, para los demás, comprobar una inscripción activa. Si ninguna condición se cumple, responde 403.</p></div></details>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s14" data-accent="1" data-layout="focus" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">✅</span>
+            <div class="sec-copy">
+              <span class="sec-n">14 · Cierre</span>
+              <h2 class="sec-t">La API ya toma decisiones con identidad</h2>
+              <p class="sec-s">El proyecto pasó de reconocer usuarios a proteger acciones y datos con reglas observables.</p>
+            </div>
+          </div>
+          <div class="body">
+            <ul class="checklist">
+              <li><strong>Problema resuelto:</strong> una identidad autenticada ya no equivale a permiso ilimitado.</li>
+              <li><strong>Construcción:</strong> dependencia de usuario actual, roles, refresh, servicios, routers e integración.</li>
+              <li><strong>Idea 1:</strong> 401 significa identidad no demostrada; 403 significa identidad sin permiso.</li>
+              <li><strong>Idea 2:</strong> el rol habilita una categoría de acción; la propiedad decide sobre el dato concreto.</li>
+              <li><strong>Idea 3:</strong> un permiso puede heredarse a través de una relación, como lección → curso → dueño.</li>
+              <li><strong>Siguiente necesidad:</strong> aplicar el control de lectura por inscripción y decidir si el admin tendrá bypass global.</li>
+            </ul>
+            <div class="socratica">
+              <span class="component-label">Pregunta de cierre</span>
+              <p class="socratica-q">Si el cliente exige que “cerrar sesión” invalide un JWT de inmediato, ¿qué tendría que empezar a guardar el servidor?</p>
+              <details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">Estado de revocación: una lista de tokens o identificadores invalidados, o una versión de sesión por usuario.</p><p>La invalidación inmediata introduce consulta y persistencia en el servidor. Se reduce la ventaja de validar JWT de forma completamente stateless.</p></div></details>
+            </div>
+            <div class="callout" data-tone="success"><span class="callout-icon">✓</span><div><h3>Checklist profesional</h3><p>Hash fuera de respuestas; secretos en <code>.env</code>; access corto y refresh largo; tipo de token validado; dueño tomado del token; permisos por rol, dato y relación probados.</p></div></div>
+            <p class="doc-foot">© 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · Todos los derechos reservados · linkedin.com/in/ana-alvarado-instructora-full-stack</p>
+          </div>
+        </section>
+      </div>
+
+      <nav class="view-controls" id="viewControls" aria-label="Navegación entre secciones">
+        <button class="view-btn" id="prevView" type="button" aria-label="Sección anterior">←</button>
+        <span class="view-position" id="viewPosition" aria-live="polite">Portada</span>
+        <button class="view-btn" id="nextView" type="button" aria-label="Sección siguiente">→</button>
+      </nav>
+    </main>
+  </div>
+
+  <div class="watermark" aria-hidden="true">© 2026 ANA ALVARADO</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+  <script src="anaclase-v11.js"></script>
+</body>
+</html>
