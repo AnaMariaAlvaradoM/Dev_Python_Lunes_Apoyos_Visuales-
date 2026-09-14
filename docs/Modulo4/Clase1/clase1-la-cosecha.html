@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro" data-tema-base="oscuro" data-empresa="dev-senior" data-paleta="bosque" data-atmosfera="organica">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Ana Alvarado">
+  <meta name="copyright" content="© 2026 Ana Alvarado — Todos los derechos reservados">
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+  <title>Clase 1 · La Cosecha: diseño y esqueleto vivo · Ana Alvarado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <link rel="stylesheet" href="anaestilos-v11.css">
+</head>
+<body>
+  <a class="skip-link" href="#s1">Saltar al contenido</a>
+  <div class="topline" id="topline" aria-hidden="true"></div>
+  <div class="controls" aria-label="Controles">
+    <button class="ctrl" id="temaBtn" type="button" aria-label="Cambiar tema">☀</button>
+    <button class="ctrl" id="fullscreenBtn" type="button" aria-label="Pantalla completa">⛶</button>
+  </div>
+
+  <div class="shell" id="shell" data-collapsed="false">
+    <aside class="sidebar" aria-label="Índice de la clase">
+      <div class="sb-top">
+        <span class="brand-mark">A</span>
+        <div class="sb-title"><b>Python Backend Developer</b><span>Módulo 4 · Clase 1</span></div>
+      </div>
+      <button class="sb-toggle" id="collapseBtn" type="button" aria-label="Colapsar menú">‹</button>
+      <nav class="sb-nav" id="nav" aria-label="Secciones">
+        <a class="nav-item active" data-icon="✦" href="#portada"><span class="nav-index">00</span><span class="nav-label">Portada</span></a>
+        <a class="nav-item" data-icon="📨" href="#s1"><span class="nav-index">01</span><span class="nav-label">El encargo</span></a>
+        <a class="nav-item" data-icon="🧭" href="#s2"><span class="nav-index">02</span><span class="nav-label">Dolor a decisión</span></a>
+        <a class="nav-item" data-icon="🖥️" href="#s3"><span class="nav-index">03</span><span class="nav-label">La meta visible</span></a>
+        <a class="nav-item" data-icon="🧩" href="#s4"><span class="nav-index">04</span><span class="nav-label">Entidades</span></a>
+        <a class="nav-item" data-icon="🗺️" href="#s5"><span class="nav-index">05</span><span class="nav-label">Roles y API</span></a>
+        <a class="nav-item" data-icon="🚀" href="#s6"><span class="nav-index">06</span><span class="nav-label">Preparar el proyecto</span></a>
+        <a class="nav-item" data-icon="🏗️" href="#s7"><span class="nav-index">07</span><span class="nav-label">Estructura</span></a>
+        <a class="nav-item" data-icon="💓" href="#s8"><span class="nav-index">08</span><span class="nav-label">Primera respuesta</span></a>
+        <a class="nav-item" data-icon="🔄" href="#s9"><span class="nav-index">09</span><span class="nav-label">Viaje del dato</span></a>
+        <a class="nav-item" data-icon="📐" href="#s10"><span class="nav-index">10</span><span class="nav-label">Schema</span></a>
+        <a class="nav-item" data-icon="🍳" href="#s11"><span class="nav-index">11</span><span class="nav-label">Service</span></a>
+        <a class="nav-item" data-icon="🚪" href="#s12"><span class="nav-index">12</span><span class="nav-label">Router y app</span></a>
+        <a class="nav-item" data-icon="🧪" href="#s13"><span class="nav-index">13</span><span class="nav-label">Pruebas</span></a>
+        <a class="nav-item" data-icon="📦" href="#s14"><span class="nav-index">14</span><span class="nav-label">Entrega técnica</span></a>
+        <a class="nav-item" data-icon="✅" href="#s15"><span class="nav-index">15</span><span class="nav-label">Cierre</span></a>
+      </nav>
+      <div class="sb-prog">
+        <div class="lbl"><span>Progreso</span><span id="progPct">0%</span></div>
+        <div class="track"><div class="fill" id="progFill"></div></div>
+      </div>
+      <p class="sb-foot">© 2026 Ana Alvarado<br>Educadora Tech &amp; Desarrolladora Full Stack</p>
+    </aside>
+
+    <main class="main">
+      <header class="hero view" id="portada" data-accent="1">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <span class="eyebrow">Proyecto final · Clase 1</span>
+            <h1 class="hero-title">La Cosecha: del problema real al <em>esqueleto vivo</em></h1>
+            <p class="hero-lead">Traducirás las necesidades de una tienda en arquitectura y levantarás un backend FastAPI que crea y lista su primer recurso.</p>
+            <div class="meta">
+              <span class="pill" data-hot>FastAPI + Pydantic</span>
+              <span class="pill">Diseño por capas</span>
+              <span class="pill">3 horas · Intermedio</span>
+            </div>
+          </div>
+          <figure class="hero-visual">
+            <span class="emoji-hero" aria-hidden="true">🌾</span>
+            <figcaption class="hero-note">Hoy el sistema arranca, responde y completa el flujo de Categoría en memoria.</figcaption>
+          </figure>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="section view" id="s1" data-accent="1" data-layout="split" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">📨</span>
+            <div class="sec-copy">
+              <span class="sec-n">01 · El encargo</span>
+              <h2 class="sec-t">Doña Marta no pidió un CRUD</h2>
+              <p class="sec-s">Pidió dejar de perder control sobre inventario, ventas y responsabilidades.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="panel">
+              <h3>El correo que inicia el proyecto</h3>
+              <p>La tienda “La Cosecha”, en Zipaquirá, trabaja con cuaderno y Excel. A veces vende productos agotados, no puede saber quién hizo cada venta, sus ayudantes pueden cambiar precios, los totales manuales fallan y consultar qué hay o qué se vendió se volvió un caos.</p>
+              <p><strong>La necesidad real:</strong> convertir datos dispersos y acciones inseguras en un sistema confiable.</p>
+            </div>
+            <div class="cards">
+              <div class="card" data-accent="1"><span class="emoji-orb" aria-hidden="true">1</span><b>Hoy</b><p>Diseño, estructura profesional y Categoría completa en memoria.</p></div>
+              <div class="card" data-accent="2"><span class="emoji-orb" aria-hidden="true">2</span><b>Persistencia</b><p>PostgreSQL y SQLAlchemy convierten entidades en datos duraderos.</p></div>
+              <div class="card" data-accent="3"><span class="emoji-orb" aria-hidden="true">3</span><b>Seguridad</b><p>Usuarios, login, JWT y roles protegen las decisiones del negocio.</p></div>
+              <div class="card" data-accent="4"><span class="emoji-orb" aria-hidden="true">4</span><b>Integración</b><p>La venta valida stock, calcula totales y conecta el sistema completo.</p></div>
+            </div>
+            <div class="callout" data-tone="success">
+              <span class="callout-icon">✓</span>
+              <div><h3>Promesa de hoy</h3><p>Pasaremos del correo a un backend que arranca, se documenta solo y ya puede crear y listar categorías.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s2" data-accent="2" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🧭</span>
+            <div class="sec-copy">
+              <span class="sec-n">02 · Pensamiento de ingeniería</span>
+              <h2 class="sec-t">Cada dolor es una decisión técnica</h2>
+              <p class="sec-s">La tecnología aparece porque resuelve una necesidad; no porque estaba en el temario.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="table-wrap">
+              <table class="data-table">
+                <caption>Del problema humano al sistema</caption>
+                <thead><tr><th>Lo que ocurre</th><th>Decisión técnica</th><th>Clase</th></tr></thead>
+                <tbody>
+                  <tr><td>“Vendo algo que ya no tengo”</td><td data-emphasis>Validar y descontar stock al vender</td><td>4</td></tr>
+                  <tr><td>“No sé quién hizo cada venta”</td><td data-emphasis>Relacionar cada venta con su vendedor y exigir login</td><td>2–3</td></tr>
+                  <tr><td>“Me cambiaron los precios”</td><td data-emphasis>Autorizar por rol: solo admin edita productos</td><td>3</td></tr>
+                  <tr><td>“Sumar me da errores”</td><td data-emphasis>Calcular el total dentro del backend</td><td>4</td></tr>
+                  <tr><td>“Quiero saber qué tengo y qué se vendió”</td><td data-emphasis>Persistir información confiable</td><td>2</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="micro-task">
+              <span class="component-label">Decide · 40 segundos</span>
+              <p class="micro-task-q">¿Por qué el celular de la cajera no debería enviar al backend el total ya calculado?</p>
+              <p class="micro-task-hint">Piensa qué datos controla el negocio y cuáles llegan desde afuera.</p>
+              <details class="micro-reveal">
+                <summary>Comprobar razonamiento</summary>
+                <p class="micro-answer"><strong>El backend es la fuente de verdad.</strong> Lo externo puede llegar mal sumado o manipulado. El servidor debe recalcular con los precios reales para no heredar errores ni fraude.</p>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s3" data-accent="3" data-layout="split" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🖥️</span>
+            <div class="sec-copy">
+              <span class="sec-n">03 · Meta visible</span>
+              <h2 class="sec-t">El front muestra el “para qué”</h2>
+              <p class="sec-s">La interfaz ya existe como maqueta. Nuestro trabajo es construir el motor que la vuelve real.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="panel">
+              <h3>Recorre las tres pantallas</h3>
+              <p>Abre la maqueta, navega por <strong>Inventario</strong>, <strong>Nueva venta</strong> y <strong>Ventas del día</strong>. Los datos todavía están escritos en la página: nada se consulta ni se guarda.</p>
+              <p><a class="pill" data-hot href="front-la-cosecha.html" target="_blank" rel="noopener">Abrir front-la-cosecha.html ↗</a></p>
+            </div>
+            <div class="cards">
+              <div class="card" data-accent="1"><span class="emoji-orb" aria-hidden="true">📦</span><b>Inventario</b><p>Necesita productos reales y stock actualizado.</p></div>
+              <div class="card" data-accent="2"><span class="emoji-orb" aria-hidden="true">🛒</span><b>Nueva venta</b><p>Necesita registrar detalles, calcular el total y descontar stock.</p></div>
+              <div class="card" data-accent="3"><span class="emoji-orb" aria-hidden="true">🧾</span><b>Historial</b><p>Necesita conservar qué se vendió, cuándo y quién lo hizo.</p></div>
+            </div>
+            <div class="socratica">
+              <span class="component-label">Para pensar</span>
+              <p class="socratica-q">Cuando una cajera abre Inventario, ¿de dónde deberían salir los productos?</p>
+              <details class="reveal">
+                <summary>Ver respuesta</summary>
+                <div class="reveal-body">
+                  <p class="lead-answer">De <code>GET /productos</code>, consultando la base de datos.</p>
+                  <p>El front pide y presenta; el backend conoce la verdad. Si los productos quedan “quemados” en la página, cada cambio obliga a reescribir la interfaz.</p>
+                </div>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s4" data-accent="4" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🧩</span>
+            <div class="sec-copy">
+              <span class="sec-n">04 · Diseño del dominio</span>
+              <h2 class="sec-t">Las cosas que el negocio necesita recordar</h2>
+              <p class="sec-s">Una entidad representa algo importante del negocio que debe conservarse y relacionarse.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="er-board">
+              <div class="entity" data-accent="1">
+                <div class="entity-name"><span class="entity-emoji" aria-hidden="true">👤</span> Usuario</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li>nombre</li><li>rol: admin | vendedor</li></ul>
+              </div>
+              <div class="entity" data-accent="2">
+                <div class="entity-name"><span class="entity-emoji" aria-hidden="true">🧾</span> Venta</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li>fecha</li><li>total</li><li class="is-key"><span class="key fk">FK</span> vendedor_id</li></ul>
+              </div>
+              <div class="entity" data-emphasis data-accent="3">
+                <div class="entity-name"><span class="entity-emoji" aria-hidden="true">🔗</span> DetalleVenta</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li class="is-key"><span class="key fk">FK</span> venta_id</li><li class="is-key"><span class="key fk">FK</span> producto_id</li><li>cantidad</li><li>subtotal</li></ul>
+              </div>
+              <div class="entity" data-accent="4">
+                <div class="entity-name"><span class="entity-emoji" aria-hidden="true">📦</span> Producto</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li>nombre</li><li>precio</li><li>stock</li><li class="is-key"><span class="key fk">FK</span> categoria_id</li></ul>
+              </div>
+              <div class="entity" data-accent="1">
+                <div class="entity-name"><span class="entity-emoji" aria-hidden="true">🏷️</span> Categoria</div>
+                <ul class="entity-fields"><li class="is-key"><span class="key pk">PK</span> id</li><li>nombre</li></ul>
+              </div>
+            </div>
+            <div class="socratica">
+              <span class="component-label">Para pensar</span>
+              <p class="socratica-q">¿Por qué <code>DetalleVenta</code> debe ser una entidad y no una simple lista dentro de Venta?</p>
+              <details class="reveal">
+                <summary>Ver respuesta</summary>
+                <div class="reveal-body">
+                  <p class="lead-answer">Resuelve una relación muchos a muchos que además tiene datos propios.</p>
+                  <p>Una venta incluye varios productos y un producto aparece en muchas ventas. La <strong>cantidad</strong> y el <strong>subtotal</strong> pertenecen a la unión concreta entre ambos: esa línea es <code>DetalleVenta</code>.</p>
+                </div>
+              </details>
+            </div>
+            <div class="callout" data-tone="info">
+              <span class="callout-icon">i</span>
+              <div><h3>Lee el modelo como frases</h3><p>Un usuario hace ventas; una venta tiene detalles; cada detalle apunta a un producto; cada producto pertenece a una categoría.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s5" data-accent="1" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🗺️</span>
+            <div class="sec-copy">
+              <span class="sec-n">05 · Contrato del sistema</span>
+              <h2 class="sec-t">Roles claros y rutas con intención</h2>
+              <p class="sec-s">Los permisos y endpoints salen directamente del negocio que acabamos de modelar.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="compare">
+              <div class="compare-card" data-side="positive"><h3>admin · Doña Marta</h3><ul><li>Gestiona productos y precios</li><li>Crea categorías y usuarios</li><li>Consulta el historial completo</li></ul></div>
+              <div class="compare-card" data-side="negative"><h3>vendedor · equipo de caja</h3><ul><li>Consulta inventario</li><li>Registra ventas</li><li>No cambia precios</li></ul></div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <caption>Mapa de endpoints del módulo</caption>
+                <thead><tr><th>Recurso</th><th>Método + ruta</th><th>Acción</th><th>Acceso</th></tr></thead>
+                <tbody>
+                  <tr><td>Categorías</td><td data-emphasis><code>GET /categorias</code></td><td>Listar</td><td>Todos</td></tr>
+                  <tr><td>Categorías</td><td data-emphasis><code>POST /categorias</code></td><td>Crear</td><td>admin</td></tr>
+                  <tr><td>Productos</td><td data-emphasis><code>GET /productos</code></td><td>Listar inventario</td><td>Todos</td></tr>
+                  <tr><td>Productos</td><td data-emphasis><code>POST /productos</code></td><td>Crear producto</td><td>admin</td></tr>
+                  <tr><td>Productos</td><td data-emphasis><code>PUT /productos/{id}</code></td><td>Editar precio o stock</td><td>admin</td></tr>
+                  <tr><td>Usuarios</td><td data-emphasis><code>POST /auth/registro</code></td><td>Crear usuario</td><td>admin</td></tr>
+                  <tr><td>Usuarios</td><td data-emphasis><code>POST /auth/login</code></td><td>Recibir token</td><td>Todos</td></tr>
+                  <tr><td>Ventas</td><td data-emphasis><code>POST /ventas</code></td><td>Registrar venta</td><td>vendedor/admin</td></tr>
+                  <tr><td>Ventas</td><td data-emphasis><code>GET /ventas</code></td><td>Consultar historial</td><td>admin</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="micro-task">
+              <span class="component-label">Explica · 30 segundos</span>
+              <p class="micro-task-q">¿Por qué hoy empezamos por Categoría y no por Producto?</p>
+              <details class="micro-reveal">
+                <summary>Comprobar razonamiento</summary>
+                <p class="micro-answer">Categoría es el recurso más simple y funciona como molde del patrón. Además, Producto depende de ella: construir primero las dependencias reduce retrabajo.</p>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s6" data-accent="2" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🚀</span>
+            <div class="sec-copy">
+              <span class="sec-n">06 · Puesta en marcha</span>
+              <h2 class="sec-t">Un entorno aislado para La Cosecha</h2>
+              <p class="sec-s">Estos comandos están escritos para Windows PowerShell y se ejecutan desde la carpeta donde guardas tus proyectos.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="active-build">
+              <div class="build-step">
+                <span class="build-step-index">01</span>
+                <div class="build-step-copy">
+                  <h3 class="build-step-title">Crea la carpeta y entra</h3>
+                  <p class="build-step-purpose">Toda la aplicación vivirá bajo una raíz única.</p>
+                  <div class="code-block" data-tipo="terminal"><div class="code-head"><div><span class="code-context">PowerShell</span><span class="code-file">carpeta de proyectos</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-bash">mkdir la_cosecha
+cd la_cosecha</code></pre></div>
+                </div>
+              </div>
+              <div class="build-step">
+                <span class="build-step-index">02</span>
+                <div class="build-step-copy">
+                  <h3 class="build-step-title">Crea y activa el entorno virtual</h3>
+                  <p class="build-step-purpose">Las dependencias de este proyecto quedan aisladas. Cuando la activación funciona, la terminal muestra <code>(venv)</code>.</p>
+                  <div class="code-block" data-tipo="terminal"><div class="code-head"><div><span class="code-context">PowerShell</span><span class="code-file">la_cosecha/</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-bash">py -m venv venv
+.\venv\Scripts\Activate.ps1</code></pre></div>
+                </div>
+              </div>
+              <div class="build-step">
+                <span class="build-step-index">03</span>
+                <div class="build-step-copy">
+                  <h3 class="build-step-title">Instala FastAPI con el conjunto estándar</h3>
+                  <p class="build-step-purpose"><code>fastapi[standard]</code> incluye el framework, Pydantic, Uvicorn y el CLI que usaremos para arrancar.</p>
+                  <div class="code-block" data-tipo="terminal"><div class="code-head"><div><span class="code-context">PowerShell</span><span class="code-file">(venv) la_cosecha/</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-bash">pip install "fastapi[standard]"</code></pre></div>
+                </div>
+              </div>
+            </div>
+            <div class="callout" data-tone="warning">
+              <span class="callout-icon">!</span>
+              <div><h3>Comprueba antes de seguir</h3><p>La terminal debe mostrar <code>(venv)</code>. En macOS o Linux cambian las rutas de activación y se usan barras <code>/</code>.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s7" data-accent="3" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🏗️</span>
+            <div class="sec-copy">
+              <span class="sec-n">07 · Separación de responsabilidades</span>
+              <h2 class="sec-t">La estructura prepara el crecimiento</h2>
+              <p class="sec-s">FastAPI prescribe routers; separar además services, schemas, models y config es una convención profesional para mantener el proyecto entendible.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="cards">
+              <div class="card" data-accent="1"><span class="emoji-orb" aria-hidden="true">🚪</span><b>routers/</b><p>Traduce HTTP: recibe peticiones y devuelve respuestas.</p></div>
+              <div class="card" data-accent="2"><span class="emoji-orb" aria-hidden="true">⚙️</span><b>services/</b><p>Contiene lógica de negocio sin depender de HTTP.</p></div>
+              <div class="card" data-accent="3"><span class="emoji-orb" aria-hidden="true">📐</span><b>schemas/</b><p>Define y valida la forma de los datos.</p></div>
+              <div class="card" data-accent="4"><span class="emoji-orb" aria-hidden="true">🗄️</span><b>models/ + config/</b><p>Recibirán tablas y conexión a base de datos en la Clase 2.</p></div>
+            </div>
+            <div class="code-block" data-tipo="terminal">
+              <div class="code-head"><div><span class="code-context">Crear carpetas</span><span class="code-file">(venv) la_cosecha/</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-bash">mkdir app
+mkdir app\routers, app\services, app\schemas, app\models, app\config</code></pre>
+            </div>
+            <div class="code-block" data-tipo="terminal">
+              <div class="code-head"><div><span class="code-context">Crear paquetes</span><span class="code-file">(venv) la_cosecha/</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-bash">New-Item app\__init__.py -ItemType File
+New-Item app\routers\__init__.py -ItemType File
+New-Item app\services\__init__.py -ItemType File
+New-Item app\schemas\__init__.py -ItemType File
+New-Item app\models\__init__.py -ItemType File
+New-Item app\config\__init__.py -ItemType File</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head"><div><span class="code-context">Estado esperado</span><span class="code-file">la_cosecha/</span></div><button class="copy-btn" type="button">Copiar</button></div>
+              <pre><code class="language-plaintext">la_cosecha/
+├── venv/
+└── app/
+    ├── __init__.py
+    ├── routers/    (__init__.py)
+    ├── services/   (__init__.py)
+    ├── schemas/    (__init__.py)
+    ├── models/     (__init__.py · se usa en Clase 2)
+    └── config/     (__init__.py · se usa en Clase 2)</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s8" data-accent="4" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">💓</span>
+            <div class="sec-copy">
+              <span class="sec-n">08 · Primera prueba de vida</span>
+              <h2 class="sec-t">Una app mínima que ya respira</h2>
+              <p class="sec-s">La ruta raíz demuestra que FastAPI puede arrancar y convertir un diccionario de Python en una respuesta JSON.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="active-build">
+              <div class="build-step">
+                <span class="build-step-index">01</span>
+                <div class="build-step-copy">
+                  <h3 class="build-step-title">Define una aplicación y una puerta de entrada</h3>
+                  <p class="build-step-purpose"><code>FastAPI(title="API de La Cosecha")</code> crea la app; el decorador <code>@app.get("/")</code> conecta una petición GET con la función que responde.</p>
+                  <div class="code-block" data-role="fragment"><div class="code-head"><div><span class="code-context">Fragmento</span><span class="code-file">la_cosecha/app/main.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">app = FastAPI(title="API de La Cosecha")
+
+
+@app.get("/")
+def raiz():
+    return {"mensaje": "API de La Cosecha en línea 🌾"}</code></pre></div>
+                </div>
+              </div>
+            </div>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver main.py completo · versión inicial</span><span class="code-reveal-note">Crear · la_cosecha/app/main.py · Python · listo para copiar</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block"><div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/main.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div><pre class="line-numbers"><code class="language-python">from fastapi import FastAPI
+
+app = FastAPI(title="API de La Cosecha")
+
+
+@app.get("/")
+def raiz():
+    return {"mensaje": "API de La Cosecha en línea 🌾"}</code></pre></div></div>
+            </details>
+            <div class="code-block" data-tipo="terminal"><div class="code-head"><div><span class="code-context">Ejecutar</span><span class="code-file">(venv) la_cosecha/</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-bash">fastapi dev app/main.py</code></pre></div>
+            <div class="cards">
+              <div class="card" data-accent="1"><span class="emoji-orb" aria-hidden="true">✓</span><b><code>/</code></b><p><code>http://127.0.0.1:8000/</code> debe devolver el mensaje de bienvenida.</p></div>
+              <div class="card" data-accent="2"><span class="emoji-orb" aria-hidden="true">📚</span><b><code>/docs</code></b><p>Swagger UI presenta y permite ejecutar las rutas.</p></div>
+            </div>
+            <div class="socratica">
+              <span class="component-label">Para pensar</span>
+              <p class="socratica-q">No programamos la página <code>/docs</code>. ¿De dónde salió?</p>
+              <details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">FastAPI la genera a partir del código tipado.</p><p>Las rutas y modelos producen un esquema OpenAPI. De ahí salen Swagger UI en <code>/docs</code>, ReDoc en <code>/redoc</code> y <code>/openapi.json</code>.</p></div></details>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s9" data-accent="1" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🔄</span>
+            <div class="sec-copy">
+              <span class="sec-n">09 · Modelo mental</span>
+              <h2 class="sec-t">Así viaja una Categoría</h2>
+              <p class="sec-s">El flujo completo separa contrato, traducción HTTP y lógica para que cada pieza pueda cambiar sin reescribir las demás.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="visual-panel">
+              <div class="chart-title">Petición → resultado</div>
+              <div class="flow">
+                <div class="flow-step"><span class="fs-index">01</span><strong>Cliente</strong><span>Envía JSON</span></div>
+                <div class="flow-arrow" aria-hidden="true">→</div>
+                <div class="flow-step"><span class="fs-index">02</span><strong>Schema</strong><span>Valida el contrato</span></div>
+                <div class="flow-arrow" aria-hidden="true">→</div>
+                <div class="flow-step"><span class="fs-index">03</span><strong>Router</strong><span>Traduce HTTP</span></div>
+                <div class="flow-arrow" aria-hidden="true">→</div>
+                <div class="flow-step" data-emphasis><span class="fs-index">04</span><strong>Service</strong><span>Aplica la lógica</span></div>
+                <div class="flow-arrow" aria-hidden="true">→</div>
+                <div class="flow-step"><span class="fs-index">05</span><strong>Memoria</strong><span>Guarda temporalmente</span></div>
+                <div class="flow-arrow" aria-hidden="true">→</div>
+                <div class="flow-step"><span class="fs-index">06</span><strong>Respuesta</strong><span>JSON + estado</span></div>
+              </div>
+            </div>
+            <div class="cards">
+              <div class="card" data-accent="1"><span class="emoji-orb" aria-hidden="true">📐</span><b>Schema = contrato</b><p>Define campos, tipos y validaciones de entrada y salida.</p></div>
+              <div class="card" data-accent="2"><span class="emoji-orb" aria-hidden="true">🍳</span><b>Service = cocina</b><p>Trabaja con datos; no sabe si llegaron por HTTP.</p></div>
+              <div class="card" data-accent="3"><span class="emoji-orb" aria-hidden="true">🚪</span><b>Router = mesero</b><p>Recibe el pedido, delega y presenta la respuesta.</p></div>
+            </div>
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>El premio de separar</h3><p>En la Clase 2 la lista en memoria se convertirá en PostgreSQL. El contrato y las rutas podrán conservar casi toda su forma.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s10" data-accent="2" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">📐</span>
+            <div class="sec-copy">
+              <span class="sec-n">10 · Construcción activa</span>
+              <h2 class="sec-t">El schema protege el contrato</h2>
+              <p class="sec-s">El cliente envía solo el nombre; el sistema asigna el id y lo incluye en la respuesta.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="micro-task">
+              <span class="component-label">Compara · 30 segundos</span>
+              <p class="micro-task-q">Si el cliente pudiera enviar el <code>id</code>, ¿qué campo estaría controlando sin corresponderle?</p>
+              <details class="micro-reveal"><summary>Comprobar razonamiento</summary><p class="micro-answer">El identificador pertenece al sistema. Por eso entrada y salida usan modelos distintos: <code>CategoriaCrear</code> recibe el nombre y <code>CategoriaRespuesta</code> añade el id.</p></details>
+            </div>
+            <div class="active-build">
+              <div class="build-step">
+                <span class="build-step-index">01</span>
+                <div class="build-step-copy">
+                  <h3 class="build-step-title">Haz explícita la regla del nombre</h3>
+                  <p class="build-step-purpose"><code>Field</code> concentra una validación observable: entre 2 y 50 caracteres. FastAPI rechazará antes de entrar a nuestra lógica lo que rompa ese contrato.</p>
+                  <div class="code-block" data-role="fragment"><div class="code-head"><div><span class="code-context">Fragmento</span><span class="code-file">la_cosecha/app/schemas/categoria_schema.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">class CategoriaCrear(BaseModel):
+    nombre: str = Field(min_length=2, max_length=50)</code></pre></div>
+                </div>
+              </div>
+            </div>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver categoria_schema.py completo</span><span class="code-reveal-note">Crear · la_cosecha/app/schemas/categoria_schema.py · Python</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block"><div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/schemas/categoria_schema.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div><pre class="line-numbers"><code class="language-python">from pydantic import BaseModel, Field
+
+
+class CategoriaCrear(BaseModel):
+    nombre: str = Field(min_length=2, max_length=50)
+
+
+class CategoriaRespuesta(BaseModel):
+    id: int
+    nombre: str</code></pre></div></div>
+            </details>
+            <div class="checkpoint"><span class="component-label">Checkpoint</span><h3>Dos contratos, dos responsabilidades</h3><p>La entrada acepta <code>nombre</code>; la respuesta garantiza <code>id</code> y <code>nombre</code>.</p></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s11" data-accent="3" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🍳</span>
+            <div class="sec-copy">
+              <span class="sec-n">11 · Construcción activa</span>
+              <h2 class="sec-t">El service guarda y decide</h2>
+              <p class="sec-s">Una lista funciona como base de datos temporal; un contador asigna identificadores durante la ejecución.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="micro-task">
+              <span class="component-label">Predice · 30 segundos</span>
+              <p class="micro-task-q">¿Qué debe ocurrir con el contador después de guardar una categoría?</p>
+              <details class="micro-reveal"><summary>Comprobar razonamiento</summary><p class="micro-answer">Debe aumentar una vez para que la siguiente categoría reciba otro id. <code>global contador_id</code> permite modificar la variable de módulo dentro de la función.</p></details>
+            </div>
+            <div class="active-build">
+              <div class="build-step">
+                <span class="build-step-index">01</span>
+                <div class="build-step-copy">
+                  <h3 class="build-step-title">Construye una categoría válida</h3>
+                  <p class="build-step-purpose">El service recibe un objeto ya validado, crea el diccionario, lo agrega a la colección, avanza el id y devuelve el recurso creado.</p>
+                  <div class="code-block" data-role="fragment"><div class="code-head"><div><span class="code-context">Fragmento</span><span class="code-file">la_cosecha/app/services/categoria_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">def crear_categoria(datos: CategoriaCrear):
+    global contador_id
+    nueva = {"id": contador_id, "nombre": datos.nombre}
+    categorias.append(nueva)
+    contador_id += 1
+    return nueva</code></pre></div>
+                </div>
+              </div>
+            </div>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver categoria_service.py completo</span><span class="code-reveal-note">Crear · la_cosecha/app/services/categoria_service.py · Python</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block"><div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/services/categoria_service.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div><pre class="line-numbers"><code class="language-python">from app.schemas.categoria_schema import CategoriaCrear
+
+categorias = []
+contador_id = 1
+
+
+def listar_categorias():
+    return categorias
+
+
+def crear_categoria(datos: CategoriaCrear):
+    global contador_id
+    nueva = {"id": contador_id, "nombre": datos.nombre}
+    categorias.append(nueva)
+    contador_id += 1
+    return nueva</code></pre></div></div>
+            </details>
+            <div class="callout" data-tone="warning"><span class="callout-icon">!</span><div><h3>La memoria es temporal</h3><p>Las categorías desaparecen al apagar el servidor. Hoy es una decisión consciente para repasar el patrón; la persistencia real llega en la Clase 2.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s12" data-accent="4" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🚪</span>
+            <div class="sec-copy">
+              <span class="sec-n">12 · Integración</span>
+              <h2 class="sec-t">El router traduce; la app conecta</h2>
+              <p class="sec-s"><code>GET</code> delega el listado, <code>POST</code> recibe datos validados y responde 201. Ninguna lógica de negocio vive aquí.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="micro-task">
+              <span class="component-label">Detecta · 30 segundos</span>
+              <p class="micro-task-q">¿Sería correcto que el router modificara la lista <code>categorias</code> directamente?</p>
+              <details class="micro-reveal"><summary>Comprobar razonamiento</summary><p class="micro-answer">No. El router traduce HTTP y delega. Modificar datos es responsabilidad del service; mezclarlo dificulta probar y cambiar la persistencia.</p></details>
+            </div>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver categoria_router.py completo</span><span class="code-reveal-note">Crear · la_cosecha/app/routers/categoria_router.py · Python</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block"><div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/routers/categoria_router.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div><pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, status
+from app.schemas.categoria_schema import CategoriaCrear, CategoriaRespuesta
+from app.services import categoria_service
+
+router = APIRouter(prefix="/categorias", tags=["Categorías"])
+
+
+@router.get("/", response_model=list[CategoriaRespuesta])
+def listar():
+    return categoria_service.listar_categorias()
+
+
+@router.post("/", response_model=CategoriaRespuesta, status_code=status.HTTP_201_CREATED)
+def crear(datos: CategoriaCrear):
+    return categoria_service.crear_categoria(datos)</code></pre></div></div>
+            </details>
+            <div class="build-step">
+              <span class="build-step-index">02</span>
+              <div class="build-step-copy">
+                <h3 class="build-step-title">Conecta el router una sola vez</h3>
+                <p class="build-step-purpose"><code>include_router</code> suma todas las rutas del módulo a la aplicación principal y las incorpora en OpenAPI.</p>
+                <div class="code-block" data-role="fragment"><div class="code-head"><div><span class="code-context">Cambio</span><span class="code-file">la_cosecha/app/main.py</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-python">from app.routers import categoria_router
+
+app.include_router(categoria_router.router)</code></pre></div>
+              </div>
+            </div>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver main.py completo · versión final</span><span class="code-reveal-note">Reemplazar · la_cosecha/app/main.py · Python</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block"><div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/main.py</span></div><button class="copy-btn" type="button">Copiar archivo</button></div><pre class="line-numbers"><code class="language-python">from fastapi import FastAPI
+from app.routers import categoria_router
+
+app = FastAPI(title="API de La Cosecha")
+
+app.include_router(categoria_router.router)
+
+
+@app.get("/")
+def raiz():
+    return {"mensaje": "API de La Cosecha en línea 🌾"}</code></pre></div></div>
+            </details>
+            <div class="checkpoint"><span class="component-label">Nivel 2 superado</span><h3>El recurso está conectado de punta a punta</h3><p>Existen <code>GET /categorias/</code> y <code>POST /categorias/</code>, ambos visibles en Swagger bajo “Categorías”.</p></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s13" data-accent="1" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">🧪</span>
+            <div class="sec-copy">
+              <span class="sec-n">13 · Evidencia observable</span>
+              <h2 class="sec-t">Prueba primero la petición, luego la documentación</h2>
+              <p class="sec-s">Postman obliga a construir la petición; Swagger confirma que FastAPI documentó el contrato.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="code-block" data-tipo="terminal"><div class="code-head"><div><span class="code-context">Servidor</span><span class="code-file">(venv) la_cosecha/</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-bash">fastapi dev app/main.py</code></pre></div>
+            <div class="stepper">
+              <div class="step-item"><span class="step-num">1</span><h4>Crear</h4><p><code>POST /categorias/</code> con JSON válido debe responder 201.</p></div>
+              <div class="step-item"><span class="step-num">2</span><h4>Listar</h4><p><code>GET http://127.0.0.1:8000/categorias/</code> debe responder 200 con <code>[{"id": 1, "nombre": "Granos"}]</code>.</p></div>
+              <div class="step-item"><span class="step-num">3</span><h4>Romper el contrato</h4><p>Un nombre vacío debe producir 422.</p></div>
+              <div class="step-item"><span class="step-num">4</span><h4>Repetir en Swagger</h4><p>Abre <code>http://127.0.0.1:8000/docs</code> y usa “Try it out”.</p></div>
+            </div>
+            <div class="cards">
+              <div class="card" data-accent="1">
+                <b>Petición válida</b><p><code>POST http://127.0.0.1:8000/categorias/</code></p>
+                <div class="code-block"><div class="code-head"><div><span class="code-context">Body JSON</span><span class="code-file">Postman</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  "nombre": "Granos"
+}</code></pre></div>
+              </div>
+              <div class="card" data-accent="2">
+                <b>Resultado · HTTP 201</b><p>El sistema agrega el identificador.</p>
+                <div class="code-block"><div class="code-head"><div><span class="code-context">Response</span><span class="code-file">application/json</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  "id": 1,
+  "nombre": "Granos"
+}</code></pre></div>
+              </div>
+              <div class="card" data-accent="3">
+                <b>Petición inválida</b><p>El nombre incumple <code>min_length=2</code>.</p>
+                <div class="code-block"><div class="code-head"><div><span class="code-context">Body JSON</span><span class="code-file">espera 422</span></div><button class="copy-btn" type="button">Copiar</button></div><pre class="line-numbers"><code class="language-json">{
+  "nombre": ""
+}</code></pre></div>
+              </div>
+            </div>
+            <div class="socratica">
+              <span class="component-label">Para pensar</span>
+              <p class="socratica-q">No escribimos un <code>if</code> para rechazar el nombre vacío. ¿Quién lo hizo?</p>
+              <details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">Pydantic, gracias a la regla del schema.</p><p>FastAPI valida el cuerpo contra <code>CategoriaCrear</code> antes de ejecutar la función. La validación permanece en el contrato y el router queda limpio.</p></div></details>
+            </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s14" data-accent="2" data-layout="canvas" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">📦</span>
+            <div class="sec-copy">
+              <span class="sec-n">14 · Entrega técnica</span>
+              <h2 class="sec-t">El proyecto debe poder reconstruirse</h2>
+              <p class="sec-s">Las dependencias quedan registradas, los archivos temporales fuera del repositorio y el avance guardado en Git.</p>
+            </div>
+          </div>
+          <div class="body">
+            <div class="active-build">
+              <div class="build-step"><span class="build-step-index">01</span><div class="build-step-copy"><h3 class="build-step-title">Guarda las versiones instaladas</h3><p class="build-step-purpose"><code>requirements.txt</code> permitirá recrear el mismo entorno.</p><div class="code-block" data-tipo="terminal"><div class="code-head"><div><span class="code-context">Generar</span><span class="code-file">la_cosecha/requirements.txt</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-bash">pip freeze &gt; requirements.txt</code></pre></div></div></div>
+              <div class="build-step"><span class="build-step-index">02</span><div class="build-step-copy"><h3 class="build-step-title">Ignora lo regenerable</h3><p class="build-step-purpose">El entorno virtual y la caché no pertenecen al repositorio.</p></div></div>
+            </div>
+            <details class="code-reveal">
+              <summary><span><span class="code-reveal-title">Ver .gitignore completo</span><span class="code-reveal-note">Crear · la_cosecha/.gitignore · Git ignore</span></span></summary>
+              <div class="code-reveal-body"><div class="code-block"><div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/.gitignore</span></div><button class="copy-btn" type="button">Copiar archivo</button></div><pre class="line-numbers"><code class="language-gitignore">venv/
+__pycache__/
+*.pyc</code></pre></div></div>
+            </details>
+            <div class="code-block" data-tipo="terminal"><div class="code-head"><div><span class="code-context">Versionar</span><span class="code-file">la_cosecha/</span></div><button class="copy-btn" type="button">Copiar</button></div><pre><code class="language-bash">git init
+git add .
+git commit -m "Clase 1: esqueleto de La Cosecha y CRUD de categorías en memoria"</code></pre></div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <caption>Mapa final de archivos</caption>
+                <thead><tr><th>Archivo</th><th>Ubicación</th><th>Estado al cerrar</th></tr></thead>
+                <tbody>
+                  <tr><td data-emphasis><code>main.py</code></td><td><code>la_cosecha/app/</code></td><td>Versión final con router incluido</td></tr>
+                  <tr><td data-emphasis><code>categoria_schema.py</code></td><td><code>la_cosecha/app/schemas/</code></td><td>Completo</td></tr>
+                  <tr><td data-emphasis><code>categoria_service.py</code></td><td><code>la_cosecha/app/services/</code></td><td>Completo</td></tr>
+                  <tr><td data-emphasis><code>categoria_router.py</code></td><td><code>la_cosecha/app/routers/</code></td><td>Completo</td></tr>
+                  <tr><td data-emphasis><code>__init__.py</code> ×6</td><td><code>app/</code> y subcarpetas</td><td>Vacíos; marcan paquetes</td></tr>
+                  <tr><td data-emphasis><code>requirements.txt</code></td><td><code>la_cosecha/</code></td><td>Generado con <code>pip freeze</code></td></tr>
+                  <tr><td data-emphasis><code>.gitignore</code></td><td><code>la_cosecha/</code></td><td>Completo</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Repositorio remoto</h3><p>Después de crear el repositorio en GitHub, normaliza la rama con <code>git branch -M main</code>, conecta la URL real con <code>git remote add origin &lt;url&gt;</code> y publica con <code>git push -u origin main</code>.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s15" data-accent="3" data-layout="focus" hidden>
+          <div class="sec-head">
+            <span class="sec-icon" aria-hidden="true">✅</span>
+            <div class="sec-copy">
+              <span class="sec-n">15 · Cierre</span>
+              <h2 class="sec-t">Ahora el esqueleto respira</h2>
+              <p class="sec-s">La Cosecha pasó de un correo con problemas a un proyecto organizado, ejecutable y con un primer recurso vivo.</p>
+            </div>
+          </div>
+          <div class="body">
+            <ul class="checklist">
+              <li><strong>Problema resuelto hoy:</strong> ya existe una base técnica coherente sobre la cual construir el sistema.</li>
+              <li><strong>Construcción:</strong> FastAPI arranca, documenta la API y crea/lista categorías mediante schema, service y router.</li>
+              <li><strong>Cambio real:</strong> la necesidad del negocio ya tiene un diseño de entidades, roles y endpoints; no es una lista suelta de tecnologías.</li>
+              <li><strong>Idea 1:</strong> cada dolor del cliente se traduce en una decisión técnica.</li>
+              <li><strong>Idea 2:</strong> separar responsabilidades permite crecer agregando piezas en vez de reescribir todo.</li>
+              <li><strong>Idea 3:</strong> FastAPI y Pydantic convierten tipos y modelos en validación y documentación automáticas.</li>
+              <li><strong>Siguiente necesidad:</strong> las categorías desaparecen al reiniciar; la Clase 2 reemplaza la memoria por PostgreSQL y SQLAlchemy.</li>
+            </ul>
+            <div class="micro-task">
+              <span class="component-label">Última comprobación</span>
+              <p class="micro-task-q">Apaga el servidor, vuelve a iniciarlo y lista las categorías. ¿Por qué desaparecieron?</p>
+              <details class="micro-reveal"><summary>Ver puente a la Clase 2</summary><p class="micro-answer">No hubo un error: la lista vive en RAM y se vacía cuando termina el proceso. Necesitamos persistencia en disco mediante una base de datos real.</p></details>
+            </div>
+            <div class="panel">
+              <h3>Fuentes técnicas consultadas</h3>
+              <p><a href="https://fastapi.tiangolo.com/fastapi-cli/" target="_blank" rel="noopener">FastAPI CLI ↗</a><br><a href="https://fastapi.tiangolo.com/tutorial/bigger-applications/" target="_blank" rel="noopener">FastAPI · Aplicaciones con múltiples archivos, APIRouter e include_router ↗</a><br><a href="https://pydantic.dev/docs/validation/latest/concepts/fields/" target="_blank" rel="noopener">Pydantic · Modelos y Field ↗</a></p>
+            </div>
+            <p class="doc-foot">© 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · Todos los derechos reservados · linkedin.com/in/ana-alvarado-instructora-full-stack</p>
+          </div>
+        </section>
+      </div>
+
+      <nav class="view-controls" id="viewControls" aria-label="Navegación entre secciones">
+        <button class="view-btn" id="prevView" type="button" aria-label="Sección anterior">←</button>
+        <span class="view-position" id="viewPosition" aria-live="polite">Portada</span>
+        <button class="view-btn" id="nextView" type="button" aria-label="Sección siguiente">→</button>
+      </nav>
+    </main>
+  </div>
+
+  <div class="watermark" aria-hidden="true">© 2026 ANA ALVARADO</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+  <script src="anaclase-v11.js"></script>
+</body>
+</html>
