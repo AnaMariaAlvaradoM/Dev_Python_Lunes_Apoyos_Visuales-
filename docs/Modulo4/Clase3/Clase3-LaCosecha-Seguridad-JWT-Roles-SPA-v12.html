@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro" data-tema-base="oscuro" data-empresa="dev-senior" data-paleta="bosque">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Ana Alvarado">
+  <meta name="copyright" content="© 2026 Ana Alvarado — Todos los derechos reservados">
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+  <title>Clase 3 · Seguridad JWT y roles · La Cosecha · Ana Alvarado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Inter:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <link rel="stylesheet" href="anaestilos-v12.css">
+</head>
+<body>
+  <a class="skip-link" href="#s1">Saltar al contenido</a>
+  <div class="topline" id="topline" aria-hidden="true"></div>
+  <div class="controls" aria-label="Controles"><button class="ctrl" id="temaBtn" type="button" aria-label="Cambiar tema">☀</button><button class="ctrl" id="fullscreenBtn" type="button" aria-label="Pantalla completa">⛶</button></div>
+  <div class="shell" id="shell" data-collapsed="false">
+    <aside class="sidebar" aria-label="Índice de la clase">
+      <div class="sb-top"><span class="brand-mark">A</span><div class="sb-title"><b>Python Backend + IA</b><span>Módulo 4 · Clase 3 · 180 min</span></div></div>
+      <button class="sb-toggle" id="collapseBtn" type="button" aria-label="Colapsar menú">‹</button>
+      <nav class="sb-nav" id="nav" aria-label="Secciones">
+        <a class="nav-item active" href="#portada"><span class="nav-index">00</span><span class="nav-label">Portada</span></a>
+        <span class="nav-group">Problema</span>
+        <a class="nav-item" href="#s1"><span class="nav-index">01</span><span class="nav-label">Arroz a $100</span></a>
+        <a class="nav-item" href="#s2"><span class="nav-index">02</span><span class="nav-label">Preparar terreno</span></a>
+        <span class="nav-group">Identidad</span>
+        <a class="nav-item" href="#s3"><span class="nav-index">03</span><span class="nav-label">Hash Argon2</span></a>
+        <a class="nav-item" href="#s4"><span class="nav-index">04</span><span class="nav-label">Usuario</span></a>
+        <a class="nav-item" href="#s5"><span class="nav-index">05</span><span class="nav-label">Secreto y admin</span></a>
+        <a class="nav-item" href="#s6"><span class="nav-index">06</span><span class="nav-label">JWT</span></a>
+        <a class="nav-item" href="#s7"><span class="nav-index">07</span><span class="nav-label">Login</span></a>
+        <span class="nav-group">Permisos</span>
+        <a class="nav-item" href="#s8"><span class="nav-index">08</span><span class="nav-label">401 vs 403</span></a>
+        <a class="nav-item" href="#s9"><span class="nav-index">09</span><span class="nav-label">Matriz</span></a>
+        <a class="nav-item" href="#s10"><span class="nav-index">10</span><span class="nav-label">Proteger routers</span></a>
+        <a class="nav-item" href="#s11"><span class="nav-index">11</span><span class="nav-label">Traza de Laura</span></a>
+        <span class="nav-group">Demostrar</span>
+        <a class="nav-item" href="#s12"><span class="nav-index">12</span><span class="nav-label">Postman</span></a>
+        <a class="nav-item" href="#s13"><span class="nav-index">13</span><span class="nav-label">Swagger</span></a>
+        <a class="nav-item" href="#s14"><span class="nav-index">14</span><span class="nav-label">Frontend extra</span></a>
+        <a class="nav-item" href="#s15"><span class="nav-index">15</span><span class="nav-label">Auditoría IA</span></a>
+        <span class="nav-group">Cerrar</span>
+        <a class="nav-item" href="#s16"><span class="nav-index">16</span><span class="nav-label">Errores y mapa</span></a>
+        <a class="nav-item" href="#s17"><span class="nav-index">17</span><span class="nav-label">Cierre</span></a>
+        <a class="nav-item" href="#s18"><span class="nav-index">18</span><span class="nav-label">Anexo</span></a>
+      </nav>
+      <div class="sb-prog"><div class="lbl"><span>Progreso</span><span id="progPct">0%</span></div><div class="track"><div class="fill" id="progFill"></div></div></div>
+    </aside>
+
+    <main class="main">
+      <header class="hero view" id="portada" data-accent="1">
+        <div class="hero-inner">
+          <div class="hero-copy"><span class="eyebrow">Dev Senior · Python Backend · Módulo 4 · Clase 3</span><h1 class="hero-title">La API aprende quién eres y qué puedes hacer</h1><p class="hero-lead">Cerraremos la puerta que dejó el arroz a $100: contraseñas con Argon2, login con JWT y permisos de admin o vendedor protegidos en FastAPI.</p><div class="meta"><span class="pill" data-hot>180 minutos</span><span class="pill">FastAPI + PostgreSQL</span><span class="pill">Argon2 · JWT · roles</span></div></div>
+          <figure class="hero-visual"><img src="img/incidente-arroz-api.png" alt="Tienda de barrio con un precio alterado y una API expuesta que necesita una compuerta de identidad"><figcaption class="hero-note">La pantalla de login no es la cerradura. La cerradura vive en la API. Ilustración original creada para esta clase.</figcaption></figure>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="section view" id="s1" data-accent="1" data-layout="canvas" data-escena="apertura" hidden>
+          <div class="sec-head"><span class="sec-n">El incidente</span><h2 class="sec-t">Alguien cambió el arroz a $100 sin entrar al frontend</h2><p class="sec-s">El CRUD funciona, pero cualquier cliente HTTP puede hablar con la API y modificar el inventario.</p></div>
+          <div class="body">
+            <figure class="figura"><div class="figura-stage"><svg viewBox="0 0 760 250" role="img" aria-label="Postman cambia el precio directamente en una API sin protección"><rect x="30" y="42" width="230" height="166" rx="18" fill="#FFFFFF" stroke="var(--paper-line)" stroke-width="2"/><text x="55" y="82" font-family="Inter" font-size="17" font-weight="700" fill="var(--paper-ink)">PUT /productos/1</text><text x="55" y="120" font-family="IBM Plex Mono" font-size="15" fill="var(--paper-soft)">{ precio: 100 }</text><text x="55" y="164" font-family="Inter" font-size="15" fill="var(--danger)">sin token</text><path d="M286 125 H465" stroke="var(--danger)" stroke-width="5"/><path d="M446 108 l24 17 -24 17" fill="none" stroke="var(--danger)" stroke-width="5"/><rect x="500" y="42" width="230" height="166" rx="18" fill="#161B22"/><text x="615" y="105" text-anchor="middle" font-family="Inter" font-size="18" font-weight="700" fill="#E1E6ED">API</text><text x="615" y="150" text-anchor="middle" font-family="IBM Plex Mono" font-size="30" fill="#F2C98A">200 OK</text></svg></div><figcaption>La prueba inicial debe incomodar: la API acepta el cambio porque todavía no pregunta quién envía la petición.</figcaption></figure>
+            <div class="socratica"><span class="component-label">Para pensar</span><p class="socratica-q">Si el frontend muestra una pantalla de login, ¿el problema queda resuelto?</p><details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">No. Postman, un script o un celular pueden saltarse el frontend.</p><p>Ocultar pantallas es experiencia de usuario. Autenticar y autorizar en cada ruta es seguridad.</p></div></details></div>
+            <div class="pipeline" role="group" aria-label="Del dolor a la decisión técnica"><div class="pipe-step"><span class="component-label">Dolor</span><h3>Cualquiera cambia precios</h3><ul><li>sin identidad</li></ul></div><div class="pipe-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div><div class="pipe-step" data-emphasis><span class="component-label">Decisión</span><h3>Token firmado</h3><ul><li>sub + exp</li></ul></div><div class="pipe-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div><div class="pipe-step"><span class="component-label">Regla</span><h3>Admin escribe</h3><ul><li>vendedor lee</li></ul></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s2" data-accent="1" data-layout="canvas" data-escena="construccion" hidden>
+          <div class="sec-head"><span class="sec-n">Preparar · Clase 2 → Clase 3</span><h2 class="sec-t">Primero aseguramos el entorno y pagamos una deuda de tipos</h2><p class="sec-s">La columna <code>precio</code> debe ser entera en PostgreSQL, SQLAlchemy y Pydantic antes de añadir seguridad.</p></div>
+          <div class="body">
+            <div class="dos-col"><div><div class="panel"><h3>1 · Copiar, no destruir</h3><p>Copia el proyecto de la Clase 2 a la carpeta de Clase 3. Elimina solo <code>venv</code> y <code>__pycache__</code> de la copia.</p></div><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Preparar entorno</span><span class="code-file">Terminal · la_cosecha</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-bash">py -m venv venv
+venv\Scripts\activate
+pip -V
+pip install "fastapi[standard]" sqlalchemy "psycopg[binary]" pydantic-settings "pwdlib[argon2]" pyjwt
+pip freeze &gt; requirements.txt</code></pre>
+  </div></div><div><div class="panel"><h3>2 · Migrar el dato antes del código</h3><p>Comprueba decimales, redondea de forma explícita y cambia la columna a <code>integer</code>.</p></div><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Migración SQL</span><span class="code-file">pgAdmin · Query Tool</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-sql">SELECT id, nombre, precio FROM productos WHERE precio &lt;&gt; ROUND(precio);
+
+ALTER TABLE productos ALTER COLUMN precio TYPE integer USING ROUND(precio)::integer;</code></pre>
+  </div></div></div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">producto_model.py completo</span><span class="code-reveal-note">Reemplazar · precio entero y relación sin import circular</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/models/producto_model.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from sqlalchemy import CheckConstraint, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.config.database import Base
+
+
+class Producto(Base):
+    __tablename__ = "productos"
+    __table_args__ = (
+        CheckConstraint("precio &gt; 0", name="ck_productos_precio_positivo"),
+        CheckConstraint("stock &gt;= 0", name="ck_productos_stock_no_negativo"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(80), unique=True)
+    precio: Mapped[int]
+    stock: Mapped[int]
+    categoria_id: Mapped[int] = mapped_column(ForeignKey("categorias.id"))
+
+    categoria: Mapped["Categoria"] = relationship(back_populates="productos")</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">producto_schema.py completo</span><span class="code-reveal-note">Reemplazar · contrato de entrada y salida alineado</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/schemas/producto_schema.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from pydantic import BaseModel, ConfigDict, Field
+
+
+class ProductoCrear(BaseModel):
+    nombre: str = Field(min_length=2, max_length=80)
+    precio: int = Field(gt=0)
+    stock: int = Field(ge=0)
+    categoria_id: int = Field(gt=0)
+
+
+class ProductoRespuesta(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nombre: str
+    precio: int
+    stock: int
+    categoria_id: int</code></pre>
+  </div></div>
+  </details>
+            <div class="checkpoint"><span class="component-label">Checkpoint</span><h3>Una sola verdad sobre el precio</h3><p>PostgreSQL, el modelo y el schema usan <code>integer</code>. La seguridad no se construye sobre datos inconsistentes.</p></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s3" data-accent="1" data-layout="canvas" data-escena="concepto" hidden>
+          <div class="sec-head"><span class="sec-n">Concepto central 1</span><h2 class="sec-t">La contraseña nunca se guarda: se guarda una prueba costosa</h2><p class="sec-s">Argon2 produce un hash irreversible, con sal y diseñado para resistir intentos masivos.</p></div>
+          <div class="body">
+            <div class="definicion"><div class="def-tecnica"><span class="component-label">Definición técnica</span><p class="def-termino">Hash de contraseña</p><p>Transformación unidireccional y lenta. Para autenticar, se verifica la contraseña candidata contra el hash guardado.</p><span class="def-fuente">pwdlib · PasswordHash.recommended()</span></div><div class="def-vida"><span class="component-label">En la vida real</span><p>El servidor no necesita recordar la llave original; conserva una cerradura capaz de comprobar si una llave candidata encaja.</p></div></div>
+            <div class="sin-ia"><span class="sin-ia-icono" aria-hidden="true"></span><div><h3>Sin IA aquí</h3><p>No se inventan algoritmos criptográficos. Se usan librerías mantenidas y recomendaciones oficiales; nunca se delega el diseño de un hash casero.</p></div></div>
+            <div class="socratica"><span class="component-label">Predice</span><p class="socratica-q">¿La misma contraseña produce siempre el mismo texto?</p><details class="reveal"><summary>Comprobar</summary><div class="reveal-body"><p class="lead-answer">No. La sal cambia el hash, pero ambos verifican la misma contraseña.</p><p>Eso impide reconocer usuarios que comparten clave mirando la base de datos.</p></div></details></div>
+            <div class="code-block">
+    <div class="code-head"><div><span class="code-context">Crear paquete</span><span class="code-file">Terminal · la_cosecha</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-bash">mkdir app\seguridad
+type nul &gt; app\seguridad\__init__.py</code></pre>
+  </div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">contrasenas.py completo</span><span class="code-reveal-note">Crear · hashear y verificar con Argon2</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/seguridad/contrasenas.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from pwdlib import PasswordHash
+
+hasheador = PasswordHash.recommended()
+
+
+def hashear(contrasena: str) -&gt; str:
+    return hasheador.hash(contrasena)
+
+
+def verificar(contrasena: str, contrasena_hash: str) -&gt; bool:
+    return hasheador.verify(contrasena, contrasena_hash)</code></pre>
+  </div></div>
+  </details>
+            <div class="code-block">
+    <div class="code-head"><div><span class="code-context">Comprobar en vivo</span><span class="code-file">Python interactivo</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from app.seguridad.contrasenas import hashear, verificar
+a = hashear("Laura2026*")
+b = hashear("Laura2026*")
+a == b
+verificar("Laura2026*", a)
+verificar("laura2026*", a)
+
+# Resultado clave
+False
+True
+False</code></pre>
+  </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s4" data-accent="1" data-layout="canvas" data-escena="construccion" hidden>
+          <div class="sec-head"><span class="sec-n">Construir · identidad persistente</span><h2 class="sec-t">Usuario separa datos públicos, secreto protegido y rol</h2><p class="sec-s">La respuesta nunca expone <code>contrasena_hash</code>; el rol solo acepta <code>admin</code> o <code>vendedor</code>.</p></div>
+          <div class="body">
+            <div class="cards"><div class="card"><b>Identidad</b><p>Nombre y correo único normalizado.</p></div><div class="card"><b>Credencial</b><p>Solo <code>contrasena_hash</code>, nunca texto plano.</p></div><div class="card"><b>Permiso</b><p>Rol con restricción en base de datos.</p></div><div class="card"><b>Estado</b><p><code>activo</code> permite bloquear sin borrar historial.</p></div></div>
+            <div class="socratica"><span class="component-label">Para pensar</span><p class="socratica-q">¿Por qué desactivar un usuario en vez de eliminarlo?</p><details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">Porque las ventas futuras necesitarán conservar quién las realizó.</p><p>La cuenta deja de entrar, pero el historial mantiene una identidad auditable.</p></div></details></div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">usuario_model.py completo</span><span class="code-reveal-note">Crear · tabla usuarios y restricción de rol</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/models/usuario_model.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from sqlalchemy import CheckConstraint, String
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.config.database import Base
+
+
+class Usuario(Base):
+    __tablename__ = "usuarios"
+    __table_args__ = (
+        CheckConstraint("rol IN ('admin', 'vendedor')", name="ck_usuarios_rol_valido"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(60))
+    correo: Mapped[str] = mapped_column(String(120), unique=True)
+    contrasena_hash: Mapped[str] = mapped_column(String(255))
+    rol: Mapped[str] = mapped_column(String(20))
+    activo: Mapped[bool] = mapped_column(default=True)</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">models/__init__.py completo</span><span class="code-reveal-note">Reemplazar · registrar los tres modelos</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/models/__init__.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from app.models.categoria_model import Categoria
+from app.models.producto_model import Producto
+from app.models.usuario_model import Usuario
+
+__all__ = ["Categoria", "Producto", "Usuario"]</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">usuario_schema.py completo</span><span class="code-reveal-note">Crear · validación y respuesta sin hash</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/schemas/usuario_schema.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+Rol = Literal["admin", "vendedor"]
+
+
+class UsuarioCrear(BaseModel):
+    nombre: str = Field(min_length=2, max_length=60)
+    correo: EmailStr
+    contrasena: str = Field(min_length=8, max_length=128)
+    rol: Rol
+
+
+class UsuarioRespuesta(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nombre: str
+    correo: str
+    rol: Rol
+    activo: bool</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">auth_schema.py completo</span><span class="code-reveal-note">Crear · contrato OAuth2 de respuesta</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/schemas/auth_schema.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from pydantic import BaseModel
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str</code></pre>
+  </div></div>
+  </details>
+          </div>
+        </section>
+
+        <section class="section view" id="s5" data-accent="1" data-layout="canvas" data-escena="construccion" hidden>
+          <div class="sec-head"><span class="sec-n">Construir · configuración</span><h2 class="sec-t">La firma necesita una llave secreta y el sistema necesita su primera admin</h2><p class="sec-s">El bootstrap crea a Marta solo cuando la tabla está vacía. La llave real vive en <code>.env</code>.</p></div>
+          <div class="body">
+            <div class="code-block">
+    <div class="code-head"><div><span class="code-context">Generar SECRET_KEY</span><span class="code-file">Terminal</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-bash">py -c "import secrets; print(secrets.token_hex(32))"</code></pre>
+  </div>
+            <div class="callout" data-tone="danger"><span class="callout-icon">!</span><div><h3>Secreto real fuera de Git</h3><p>La <code>SECRET_KEY</code>, la contraseña del admin y el <code>.env</code> no se pegan en chats ni se suben al repositorio.</p></div></div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">.env</span><span class="code-reveal-note">Editar · valores reales locales</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Editar</span><span class="code-file">la_cosecha/.env</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-plaintext">DATABASE_URL=postgresql+psycopg://postgres:TU_CONTRASENA@localhost:5432/la_cosecha
+SECRET_KEY=PEGA_AQUI_LA_LLAVE_DE_64_CARACTERES
+ADMIN_NOMBRE=Marta Ruiz
+ADMIN_CORREO=marta@lacosecha.com
+ADMIN_CONTRASENA=Cosecha2026*</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">.env.example completo</span><span class="code-reveal-note">Reemplazar · marcadores compartibles</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/.env.example</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-plaintext">DATABASE_URL=postgresql+psycopg://postgres:TU_CONTRASENA@localhost:5432/la_cosecha
+SECRET_KEY=GENERA_UNA_CON_SECRETS_TOKEN_HEX_32
+ADMIN_NOMBRE=Marta Ruiz
+ADMIN_CORREO=marta@lacosecha.com
+ADMIN_CONTRASENA=CAMBIA_ESTA_CONTRASENA</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">settings.py completo</span><span class="code-reveal-note">Reemplazar · seguridad y admin inicial</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/config/settings.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    database_url: str
+    secret_key: str
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+    admin_nombre: str
+    admin_correo: str
+    admin_contrasena: str
+
+    model_config = SettingsConfigDict(env_file=".env")
+
+
+settings = Settings()</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">usuario_service.py completo</span><span class="code-reveal-note">Crear · CRUD, autenticación y bootstrap</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/services/usuario_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.config.settings import settings
+from app.models.usuario_model import Usuario
+from app.schemas.usuario_schema import UsuarioCrear
+from app.seguridad.contrasenas import hashear, verificar
+
+HASH_FALSO = hashear("contrasena-de-relleno")
+
+
+def listar_usuarios(db: Session):
+    return db.scalars(select(Usuario).order_by(Usuario.id)).all()
+
+
+def buscar_usuario(db: Session, usuario_id: int):
+    return db.get(Usuario, usuario_id)
+
+
+def buscar_por_correo(db: Session, correo: str):
+    return db.scalar(select(Usuario).where(Usuario.correo == correo.lower()))
+
+
+def crear_usuario(db: Session, datos: UsuarioCrear):
+    nuevo = Usuario(
+        nombre=datos.nombre,
+        correo=datos.correo.lower(),
+        contrasena_hash=hashear(datos.contrasena),
+        rol=datos.rol,
+    )
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+    return nuevo
+
+
+def autenticar(db: Session, correo: str, contrasena: str):
+    usuario = buscar_por_correo(db, correo)
+    if usuario is None:
+        verificar(contrasena, HASH_FALSO)
+        return None
+    if not verificar(contrasena, usuario.contrasena_hash):
+        return None
+    return usuario
+
+
+def crear_admin_inicial(db: Session):
+    if db.scalar(select(Usuario.id).limit(1)) is not None:
+        return
+    admin = Usuario(
+        nombre=settings.admin_nombre,
+        correo=settings.admin_correo.lower(),
+        contrasena_hash=hashear(settings.admin_contrasena),
+        rol="admin",
+    )
+    db.add(admin)
+    db.commit()</code></pre>
+  </div></div>
+  </details>
+            <div class="socratica"><span class="component-label">Seguridad lateral</span><p class="socratica-q">¿Por qué verificar un <code>HASH_FALSO</code> cuando el correo no existe?</p><details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">Para que el tiempo de respuesta no revele si una cuenta existe.</p><p>Sin el trabajo de hash, un atacante podría comparar tiempos y enumerar correos registrados.</p></div></details></div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">main.py · bootstrap intermedio</span><span class="code-reveal-note">Reemplazar · crear tablas y primer admin al encender</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/main.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
+
+from app import models
+from app.config.database import Base, SesionLocal, engine
+from app.routers import categoria_router, producto_router
+from app.services import usuario_service
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    with SesionLocal() as db:
+        usuario_service.crear_admin_inicial(db)
+    yield
+
+
+app = FastAPI(title="API de La Cosecha", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(categoria_router.router)
+app.include_router(producto_router.router)
+
+@app.get("/")
+def raiz():
+    return {"mensaje": "API de La Cosecha en línea 🌾"}</code></pre>
+  </div></div>
+  </details>
+            <div class="code-block">
+    <div class="code-head"><div><span class="code-context">Encender y verificar</span><span class="code-file">Terminal + pgAdmin</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-bash">fastapi dev app/main.py
+
+# Luego, en pgAdmin:
+SELECT id, nombre, correo, rol, activo, contrasena_hash FROM usuarios;</code></pre>
+  </div>
+          </div>
+        </section>
+
+        <section class="section view" id="s6" data-accent="1" data-layout="canvas" data-escena="concepto" hidden>
+          <div class="sec-head"><span class="sec-n">Concepto central 2</span><h2 class="sec-t">Un JWT se puede leer, pero no falsificar</h2><p class="sec-s">La API firma <code>cabecera.contenido.firma</code>. El cliente lo devuelve en <code>Authorization: Bearer</code>.</p></div>
+          <div class="body">
+            <div class="pipeline" role="group" aria-label="Partes de un JWT"><div class="pipe-step"><span class="component-label">Cabecera</span><h3>Cómo se firmó</h3><ul><li>algoritmo</li></ul></div><div class="pipe-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div><div class="pipe-step" data-emphasis><span class="component-label">Contenido</span><h3>Quién y hasta cuándo</h3><ul><li>sub</li><li>exp</li></ul></div><div class="pipe-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div><div class="pipe-step"><span class="component-label">Firma</span><h3>Prueba de integridad</h3><ul><li>SECRET_KEY</li></ul></div></div>
+            <div class="socratica"><span class="component-label">Decisión senior</span><p class="socratica-q">¿Guardamos el rol dentro del token para evitar consultar la base?</p><details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">No en esta clase: guardamos solo el id y leemos rol y estado frescos.</p><p>Así una desactivación aplica de inmediato y un cambio de rol no espera a que venza el token.</p></div></details></div>
+            <div class="compare"><div class="compare-card" data-side="positive"><h3>Sí lleva</h3><ol><li><code>sub</code>: id como texto</li><li><code>exp</code>: vencimiento</li><li>firma verificable</li></ol></div><div class="compare-card" data-side="negative"><h3>No lleva</h3><ol><li>contraseña</li><li>SECRET_KEY</li><li>rol que pueda quedar viejo</li></ol></div></div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">tokens.py completo</span><span class="code-reveal-note">Crear · emitir y leer JWT con PyJWT</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/seguridad/tokens.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from datetime import datetime, timedelta, timezone
+
+import jwt
+from jwt.exceptions import InvalidTokenError
+
+from app.config.settings import settings
+
+
+def crear_token(usuario_id: int) -&gt; str:
+    expira = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
+    contenido = {"sub": str(usuario_id), "exp": expira}
+    return jwt.encode(contenido, settings.secret_key, algorithm=settings.algorithm)
+
+
+def leer_token(token: str) -&gt; int | None:
+    try:
+        contenido = jwt.decode(
+            token,
+            settings.secret_key,
+            algorithms=[settings.algorithm],
+            options={"require": ["exp", "sub"]},
+        )
+    except InvalidTokenError:
+        return None
+    return int(contenido["sub"])</code></pre>
+  </div></div>
+  </details>
+          </div>
+        </section>
+
+        <section class="section view" id="s7" data-accent="1" data-layout="canvas" data-escena="construccion" hidden>
+          <div class="sec-head"><span class="sec-n">Construir · autenticación</span><h2 class="sec-t">El login cambia credenciales por una manilla firmada</h2><p class="sec-s">OAuth2 usa formulario: el correo viaja en <code>username</code> y la contraseña en <code>password</code>.</p></div>
+          <div class="body">
+            <div class="micro-task"><span class="component-label">Predice</span><p class="micro-task-q">¿El body de <code>POST /auth/login</code> es JSON?</p><details class="micro-reveal"><summary>Comprobar</summary><p class="micro-answer"><strong>No.</strong> Es <code>application/x-www-form-urlencoded</code>. Esa convención permite que Swagger use Authorize automáticamente.</p></details></div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">auth_router.py · versión intermedia</span><span class="code-reveal-note">Crear · login OAuth2</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/routers/auth_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+
+from app.config.database import SesionDB
+from app.schemas.auth_schema import Token
+from app.seguridad.tokens import crear_token
+from app.services import usuario_service
+
+router = APIRouter(prefix="/auth", tags=["Autenticación"])
+
+
+@router.post("/login", response_model=Token)
+def login(formulario: Annotated[OAuth2PasswordRequestForm, Depends()], db: SesionDB):
+    usuario = usuario_service.autenticar(db, formulario.username, formulario.password)
+    if usuario is None or not usuario.activo:
+        raise HTTPException(
+            status_code=401,
+            detail="Correo o contraseña incorrectos",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return Token(access_token=crear_token(usuario.id), token_type="bearer")</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">main.py · router de autenticación</span><span class="code-reveal-note">Reemplazar · conectar /auth</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/main.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
+
+from app import models
+from app.config.database import Base, SesionLocal, engine
+from app.routers import auth_router, categoria_router, producto_router
+from app.services import usuario_service
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    with SesionLocal() as db:
+        usuario_service.crear_admin_inicial(db)
+    yield
+
+
+app = FastAPI(title="API de La Cosecha", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(auth_router.router)
+app.include_router(categoria_router.router)
+app.include_router(producto_router.router)
+
+@app.get("/")
+def raiz():
+    return {"mensaje": "API de La Cosecha en línea 🌾"}</code></pre>
+  </div></div>
+  </details>
+            <div class="code-block">
+    <div class="code-head"><div><span class="code-context">Petición</span><span class="code-file">Postman · Body x-www-form-urlencoded</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-plaintext">POST http://127.0.0.1:8000/auth/login
+username = marta@lacosecha.com
+password = Cosecha2026*</code></pre>
+  </div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">Respuesta esperada</span><span class="code-reveal-note">El token cambia según hora y llave</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Verificar</span><span class="code-file">HTTP 200</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-json">{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzkxMjM3MTQzfQ.5vPZt1v2qerw0Kp97CkmDxVBVy1wehwsluPQ5GmLKpU",
+  "token_type": "bearer"
+}</code></pre>
+  </div></div>
+  </details>
+            <div class="checkpoint"><span class="component-label">Nivel 1 superado</span><h3>La API ya emite manillas</h3><p>Todavía falta revisar la manilla en cada puerta: <code>GET /productos/</code> sigue abierto hasta el siguiente bloque.</p></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s8" data-accent="1" data-layout="canvas" data-escena="concepto" hidden>
+          <div class="sec-head"><span class="sec-n">Concepto central 3</span><h2 class="sec-t">401 pregunta quién eres; 403 ya lo sabe y dice que no puedes</h2><p class="sec-s">Dos dependencias funcionan como porteros en serie: identidad primero, permiso después.</p></div>
+          <div class="body">
+            <figure class="figura"><div class="figura-stage"><img src="img/dos-porteros-jwt-roles.png" alt="Una vendedora atraviesa un control de identidad y una compuerta de rol separa lectura de edición protegida"></div><figcaption>La manilla válida supera la identidad. El rol decide qué puerta se abre; una petición rechazada no toca la lógica de negocio.<span class="figura-credito">Ilustración original creada para esta clase.</span></figcaption></figure>
+            <div class="compare"><div class="compare-card" data-side="negative"><h3>401 · no autenticado</h3><ol><li>sin token</li><li>token vencido o alterado</li><li>usuario inactivo</li></ol></div><div class="compare-card" data-side="positive"><h3>403 · sin permiso</h3><ol><li>token válido</li><li>identidad conocida</li><li>rol insuficiente</li></ol></div></div>
+            <div class="socratica"><span class="component-label">Para pensar</span><p class="socratica-q">Laura tiene un token válido e intenta borrar un producto. ¿401 o 403?</p><details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">403. La API sí sabe que es Laura; su rol no autoriza esa acción.</p><p>Un 401 haría creer al frontend que iniciar sesión otra vez resolverá el problema.</p></div></details></div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">dependencias.py completo</span><span class="code-reveal-note">Crear · celador 401 y portero 403</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/seguridad/dependencias.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from typing import Annotated
+
+from fastapi import Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
+
+from app.config.database import SesionDB
+from app.models.usuario_model import Usuario
+from app.seguridad.tokens import leer_token
+from app.services import usuario_service
+
+esquema_oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+
+def obtener_usuario_actual(token: Annotated[str, Depends(esquema_oauth2)], db: SesionDB) -&gt; Usuario:
+    error_sesion = HTTPException(
+        status_code=401,
+        detail="Sesión inválida o vencida. Inicia sesión de nuevo",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    usuario_id = leer_token(token)
+    if usuario_id is None:
+        raise error_sesion
+    usuario = usuario_service.buscar_usuario(db, usuario_id)
+    if usuario is None or not usuario.activo:
+        raise error_sesion
+    return usuario
+
+
+UsuarioActual = Annotated[Usuario, Depends(obtener_usuario_actual)]
+
+
+def exigir_admin(usuario: UsuarioActual) -&gt; Usuario:
+    if usuario.rol != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permiso para esta acción",
+        )
+    return usuario</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">auth_router.py completo</span><span class="code-reveal-note">Reemplazar · login y /auth/yo</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/routers/auth_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+
+from app.config.database import SesionDB
+from app.schemas.auth_schema import Token
+from app.schemas.usuario_schema import UsuarioRespuesta
+from app.seguridad.dependencias import UsuarioActual
+from app.seguridad.tokens import crear_token
+from app.services import usuario_service
+
+router = APIRouter(prefix="/auth", tags=["Autenticación"])
+
+
+@router.post("/login", response_model=Token)
+def login(formulario: Annotated[OAuth2PasswordRequestForm, Depends()], db: SesionDB):
+    usuario = usuario_service.autenticar(db, formulario.username, formulario.password)
+    if usuario is None or not usuario.activo:
+        raise HTTPException(
+            status_code=401,
+            detail="Correo o contraseña incorrectos",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return Token(access_token=crear_token(usuario.id), token_type="bearer")
+
+
+@router.get("/yo", response_model=UsuarioRespuesta)
+def yo(usuario: UsuarioActual):
+    return usuario</code></pre>
+  </div></div>
+  </details>
+          </div>
+        </section>
+
+        <section class="section view" id="s9" data-accent="1" data-layout="canvas" data-escena="pregunta" hidden>
+          <div class="sec-head"><span class="sec-n">Diseñar · menor privilegio</span><h2 class="sec-t">La matriz de permisos se decide antes de decorar endpoints</h2><p class="sec-s">Dar “lo justo” no significa bloquear todo: una vendedora necesita leer el inventario para vender.</p></div>
+          <div class="body">
+            <div class="table-wrap"><table class="data-table"><caption>Matriz de permisos de La Cosecha</caption><thead><tr><th>Ruta</th><th>Sin sesión</th><th>Vendedor</th><th>Admin</th></tr></thead><tbody><tr><td><code>POST /auth/login</code></td><td>200/401</td><td>✅</td><td>✅</td></tr><tr><td><code>GET /auth/yo</code></td><td>401</td><td>✅</td><td>✅</td></tr><tr><td><code>GET /categorias/</code> y <code>/productos/</code></td><td>401</td><td>✅</td><td>✅</td></tr><tr><td>POST · PUT · DELETE inventario</td><td>401</td><td data-emphasis>403</td><td>✅</td></tr><tr><td>GET · POST <code>/usuarios/</code></td><td>401</td><td data-emphasis>403</td><td>✅</td></tr></tbody></table></div>
+            <div class="socratica"><span class="component-label">Para pensar</span><p class="socratica-q">¿Por qué Laura puede ver productos si no puede editarlos?</p><details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">Porque leer inventario es parte de vender.</p><p>Menor privilegio es entregar lo necesario para la función, no lo mínimo imaginable.</p></div></details></div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">usuario_router.py completo</span><span class="code-reveal-note">Crear · todo el router exige admin</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Crear</span><span class="code-file">la_cosecha/app/routers/usuario_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException, status
+
+from app.config.database import SesionDB
+from app.schemas.usuario_schema import UsuarioCrear, UsuarioRespuesta
+from app.seguridad.dependencias import exigir_admin
+from app.services import usuario_service
+
+router = APIRouter(prefix="/usuarios", tags=["Usuarios"], dependencies=[Depends(exigir_admin)])
+
+
+@router.get("/", response_model=list[UsuarioRespuesta])
+def listar(db: SesionDB):
+    return usuario_service.listar_usuarios(db)
+
+
+@router.post("/", response_model=UsuarioRespuesta, status_code=status.HTTP_201_CREATED)
+def crear(datos: UsuarioCrear, db: SesionDB):
+    if usuario_service.buscar_por_correo(db, datos.correo) is not None:
+        raise HTTPException(status_code=409, detail="Ya existe un usuario con ese correo")
+    return usuario_service.crear_usuario(db, datos)</code></pre>
+  </div></div>
+  </details>
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Protección por defecto</h3><p><code>dependencies=[Depends(exigir_admin)]</code> en el <code>APIRouter</code> protege también las rutas que se agreguen mañana.</p></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s10" data-accent="1" data-layout="canvas" data-escena="construccion" hidden>
+          <div class="sec-head"><span class="sec-n">Construir · capas</span><h2 class="sec-t">Leer exige sesión; escribir exige además ser admin</h2><p class="sec-s">La lógica de negocio no cambia: la seguridad se declara en routers y dependencias.</p></div>
+          <div class="body">
+            <div class="pipeline" role="group" aria-label="Capas de protección"><div class="pipe-step"><span class="component-label">Router</span><h3>Todas las rutas</h3><ul><li>obtener_usuario_actual</li></ul></div><div class="pipe-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div><div class="pipe-step" data-emphasis><span class="component-label">GET</span><h3>Lectura</h3><ul><li>admin y vendedor</li></ul></div><div class="pipe-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div><div class="pipe-step"><span class="component-label">Escritura</span><h3>POST · PUT · DELETE</h3><ul><li>exigir_admin</li></ul></div></div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">categoria_router.py completo</span><span class="code-reveal-note">Reemplazar · lectura autenticada y escritura admin</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/routers/categoria_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import IntegrityError
+
+from app.config.database import SesionDB
+from app.schemas.categoria_schema import CategoriaCrear, CategoriaRespuesta
+from app.seguridad.dependencias import exigir_admin, obtener_usuario_actual
+from app.services import categoria_service
+
+router = APIRouter(
+    prefix="/categorias",
+    tags=["Categorías"],
+    dependencies=[Depends(obtener_usuario_actual)],
+)
+
+
+@router.get("/", response_model=list[CategoriaRespuesta])
+def listar(db: SesionDB):
+    return categoria_service.listar_categorias(db)
+
+
+@router.get("/{categoria_id}", response_model=CategoriaRespuesta)
+def obtener(categoria_id: int, db: SesionDB):
+    categoria = categoria_service.buscar_categoria(db, categoria_id)
+    if categoria is None:
+        raise HTTPException(status_code=404, detail="Categoría no encontrada")
+    return categoria
+
+
+@router.post(
+    "/",
+    response_model=CategoriaRespuesta,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(exigir_admin)],
+)
+def crear(datos: CategoriaCrear, db: SesionDB):
+    if categoria_service.buscar_por_nombre(db, datos.nombre) is not None:
+        raise HTTPException(status_code=409, detail="Ya existe una categoría con ese nombre")
+    try:
+        return categoria_service.crear_categoria(db, datos)
+    except IntegrityError as error:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Conflicto de integridad al crear la categoría") from error
+
+
+@router.put(
+    "/{categoria_id}",
+    response_model=CategoriaRespuesta,
+    dependencies=[Depends(exigir_admin)],
+)
+def actualizar(categoria_id: int, datos: CategoriaCrear, db: SesionDB):
+    categoria = categoria_service.buscar_categoria(db, categoria_id)
+    if categoria is None:
+        raise HTTPException(status_code=404, detail="Categoría no encontrada")
+    otra = categoria_service.buscar_por_nombre(db, datos.nombre)
+    if otra is not None and otra.id != categoria_id:
+        raise HTTPException(status_code=409, detail="Ya existe una categoría con ese nombre")
+    try:
+        return categoria_service.actualizar_categoria(db, categoria, datos)
+    except IntegrityError as error:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Conflicto de integridad al actualizar la categoría") from error
+
+
+@router.delete(
+    "/{categoria_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(exigir_admin)],
+)
+def eliminar(categoria_id: int, db: SesionDB):
+    categoria = categoria_service.buscar_categoria(db, categoria_id)
+    if categoria is None:
+        raise HTTPException(status_code=404, detail="Categoría no encontrada")
+    if categoria.productos:
+        raise HTTPException(status_code=409, detail="No se puede eliminar una categoría con productos asociados")
+    try:
+        categoria_service.eliminar_categoria(db, categoria)
+    except IntegrityError as error:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="No se puede eliminar una categoría con productos asociados") from error</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">producto_router.py completo</span><span class="code-reveal-note">Reemplazar · lectura autenticada y escritura admin</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/routers/producto_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import IntegrityError
+
+from app.config.database import SesionDB
+from app.schemas.producto_schema import ProductoCrear, ProductoRespuesta
+from app.seguridad.dependencias import exigir_admin, obtener_usuario_actual
+from app.services import categoria_service, producto_service
+
+router = APIRouter(
+    prefix="/productos",
+    tags=["Productos"],
+    dependencies=[Depends(obtener_usuario_actual)],
+)
+
+
+@router.get("/", response_model=list[ProductoRespuesta])
+def listar(db: SesionDB):
+    return producto_service.listar_productos(db)
+
+
+@router.get("/{producto_id}", response_model=ProductoRespuesta)
+def obtener(producto_id: int, db: SesionDB):
+    producto = producto_service.buscar_producto(db, producto_id)
+    if producto is None:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    return producto
+
+
+@router.post(
+    "/",
+    response_model=ProductoRespuesta,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(exigir_admin)],
+)
+def crear(datos: ProductoCrear, db: SesionDB):
+    if categoria_service.buscar_categoria(db, datos.categoria_id) is None:
+        raise HTTPException(status_code=404, detail="Categoría no encontrada")
+    if producto_service.buscar_por_nombre(db, datos.nombre) is not None:
+        raise HTTPException(status_code=409, detail="Ya existe un producto con ese nombre")
+    try:
+        return producto_service.crear_producto(db, datos)
+    except IntegrityError as error:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Conflicto de integridad al crear el producto") from error
+
+
+@router.put(
+    "/{producto_id}",
+    response_model=ProductoRespuesta,
+    dependencies=[Depends(exigir_admin)],
+)
+def actualizar(producto_id: int, datos: ProductoCrear, db: SesionDB):
+    producto = producto_service.buscar_producto(db, producto_id)
+    if producto is None:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    if categoria_service.buscar_categoria(db, datos.categoria_id) is None:
+        raise HTTPException(status_code=404, detail="Categoría no encontrada")
+    otro = producto_service.buscar_por_nombre(db, datos.nombre)
+    if otro is not None and otro.id != producto_id:
+        raise HTTPException(status_code=409, detail="Ya existe un producto con ese nombre")
+    try:
+        return producto_service.actualizar_producto(db, producto, datos)
+    except IntegrityError as error:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Conflicto de integridad al actualizar el producto") from error
+
+
+@router.delete(
+    "/{producto_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(exigir_admin)],
+)
+def eliminar(producto_id: int, db: SesionDB):
+    producto = producto_service.buscar_producto(db, producto_id)
+    if producto is None:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    producto_service.eliminar_producto(db, producto)</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">main.py final</span><span class="code-reveal-note">Reemplazar · cuatro routers y CORS</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/main.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
+
+from app import models
+from app.config.database import Base, SesionLocal, engine
+from app.routers import auth_router, categoria_router, producto_router, usuario_router
+from app.services import usuario_service
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    with SesionLocal() as db:
+        usuario_service.crear_admin_inicial(db)
+    yield
+
+
+app = FastAPI(title="API de La Cosecha", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(auth_router.router)
+app.include_router(usuario_router.router)
+app.include_router(categoria_router.router)
+app.include_router(producto_router.router)
+
+@app.get("/")
+def raiz():
+    return {"mensaje": "API de La Cosecha en línea 🌾"}</code></pre>
+  </div></div>
+  </details>
+            <div class="checkpoint"><span class="component-label">Lo importante</span><h3>Separar responsabilidades pagó dividendos</h3><p>Un import, una dependencia de router y una dependencia en cada escritura. Los services permanecen intactos.</p></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s11" data-accent="1" data-layout="canvas" data-escena="prueba" hidden>
+          <div class="sec-head"><span class="sec-n">Trazar · S10</span><h2 class="sec-t">Laura atraviesa identidad y se detiene antes del precio</h2><p class="sec-s">FastAPI resuelve dependencias antes de ejecutar el endpoint; la caché evita consultar dos veces al usuario.</p></div>
+          <div class="body">
+            <div class="code-block">
+    <div class="code-head"><div><span class="code-context">PUT /productos/1</span><span class="code-file">Traza de una petición</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-plaintext">PUT /productos/1   Authorization: Bearer &lt;token de Laura&gt;   body {"precio": 100, ...}
+↓
+Dependencia del router: obtener_usuario_actual
+    esquema_oauth2 saca el token del encabezado
+    leer_token → firma OK, no vencido → usuario_id = 2
+    SQL: SELECT ... FROM usuarios WHERE usuarios.id = 2
+    Usuario(id=2, nombre="Laura Gómez", rol="vendedor", activo=True)
+↓
+Dependencia de la ruta: exigir_admin
+    usa el mismo usuario (caché: no repite la consulta)
+    usuario.rol = "vendedor" ≠ "admin"  → HTTPException 403
+↓
+La función actualizar() NUNCA se ejecuta
+    (ni una consulta a productos)
+↓
+Respuesta 403 {"detail": "No tienes permiso para esta acción"}</code></pre>
+  </div>
+            <div class="metrics"><div class="m"><b>1</b><span>consulta SQL a usuarios</span></div><div class="m"><b>0</b><span>consultas a productos</span></div><div class="m"><b>403</b><span>respuesta final</span></div><div class="m"><b>0</b><span>líneas de negocio ejecutadas</span></div></div>
+            <div class="socratica"><span class="component-label">Orden de ejecución</span><p class="socratica-q">Si el body es inválido y no hay token, ¿responde 422 o 401?</p><details class="reveal"><summary>Comprobar</summary><div class="reveal-body"><p class="lead-answer">401. La identidad se resuelve antes de validar el cuerpo.</p><p>La API pregunta quién eres antes de estudiar una operación protegida.</p></div></details></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s12" data-accent="1" data-layout="canvas" data-escena="prueba" hidden>
+          <div class="sec-head"><span class="sec-n">Probar · Postman</span><h2 class="sec-t">Catorce pruebas cierran el incidente y atacan los bordes</h2><p class="sec-s">Guarda los tokens como <code>{{token_marta}}</code> y <code>{{token_laura}}</code>. Login usa formulario; el resto usa Bearer.</p></div>
+          <div class="body">
+            <div class="timeline"><div class="timeline-item"><h3>S1–S4 · Identidad</h3><p>Sin token → 401; login incorrecto → 401; Marta inicia → 200; <code>/auth/yo</code> devuelve su identidad sin hash.</p></div><div class="timeline-item"><h3>S5–S7 · Crear usuarios</h3><p>Marta crea a Laura → 201; correo duplicado → 409; contraseña corta y rol inventado → 422.</p></div><div class="timeline-item"><h3>S8–S12 · Permisos</h3><p>Laura inicia y lee productos → 200; editar precio, crear categoría o listar usuarios → 403.</p></div><div class="timeline-item"><h3>S13–S14 · Integridad</h3><p>Marta actualiza → 200; cambiar una sola letra del token de Laura → 401.</p></div></div>
+            <div class="table-wrap"><table class="data-table"><caption>Casos protagonistas</caption><thead><tr><th>Caso</th><th>Petición</th><th>Esperado</th><th>Lo que demuestra</th></tr></thead><tbody><tr><td>S1</td><td>GET productos sin token</td><td>401</td><td>La puerta existe</td></tr><tr><td>S9</td><td>Laura lee productos</td><td>200</td><td>Menor privilegio útil</td></tr><tr><td>S10</td><td>Laura cambia arroz a $100</td><td data-emphasis>403</td><td>Incidente cerrado</td></tr><tr><td>S14</td><td>Token alterado</td><td data-emphasis>401</td><td>Firma verificada</td></tr></tbody></table></div>
+            <div class="socratica"><span class="component-label">Ataque mental</span><p class="socratica-q">Si Laura cambia <code>sub: "2"</code> por <code>sub: "1"</code>, ¿se vuelve Marta?</p><details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">No. El contenido cambia, la firma ya no coincide y la API responde 401.</p><p>Para crear una firma válida necesitaría la <code>SECRET_KEY</code> del servidor.</p></div></details></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s13" data-accent="1" data-layout="canvas" data-escena="prueba" hidden>
+          <div class="sec-head"><span class="sec-n">Probar · Swagger</span><h2 class="sec-t">Seguir OAuth2 convierte Authorize en una prueba integrada</h2><p class="sec-s">Los nombres estándar del formulario y del token permiten que Swagger inicie sesión sin código adicional.</p></div>
+          <div class="body">
+            <ol class="ideas"><li><span>Abre <code>http://127.0.0.1:8000/docs</code> y observa los candados en rutas protegidas.</span></li><li><span>Authorize → <code>laura@lacosecha.com</code> + <code>Laura2026*</code>; deja <code>client_id</code> y <code>client_secret</code> vacíos.</span></li><li><span>Ejecuta <code>GET /productos/</code>: debe responder 200.</span></li><li><span>Ejecuta <code>DELETE /productos/{producto_id}</code>: debe responder 403.</span></li></ol>
+            <div class="callout" data-tone="success"><span class="callout-icon">✓</span><div><h3>El estándar nos regaló integración</h3><p><code>username</code>, <code>password</code>, <code>access_token</code> y <code>token_type</code> son convenciones OAuth2, no nombres inventados.</p></div></div>
+            <div class="consola"><div class="consola-head">Resultados visibles</div><ol><li class="out">GET /productos/ → <b>200 OK</b></li><li class="out">DELETE /productos/1 → <b>403 Forbidden</b></li><li class="out">detail → <b>No tienes permiso para esta acción</b></li></ol></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s14" data-accent="1" data-layout="canvas" data-escena="prueba" hidden>
+          <div class="sec-head"><span class="sec-n">Extra visual · frontend</span><h2 class="sec-t">La interfaz deja ver lo que Postman y Swagger prueban por debajo</h2><p class="sec-s">Es un laboratorio complementario: no reemplaza las pruebas HTTP y no es la fuente de la seguridad.</p></div>
+          <div class="body">
+            <div class="dos-col"><div><div class="panel"><h3>Abrir correctamente</h3><p>Desde la carpeta de Clase 3 ejecuta <code>py -m http.server 5500</code>.</p><p>Navega a <a href="http://127.0.0.1:5500/front-la-cosecha.html" target="_blank" rel="noopener">http://127.0.0.1:5500/front-la-cosecha.html</a>.</p><p>En este paquete también puedes <a href="front-la-cosecha.html" target="_blank" rel="noopener">abrir el archivo complementario</a>; para conectar con la API debes servirlo por HTTP.</p></div></div><div><div class="panel"><h3>Lo que hace visible</h3><p>Login, usuario actual, rol, tres partes del JWT, botones según permiso, token en <code>sessionStorage</code> y cada petición con Bearer.</p></div></div></div>
+            <div class="timeline"><div class="timeline-item"><h3>1 · Entra como Laura</h3><p>Los botones de crear, editar y borrar desaparecen.</p></div><div class="timeline-item"><h3>2 · Activa Modo prueba</h3><p>Los botones reaparecen, como si el frontend tuviera un error.</p></div><div class="timeline-item"><h3>3 · Intenta cambiar el arroz</h3><p>La API responde 403 y el modal lo muestra. La función de negocio no se ejecuta.</p></div></div>
+            <div class="callout" data-tone="warning"><span class="callout-icon">!</span><div><h3>El frontend oculta; el backend protege</h3><p>Esconder un botón es una cortesía. La autorización real debe resistir un frontend roto, Postman y cualquier cliente alternativo.</p></div></div>
+            <div class="socratica"><span class="component-label">Seguridad de frontend</span><p class="socratica-q">¿Por qué <code>sessionStorage</code> no es la opción más robusta?</p><details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">JavaScript puede leerlo si la página sufre XSS.</p><p>Las cookies <code>httpOnly</code> reducen ese riesgo, pero pertenecen a una profundización de frontend. Aquí el foco es el encabezado Authorization de la API.</p></div></details></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s15" data-accent="1" data-layout="canvas" data-escena="prueba" hidden>
+          <div class="sec-head"><span class="sec-n">Revisar · IA</span><h2 class="sec-t">La IA audita después de que el equipo razona y prueba</h2><p class="sec-s">Nivel 1: revisor. No reescribe, no recibe secretos y no decide el riesgo aceptable.</p></div>
+          <div class="body">
+            <div class="momento-ia"><div class="momento-ia-head"><span class="momento-ia-titulo">Momento IA</span><span class="ia-nivel">Nivel 1 · Revisor</span><span class="ia-herramienta">Chat de Cursor</span></div><div class="momento-ia-body"><p class="ia-porque">El código ya está escrito y probado. Una revisión externa puede descubrir omisiones, pero el equipo conserva el criterio.</p><div class="ia-grid"><div><span class="component-label">Primero razonas tú</span><p>Con la matriz de permisos y S1–S14, identifica qué puerta podría seguir abierta.</p></div><div class="ia-no-delega"><span class="component-label">No se delega</span><p>Decidir qué riesgo acepta La Cosecha. Jamás se comparten <code>.env</code>, <code>SECRET_KEY</code> ni tokens reales.</p></div></div><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Prompt sugerido</span><span class="code-file">Cursor · Chat</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-plaintext">Revisa la seguridad de esta API de FastAPI. Te paso `seguridad/tokens.py`, `seguridad/dependencias.py`, `services/usuario_service.py` y `routers/auth_router.py`. Dime qué riesgos ves, cuáles son graves y cuáles son mejoras opcionales. No reescribas el código: explica cada riesgo y por qué importa.</code></pre>
+  </div><div><span class="component-label">Cómo validar</span><ul class="checklist"><li>Clasifica cada sugerencia: error real o mejora para un sistema mayor.</li><li>Discute lo que contradiga una decisión intencional, como no guardar rol en el token.</li><li>Descarta recomendaciones desactualizadas de <code>passlib</code> o <code>python-jose</code>.</li><li>Conserva como mejoras futuras rate limiting, refresh tokens y cambio de contraseña.</li></ul></div></div></div>
+          </div>
+        </section>
+
+        <section class="section view" id="s16" data-accent="1" data-layout="canvas" data-escena="prueba" hidden>
+          <div class="sec-head"><span class="sec-n">Operar · diagnóstico</span><h2 class="sec-t">Cada error cuenta una historia concreta</h2><p class="sec-s">Lee la última línea, decide si falla configuración, formato, identidad o permiso y corrige la capa exacta.</p></div>
+          <div class="body">
+            <div class="table-wrap"><table class="data-table"><caption>Mapa rápido de errores en vivo</caption><thead><tr><th>Síntoma</th><th>Causa probable</th><th>Corrección</th></tr></thead><tbody><tr><td><code>secret_key · Field required</code></td><td>Faltan variables en <code>.env</code></td><td>Agregar las cuatro líneas nuevas</td></tr><tr><td><code>No module named jwt</code></td><td>Entorno equivocado</td><td>Activar venv, comprobar <code>pip -V</code></td></tr><tr><td><code>HasherNotAvailable</code></td><td>Falta extra Argon2</td><td><code>pip install "pwdlib[argon2]"</code></td></tr><tr><td>Login 422</td><td>Se envió JSON</td><td>Usar x-www-form-urlencoded</td></tr><tr><td>Todo 401</td><td>Bearer ausente o mal pegado</td><td>Enviar solo el token, sin comillas</td></tr><tr><td>Vendedora recibe 403 al leer</td><td><code>exigir_admin</code> en un GET</td><td>Dejar los GET solo con sesión</td></tr><tr><td>Front en demostración</td><td>Archivo abierto con doble clic o API apagada</td><td>Servir por HTTP en puerto 5500</td></tr></tbody></table></div>
+            <details class="code-reveal" data-reference="true">
+    <summary><span><span class="code-reveal-title">Estructura final del proyecto</span><span class="code-reveal-note">Referencia · resultado de la clase</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Verificar</span><span class="code-file">la_cosecha/</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-plaintext">la_cosecha/
+├── .env
+├── .env.example
+├── .gitignore
+├── requirements.txt
+├── venv/
+└── app/
+    ├── __init__.py
+    ├── main.py
+    ├── config/      (__init__.py, database.py, settings.py)
+    ├── models/      (__init__.py, categoria_model.py, producto_model.py, usuario_model.py)
+    ├── routers/     (__init__.py, auth_router.py, categoria_router.py, producto_router.py, usuario_router.py)
+    ├── schemas/     (__init__.py, auth_schema.py, categoria_schema.py, producto_schema.py, usuario_schema.py)
+    ├── seguridad/   (__init__.py, contrasenas.py, dependencias.py, tokens.py)
+    └── services/    (__init__.py, categoria_service.py, producto_service.py, usuario_service.py)</code></pre>
+  </div></div>
+  </details>
+            <ul class="checklist"><li>Contraseñas guardadas solo como hash Argon2.</li><li>JWT contiene <code>sub</code> y <code>exp</code>, no secretos ni rol.</li><li>Lecturas autenticadas; escrituras y usuarios solo admin.</li><li>Postman, Swagger y frontend reproducen 401 y 403.</li><li><code>.env</code> permanece fuera de Git y fuera de chats.</li></ul>
+          </div>
+        </section>
+
+        <section class="section view" id="s17" data-accent="1" data-layout="canvas" data-escena="cierre" hidden>
+          <div class="sec-head"><span class="sec-n">Cierre</span><h2 class="sec-t">El arroz ya no cambia de precio por culpa de cualquiera</h2><p class="sec-s">La API sabe quién hace la petición, verifica si la cuenta sigue activa y decide qué acción permite.</p></div>
+          <div class="body">
+            <ol class="ideas"><li><span><strong>La contraseña no se almacena:</strong> Argon2 guarda una prueba lenta, salada e irreversible.</span></li><li><span><strong>El JWT identifica:</strong> se puede leer, pero una alteración rompe la firma.</span></li><li><span><strong>El backend autoriza:</strong> 401 es “no sé quién eres”; 403 es “sé quién eres, pero no puedes”.</span></li></ol>
+            <div class="pipeline" role="group" aria-label="Transformación de la clase"><div class="pipe-step"><span class="component-label">Antes</span><h3>CRUD abierto</h3><ul><li>arroz a $100</li></ul></div><div class="pipe-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div><div class="pipe-step" data-emphasis><span class="component-label">Ahora</span><h3>Identidad + rol</h3><ul><li>JWT</li><li>admin / vendedor</li></ul></div><div class="pipe-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div><div class="pipe-step"><span class="component-label">Clase 4</span><h3>Ventas confiables</h3><ul><li>vendedor desde token</li><li>stock y total</li></ul></div></div>
+            <div class="micro-task"><span class="component-label">Puente</span><p class="micro-task-q">Cuando Laura registre una venta, ¿el <code>vendedor_id</code> debe venir en el JSON del frontend?</p><details class="micro-reveal"><summary>Descubrir</summary><p class="micro-answer"><strong>No.</strong> Vendrá del <code>UsuarioActual</code>. El frontend podría mentir; el backend ya conoce la identidad firmada.</p></details></div>
+            <p class="doc-foot">© 2026 Ana Alvarado · Educadora Tech &amp; Desarrolladora Full Stack · Todos los derechos reservados · linkedin.com/in/ana-alvarado-instructora-full-stack</p>
+          </div>
+        </section>
+
+        <section class="section view" id="s18" data-accent="1" data-layout="canvas" data-escena="construccion" hidden>
+          <div class="sec-head"><span class="sec-n">Anexo · solo si sobra tiempo</span><h2 class="sec-t">Desactivar a Laura invalida su acceso sin borrar su historia</h2><p class="sec-s">El token no venció: la cuenta fresca en base de datos decide que ya no puede entrar.</p></div>
+          <div class="body">
+            <div class="callout" data-tone="info"><span class="callout-icon">i</span><div><h3>Cuándo usarlo</h3><p>Este bloque es opcional. El frontend ya trae el botón; sin la ruta del anexo muestra 404 y explica que aún no existe.</p></div></div>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">usuario_schema.py · con UsuarioEstado</span><span class="code-reveal-note">Reemplazar · agrega el booleano activo</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/schemas/usuario_schema.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+Rol = Literal["admin", "vendedor"]
+
+
+class UsuarioCrear(BaseModel):
+    nombre: str = Field(min_length=2, max_length=60)
+    correo: EmailStr
+    contrasena: str = Field(min_length=8, max_length=128)
+    rol: Rol
+
+
+class UsuarioRespuesta(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nombre: str
+    correo: str
+    rol: Rol
+    activo: bool
+
+
+class UsuarioEstado(BaseModel):
+    activo: bool</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">usuario_service.py · con cambiar_estado</span><span class="code-reveal-note">Reemplazar · conserva historial</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/services/usuario_service.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.config.settings import settings
+from app.models.usuario_model import Usuario
+from app.schemas.usuario_schema import UsuarioCrear
+from app.seguridad.contrasenas import hashear, verificar
+
+HASH_FALSO = hashear("contrasena-de-relleno")
+
+
+def listar_usuarios(db: Session):
+    return db.scalars(select(Usuario).order_by(Usuario.id)).all()
+
+
+def buscar_usuario(db: Session, usuario_id: int):
+    return db.get(Usuario, usuario_id)
+
+
+def buscar_por_correo(db: Session, correo: str):
+    return db.scalar(select(Usuario).where(Usuario.correo == correo.lower()))
+
+
+def crear_usuario(db: Session, datos: UsuarioCrear):
+    nuevo = Usuario(
+        nombre=datos.nombre,
+        correo=datos.correo.lower(),
+        contrasena_hash=hashear(datos.contrasena),
+        rol=datos.rol,
+    )
+    db.add(nuevo)
+    db.commit()
+    db.refresh(nuevo)
+    return nuevo
+
+
+def autenticar(db: Session, correo: str, contrasena: str):
+    usuario = buscar_por_correo(db, correo)
+    if usuario is None:
+        verificar(contrasena, HASH_FALSO)
+        return None
+    if not verificar(contrasena, usuario.contrasena_hash):
+        return None
+    return usuario
+
+
+def crear_admin_inicial(db: Session):
+    if db.scalar(select(Usuario.id).limit(1)) is not None:
+        return
+    admin = Usuario(
+        nombre=settings.admin_nombre,
+        correo=settings.admin_correo.lower(),
+        contrasena_hash=hashear(settings.admin_contrasena),
+        rol="admin",
+    )
+    db.add(admin)
+    db.commit()
+
+
+def cambiar_estado(db: Session, usuario: Usuario, activo: bool):
+    usuario.activo = activo
+    db.commit()
+    db.refresh(usuario)
+    return usuario</code></pre>
+  </div></div>
+  </details>
+            <details class="code-reveal">
+    <summary><span><span class="code-reveal-title">usuario_router.py · PATCH estado</span><span class="code-reveal-note">Reemplazar · evita autodesactivación</span></span></summary>
+    <div class="code-reveal-body"><div class="code-block">
+    <div class="code-head"><div><span class="code-context">Reemplazar</span><span class="code-file">la_cosecha/app/routers/usuario_router.py</span></div><button class="copy-btn" type="button">Copiar</button></div>
+    <pre class="line-numbers"><code class="language-python">from fastapi import APIRouter, Depends, HTTPException, status
+
+from app.config.database import SesionDB
+from app.schemas.usuario_schema import UsuarioCrear, UsuarioEstado, UsuarioRespuesta
+from app.seguridad.dependencias import UsuarioActual, exigir_admin
+from app.services import usuario_service
+
+router = APIRouter(prefix="/usuarios", tags=["Usuarios"], dependencies=[Depends(exigir_admin)])
+
+
+@router.get("/", response_model=list[UsuarioRespuesta])
+def listar(db: SesionDB):
+    return usuario_service.listar_usuarios(db)
+
+
+@router.post("/", response_model=UsuarioRespuesta, status_code=status.HTTP_201_CREATED)
+def crear(datos: UsuarioCrear, db: SesionDB):
+    if usuario_service.buscar_por_correo(db, datos.correo) is not None:
+        raise HTTPException(status_code=409, detail="Ya existe un usuario con ese correo")
+    return usuario_service.crear_usuario(db, datos)
+
+
+@router.patch("/{usuario_id}/estado", response_model=UsuarioRespuesta)
+def cambiar_estado(usuario_id: int, datos: UsuarioEstado, db: SesionDB, actual: UsuarioActual):
+    usuario = usuario_service.buscar_usuario(db, usuario_id)
+    if usuario is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    if usuario.id == actual.id:
+        raise HTTPException(status_code=409, detail="No puedes desactivar tu propia cuenta")
+    return usuario_service.cambiar_estado(db, usuario, datos.activo)</code></pre>
+  </div></div>
+  </details>
+            <div class="timeline"><div class="timeline-item"><h3>A1 · Marta desactiva a Laura</h3><p><code>PATCH /usuarios/2/estado</code> con <code>{"activo": false}</code> → 200.</p></div><div class="timeline-item"><h3>A2 · Token anterior</h3><p>Laura intenta <code>GET /productos/</code> → 401 inmediato.</p></div><div class="timeline-item"><h3>A4 · Marta se intenta desactivar</h3><p>La API protege a la única admin → 409.</p></div><div class="timeline-item"><h3>A5–A6 · Reactivar</h3><p>Marta reactiva a Laura → su token no vencido vuelve a servir.</p></div></div>
+            <div class="socratica"><span class="component-label">Para pensar</span><p class="socratica-q">¿Por qué <code>PATCH</code> y no <code>PUT</code>?</p><details class="reveal"><summary>Ver respuesta</summary><div class="reveal-body"><p class="lead-answer">PATCH modifica una parte; PUT representa un reemplazo completo.</p><p>Aquí cambia solo el estado y la subruta <code>/estado</code> hace explícita la intención.</p></div></details></div>
+          </div>
+        </section>
+      </div>
+
+      <nav class="view-controls" id="viewControls" aria-label="Navegación entre secciones"><button class="view-btn" id="prevView" type="button" aria-label="Sección anterior">←</button><span class="view-position" id="viewPosition" aria-live="polite">Portada</span><button class="view-btn" id="nextView" type="button" aria-label="Sección siguiente">→</button></nav>
+    </main>
+  </div>
+  <div class="watermark" aria-hidden="true">© 2026 ANA ALVARADO</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="anaclase-v12.js"></script>
+</body>
+</html>
