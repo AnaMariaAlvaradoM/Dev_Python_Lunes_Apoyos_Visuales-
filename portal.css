@@ -1,5 +1,5 @@
 /*
-  PLANTILLA UNIVERSAL DE PORTALES · ANA ALVARADO
+  PLANTILLA UNIVERSAL DE PORTALES · ANA ALVARADO · v2 (visor con barra fija)
   Generation usa azul. Dev Senior usa morado.
   La selección se hace en index.html con data-empresa.
 */
@@ -82,6 +82,9 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 }
 
 .portal-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   min-height: 64px;
   display: flex;
   align-items: center;
@@ -89,6 +92,9 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   gap: 20px;
   padding: 10px max(20px, calc((100vw - 1040px) / 2));
   border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  backdrop-filter: saturate(1.4) blur(10px);
 }
 .portal-brand {
   min-width: 0;
@@ -124,7 +130,10 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   color: var(--ink-soft);
   cursor: pointer;
 }
-.ctrl-btn:hover { border-color: var(--line-strong); background: var(--surface); color: var(--ink); }
+.ctrl-btn svg { width: 19px; height: 19px; }
+.ctrl-btn:disabled { opacity: .35; cursor: default; }
+.ctrl-btn:hover:not(:disabled) { border-color: var(--line-strong); background: var(--surface); color: var(--ink); }
+a.ctrl-btn { text-decoration: none; }
 
 .wrap {
   width: min(100% - 40px, 1040px);
@@ -160,7 +169,7 @@ h1 {
   gap: 24px;
   border-top: 1px solid var(--line-strong);
   border-bottom: 1px solid var(--line);
-  scroll-margin-top: 20px;
+  scroll-margin-top: 84px;
 }
 .section-label {
   display: block;
@@ -295,6 +304,73 @@ footer {
 }
 footer p { margin: 0; }
 
+/* ============================================================
+   v2 · ENLACE PARA SALTAR, MATERIAL EXTRA
+   ============================================================ */
+.skip-link { position: fixed; top: 10px; left: 10px; z-index: 100; padding: 10px 14px; border-radius: 9px; background: var(--ink); color: var(--bg); font-weight: 650; text-decoration: none; transform: translateY(-160%); }
+.skip-link:focus { transform: none; }
+.clase[data-extra] .num { border-style: dashed; }
+.clase[data-extra] .clase-titulo { color: var(--ink-soft); }
+.vacio { margin: 0 0 18px 23px; color: var(--ink-muted); font-size: .84rem; }
+
+/* ============================================================
+   v2 · VISOR DE GUÍAS
+   La barra superior se mantiene; la guía ocupa el resto de la pantalla.
+   ============================================================ */
+body.en-visor { height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+body.en-visor .wrap, body.en-visor footer { display: none; }
+body.en-visor .portal-topbar {
+  flex: 0 0 auto;
+  min-height: 56px;
+  gap: 14px;
+  padding: 7px 14px;
+  background: var(--surface);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+body.en-visor .portal-brand-copy { display: none; }
+
+.visor-nav { min-width: 0; flex: 1; display: flex; align-items: center; gap: 14px; }
+.visor-inicio {
+  flex: 0 0 auto;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 0 11px;
+  border-radius: 10px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: .86rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background .18s ease;
+}
+.visor-inicio svg { width: 18px; height: 18px; }
+.visor-inicio:hover { background: color-mix(in srgb, var(--brand) 22%, var(--brand-soft)); }
+.visor-ubicacion { min-width: 0; flex: 1; display: grid; line-height: 1.2; }
+.visor-modulo { overflow: hidden; color: var(--ink-muted); font-size: .74rem; white-space: nowrap; text-overflow: ellipsis; }
+.visor-clase { overflow: hidden; color: var(--ink); font-size: .94rem; font-weight: 650; white-space: nowrap; text-overflow: ellipsis; }
+.visor-pasos { flex: 0 0 auto; display: flex; gap: 6px; }
+.visor-pasos .ctrl-btn { width: 42px; height: 42px; }
+
+.visor { flex: 1; min-height: 0; position: relative; background: var(--bg); }
+.visor-frame { display: block; width: 100%; height: 100%; border: 0; background: var(--bg); }
+.visor.cargando::after {
+  content: "Cargando guía…";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  color: var(--ink-muted);
+  font-size: .9rem;
+}
+
+@media print {
+  .portal-topbar, .visor { display: none !important; }
+}
+
 @media (max-width: 720px) {
   .portal-topbar { padding-inline: 16px; }
   .portal-brand-copy small { display: none; }
@@ -304,9 +380,17 @@ footer p { margin: 0; }
   .library-actions { width: 100%; }
   .text-btn { flex: 1; }
   .clases { grid-template-columns: 1fr; padding-left: 18px; }
+  .visor-inicio span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .visor-inicio { width: 42px; padding: 0; justify-content: center; }
+  body.en-visor .portal-brand { display: none; }
+  body.en-visor .portal-topbar { gap: 8px; padding: 6px 10px; }
+  .visor-nav { gap: 10px; }
+  .visor-pasos { gap: 4px; }
+  .visor-pasos .ctrl-btn, body.en-visor #temaBtn { width: 38px; height: 38px; }
 }
 
 @media (max-width: 430px) {
+  #abrirSola { display: none; }
   h1 { font-size: 2.5rem; }
   .mod-badge { display: none; }
   .modulo summary { gap: 11px; }
@@ -319,3 +403,6 @@ footer p { margin: 0; }
 
 .clase--pendiente { opacity: .58; cursor: default; }
 .clase--pendiente .flecha { font-family: var(--font-mono); font-size: .62rem; letter-spacing: .04em; text-transform: uppercase; }
+
+/* v2 · clase listada sin guía todavía (href vacío o "#") */
+.clase--sin-guia { opacity: .58; cursor: default; }

@@ -12,17 +12,46 @@
 </head>
 
 <body>
+  <a class="skip-link" href="#lista-guias">Saltar a las guías</a>
   <header class="portal-topbar">
-    <a class="portal-brand" href="./index.html" aria-label="Inicio del portal">
+    <a class="portal-brand" href="./index.html" id="irInicio" aria-label="Inicio del portal">
       <span class="portal-brand-mark" aria-hidden="true">A</span>
       <span class="portal-brand-copy">
         <strong>Ana Alvarado</strong>
         <small>Dev Senior · Python Backend Developer</small>
       </span>
     </a>
+    <!-- Solo visible con una guía abierta (lo llena portal.js) -->
+    <nav class="visor-nav" id="visorNav" aria-label="Navegación de la guía" hidden>
+      <a class="visor-inicio" href="./index.html" id="volverBiblioteca">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+        <span>Todas las guías</span>
+      </a>
+      <div class="visor-ubicacion" aria-live="polite">
+        <span class="visor-modulo" id="visorModulo"></span>
+        <strong class="visor-clase" id="visorClase"></strong>
+      </div>
+      <div class="visor-pasos">
+        <button class="ctrl-btn" id="guiaAnterior" type="button" aria-label="Guía anterior" title="Guía anterior">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="ctrl-btn" id="guiaSiguiente" type="button" aria-label="Guía siguiente" title="Guía siguiente">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <a class="ctrl-btn" id="abrirSola" href="#" target="_blank" rel="noopener" aria-label="Abrir la guía sola en otra pestaña" title="Abrir sola (para imprimir o pantalla completa)">
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+        </a>
+      </div>
+    </nav>
+
     <button class="ctrl-btn" id="temaBtn" type="button" aria-label="Activar tema oscuro"
       title="Activar tema oscuro">☾</button>
   </header>
+
+  <!-- ============ VISOR · aquí se abre cada guía, bajo la barra fija ============ -->
+  <section class="visor" id="visor" aria-label="Guía abierta" hidden>
+    <iframe class="visor-frame" id="visorFrame" title="Guía de clase" allow="fullscreen; clipboard-write"></iframe>
+  </section>
 
   <main class="wrap">
     <p class="eyebrow">DEV SENIOR · PYTHON IA</p>

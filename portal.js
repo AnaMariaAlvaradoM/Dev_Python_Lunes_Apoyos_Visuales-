@@ -1,7 +1,13 @@
 /*
-  PLANTILLA UNIVERSAL DE PORTALES · ANA ALVARADO
-  Este único archivo controla el portal y también crea el botón de regreso
-  cuando se carga dentro de una guía mediante data-home.
+  PLANTILLA UNIVERSAL DE PORTALES · ANA ALVARADO · v2
+  Un solo archivo para dos usos:
+  1. En index.html: biblioteca (búsqueda, módulos, tema) + VISOR de guías.
+     Cada guía se abre dentro del portal con una barra fija:
+     Todas las guías · módulo y clase · anterior / siguiente · abrir sola.
+  2. Dentro de una guía abierta SOLA (opcional): agrega el botón "Todas las guías".
+     <script src="../portal.js" defer></script>  (ajusta ../ según la carpeta)
+     El inicio se calcula a partir de la ruta de este archivo; data-home ya no hace falta
+     (si una guía vieja lo trae, se respeta). Dentro del visor no se agrega, para no duplicar.
 */
 (function () {
   'use strict';
@@ -9,11 +15,26 @@
   var loader = document.currentScript;
   var root = document.documentElement;
   var company = (loader && loader.dataset.empresa) || root.dataset.empresa || 'generation';
-  var home = loader && loader.dataset.home;
+  var isPortal = !!document.getElementById('lista-guias');
+  var framed = false;
+  try { framed = window.self !== window.top; } catch (error) { framed = true; }
 
-  if (home) mountHomeButton(home, company);
-  if (document.getElementById('lista-guias')) initPortal(company);
+  if (isPortal) initPortal(company);
+  else if (!framed) mountHomeButton(homeFromLoader(), company);
 
+  function isGuideLink(link) {
+    var href = (link.getAttribute('href') || '').trim();
+    return href !== '' && href.charAt(0) !== '#';
+  }
+
+  function homeFromLoader() {
+    if (loader && loader.dataset.home) return loader.dataset.home;
+    try { return new URL('index.html', loader.src).href; } catch (error) { return '../index.html'; }
+  }
+
+  /* ==================================================================
+     BIBLIOTECA
+     ================================================================== */
   function initPortal(activeCompany) {
     var themeButton = document.getElementById('temaBtn');
     var searchToggle = document.getElementById('mostrarBusqueda');
@@ -34,7 +55,7 @@
     function normalize(value) {
       return String(value || '')
         .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[̀-ͯ]/g, '')
         .toLowerCase()
         .trim();
     }
@@ -60,7 +81,7 @@
       });
     }
 
-    var availableResources = document.querySelectorAll('a.clase[href]').length;
+    var availableResources = Array.prototype.filter.call(document.querySelectorAll('a.clase[href]'), isGuideLink).length;
     if (moduleCount) moduleCount.textContent = modules.length;
     if (resourceCount) resourceCount.textContent = availableResources;
 
@@ -101,7 +122,7 @@
           item.hidden = !matches;
           if (matches) visible += 1;
         });
-        module.hidden = visible === 0;
+        module.hidden = query ? visible === 0 : false;
         if (query && visible) module.open = true;
       });
       if (clearButton) clearButton.hidden = !query;
@@ -163,8 +184,188 @@
 
     updateStatus('');
     updateExpandLabel();
+    initViewer(modules);
   }
 
+  /* ==================================================================
+     VISOR · la guía se abre dentro del portal, bajo la barra fija
+     ================================================================== */
+  function initViewer(modules) {
+    var viewer = document.getElementById('visor');
+    var frame = document.getElementById('visorFrame');
+    var nav = document.getElementById('visorNav');
+    if (!viewer || !frame || !nav) return;
+
+    var moduleLabel = document.getElementById('visorModulo');
+    var classLabel = document.getElementById('visorClase');
+    var prevButton = document.getElementById('guiaAnterior');
+    var nextButton = document.getElementById('guiaSiguiente');
+    var openAlone = document.getElementById('abrirSola');
+    var homeLinks = [document.getElementById('irInicio'), document.getElementById('volverBiblioteca')];
+    var baseTitle = document.title;
+    var current = null;
+
+    function text(scope, selector) {
+      var node = scope && scope.querySelector(selector);
+      return node ? node.textContent.replace(/\s+/g, ' ').trim() : '';
+    }
+
+    /* Una clase con href vacío o "#" todavía no tiene guía: no se abre ni cuenta. */
+    Array.prototype.forEach.call(document.querySelectorAll('a.clase'), function (link) {
+      if (isGuideLink(link)) return;
+      link.setAttribute('aria-disabled', 'true');
+      link.classList.add('clase--sin-guia');
+      link.addEventListener('click', function (event) { event.preventDefault(); });
+    });
+
+    var guides = Array.prototype.filter.call(document.querySelectorAll('a.clase[href]'), isGuideLink).map(function (link, index) {
+      var module = link.closest('.modulo');
+      var summary = module && module.querySelector('summary');
+      var unit = link.closest('.unidad-grupo');
+      var unitName = unit ? [text(unit, '.unidad-num'), text(unit, '.unidad-head h3')].filter(Boolean).join(' · ') : '';
+      return {
+        index: index,
+        link: link,
+        module: module,
+        href: link.getAttribute('href'),
+        url: link.href,
+        title: text(link, '.clase-titulo'),
+        topic: text(link, '.clase-temas'),
+        moduleTitle: text(summary, '.mod-titulo'),
+        moduleMeta: text(summary, '.mod-meta'),
+        unit: unitName
+      };
+    });
+    if (!guides.length) return;
+
+    function byHref(href) {
+      return guides.filter(function (guide) { return guide.href === href; })[0] || null;
+    }
+
+    function byUrl(url) {
+      var clean = String(url || '').split('#')[0];
+      return guides.filter(function (guide) { return guide.url.split('#')[0] === clean; })[0] || null;
+    }
+
+    function guideParam() {
+      try { return new URLSearchParams(window.location.search).get('guia'); } catch (error) { return null; }
+    }
+
+    function urlFor(guide) {
+      var base = window.location.pathname.split('/').pop() || 'index.html';
+      if (!guide) return base;
+      return base + '?guia=' + encodeURI(guide.href).replace(/[?#&]/g, encodeURIComponent);
+    }
+
+    function remember(guide, replace) {
+      try {
+        var method = replace ? 'replaceState' : 'pushState';
+        history[method]({ guia: guide ? guide.href : null }, '', urlFor(guide));
+      } catch (error) {}
+    }
+
+    function paintBar(guide) {
+      var module = [guide.moduleTitle, guide.unit || guide.moduleMeta].filter(Boolean).join(' · ');
+      var lesson = [guide.title, guide.topic].filter(Boolean).join(' · ');
+      moduleLabel.textContent = module;
+      classLabel.textContent = lesson;
+      classLabel.title = lesson;
+      prevButton.disabled = guide.index === 0;
+      nextButton.disabled = guide.index === guides.length - 1;
+      var prev = guides[guide.index - 1];
+      var next = guides[guide.index + 1];
+      prevButton.title = prev ? 'Anterior: ' + prev.title + (prev.topic ? ' · ' + prev.topic : '') : 'Es la primera guía';
+      nextButton.title = next ? 'Siguiente: ' + next.title + (next.topic ? ' · ' + next.topic : '') : 'Es la última guía';
+      openAlone.href = guide.url;
+      document.title = (guide.title ? guide.title + ' · ' : '') + baseTitle;
+    }
+
+    function open(guide, options) {
+      options = options || {};
+      if (!guide) return;
+      current = guide;
+      document.body.classList.add('en-visor');
+      viewer.hidden = false;
+      nav.hidden = false;
+      paintBar(guide);
+      if (byUrl(frameUrl()) !== guide) {
+        viewer.classList.add('cargando');
+        frame.src = guide.href;
+      }
+      if (!options.fromHistory) remember(guide, options.replace);
+      window.scrollTo(0, 0);
+    }
+
+    function close(options) {
+      options = options || {};
+      var last = current;
+      current = null;
+      document.body.classList.remove('en-visor');
+      viewer.hidden = true;
+      nav.hidden = true;
+      viewer.classList.remove('cargando');
+      frame.removeAttribute('src');
+      document.title = baseTitle;
+      if (!options.fromHistory) remember(null, options.replace);
+      if (last) {
+        if (last.module && !last.module.open) last.module.open = true;
+        window.requestAnimationFrame(function () {
+          last.link.scrollIntoView({ block: 'center' });
+          last.link.focus({ preventScroll: true });
+        });
+      }
+    }
+
+    function frameUrl() {
+      try { return frame.contentWindow.location.href; } catch (error) { return ''; }
+    }
+
+    frame.addEventListener('load', function () {
+      if (!current) return;
+      viewer.classList.remove('cargando');
+      var shown = byUrl(frameUrl());
+      if (shown && shown !== current) {
+        current = shown;
+        paintBar(shown);
+        remember(shown, true);
+      }
+      try { frame.contentWindow.focus(); } catch (error) {}
+    });
+
+    guides.forEach(function (guide) {
+      guide.link.addEventListener('click', function (event) {
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        open(guide);
+      });
+    });
+
+    homeLinks.forEach(function (link) {
+      if (!link) return;
+      link.addEventListener('click', function (event) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (!current) return;
+        event.preventDefault();
+        close();
+      });
+    });
+
+    prevButton.addEventListener('click', function () { if (current) open(guides[current.index - 1]); });
+    nextButton.addEventListener('click', function () { if (current) open(guides[current.index + 1]); });
+
+    window.addEventListener('popstate', function () {
+      var guide = byHref(guideParam());
+      if (guide) open(guide, { fromHistory: true });
+      else if (current) close({ fromHistory: true });
+    });
+
+    var initial = byHref(guideParam());
+    if (initial) open(initial, { replace: true });
+  }
+
+  /* ==================================================================
+     BOTÓN "TODAS LAS GUÍAS" · solo cuando la guía se abre sola
+     ================================================================== */
   function mountHomeButton(homePath, activeCompany) {
     if (document.querySelector('.ana-portal-home')) return;
 
@@ -178,6 +379,7 @@
       ':root[data-tema="oscuro"] .ana-portal-home{background:#1d201f;color:#e7e9e7;border-color:#414643;box-shadow:0 2px 8px rgba(0,0,0,.24)}',
       '.controls .ana-portal-home{position:static;order:-1}',
       '@media(max-width:560px){.ana-portal-home{width:44px;padding:0;justify-content:center}.ana-portal-home span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}',
+      '@media print{.ana-portal-home{display:none!important}}',
       '@media(prefers-reduced-motion:reduce){.ana-portal-home{transition:none}}'
     ].join('');
     document.head.appendChild(style);
