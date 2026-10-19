@@ -1,5 +1,5 @@
 /* ========================================================================== 
-   ANA LEARNING EXPERIENCE SYSTEM · CONTROLADOR v12.1 "PIZARRA"
+   ANA LEARNING EXPERIENCE SYSTEM · CONTROLADOR v12.5 "PIZARRA"
    © 2026 Ana Alvarado · Educadora Tech & Desarrolladora Full Stack
 
    v12.1 (aditivo): panel flotante de glosario con búsqueda, términos
@@ -10,6 +10,10 @@
    enfocar una .nota ilumina sus líneas (data-lineas="11-14,17") en el
    fragmento; tocar una línea del código activa la nota que la explica.
    Flechas ↑ ↓ recorren las notas sin cambiar de escena.
+
+   v12.5 (aditivo): orden y reparación automática. Partes plegables con
+   índice "En esta escena", portada con imagen, ilustraciones arriba,
+   notas y bloques de código normalizados (ver sección "ORDEN").
 
    Una SPA real: portada y una sola sección visible a la vez.
    El contenido, los bloques de código y los componentes pedagógicos se
@@ -267,6 +271,317 @@
       if (reduceMotion) animateChart(scope);
       else window.requestAnimationFrame(function () { animateChart(scope); });
     });
+  }
+
+  /* -----------------------------------------------------------------
+     v12.5 · ORDEN Y REPARACIÓN AUTOMÁTICA (aditivo)
+     Corre una sola vez, antes de armar las escenas. No cambia el contenido:
+     solo lo ordena y corrige patrones de marcado que se repiten al generar
+     la SPA desde la guía.
+       1. Notas: quita "L12 · <code>…</code> →" repetido y lo pasa a la cabeza.
+       2. Archivo completo: arma título + nota cuando el <summary> trae texto suelto.
+       3. Bloques de código: comandos = "Terminal" (sin nombre de archivo falso);
+          "Código" genérico toma la acción de la ficha (Crear, Reemplazar…).
+       4. Subsecciones numeradas (h3 "3.3 · …") que quedaron dentro de un
+          .archivo salen a la escena.
+       5. Portada sin imagen: usa la primera ilustración de la clase.
+       6. Ilustración al final de una escena: sube al inicio de la escena.
+       7. Escenas con 2 o más subsecciones numeradas: índice "En esta escena",
+          partes plegables y botón "Siguiente parte".
+     ----------------------------------------------------------------- */
+  var SUB_RE = /^\s*(\d+(?:\.\d+)+)\s*(?:[·.:\-–—]\s*)?/;
+  var LINE_LABEL_RE = /^\s*(L\d+(?:\s*[–-]\s*\d+)?)\s*·?\s*/;
+
+  function eachNode(selector, scope, fn) {
+    Array.prototype.forEach.call((scope || document).querySelectorAll(selector), fn);
+  }
+
+  function plainText(node) {
+    return node ? node.textContent.replace(/\s+/g, ' ').trim() : '';
+  }
+
+  function firstMeaningful(parent) {
+    var node = parent.firstChild;
+    while (node && node.nodeType === 3 && !node.textContent.trim()) node = node.nextSibling;
+    return node;
+  }
+
+  /* 1 · Notas */
+  function repairNotes() {
+    eachNode('.nota', document, function (note) {
+      var paragraph = note.querySelector(':scope > p');
+      if (!paragraph) return;
+      var strong = firstMeaningful(paragraph);
+      if (!strong || strong.nodeType !== 1 || strong.tagName !== 'STRONG') return;
+      var match = plainText(strong).match(LINE_LABEL_RE);
+      if (!match) return;
+
+      var lead = strong.firstChild;
+      if (lead && lead.nodeType === 3) lead.textContent = lead.textContent.replace(LINE_LABEL_RE, '');
+      var rest = strong.innerHTML.trim();
+      var after = strong.nextSibling;
+      strong.remove();
+      if (after && after.nodeType === 3) after.textContent = after.textContent.replace(/^\s*(?:→|->|:)\s*/, '');
+      var leading = paragraph.firstChild;
+      if (leading && leading.nodeType === 3) leading.textContent = leading.textContent.replace(/^\s+/, '');
+
+      var head = note.querySelector('.nota-cabeza');
+      if (!head) {
+        head = document.createElement('div');
+        head.className = 'nota-cabeza';
+        var label = document.createElement('span');
+        label.className = 'nota-lineas';
+        label.textContent = match[1].replace(/\s+/g, '');
+        head.appendChild(label);
+        note.insertBefore(head, note.firstChild);
+      }
+      if (rest && !head.querySelector('.nota-codigo')) {
+        var code = document.createElement('span');
+        code.className = 'nota-codigo';
+        code.innerHTML = rest;
+        head.appendChild(code);
+      }
+    });
+  }
+
+  /* 2 · Resumen del archivo completo */
+  function repairCodeReveals() {
+    eachNode('details.code-reveal > summary', document, function (summary) {
+      if (summary.querySelector('.code-reveal-title')) return;
+      var code = summary.querySelector('code');
+      var file = plainText(code);
+      var raw = plainText(summary);
+      var note = raw
+        .replace(/^Archivo completo\s*[—–\-:]?\s*/i, '')
+        .replace(file, '')
+        .replace(/^\s*[·—–\-:]\s*/, '')
+        .trim();
+      summary.innerHTML = '<span><span class="code-reveal-title"></span><span class="code-reveal-note"></span></span>';
+      summary.querySelector('.code-reveal-title').textContent = file ? file + ' · archivo completo' : (raw || 'Archivo completo');
+      summary.querySelector('.code-reveal-note').textContent = note;
+    });
+  }
+
+  /* 3 · Cabeza de los bloques de código */
+  var SHELL_LANG = /language-(bash|shell|sh|zsh|powershell|ps1|console|cmd|bat)\b/;
+  function repairCodeHeads() {
+    eachNode('.code-block', document, function (block) {
+      var code = block.querySelector('code');
+      var context = block.querySelector('.code-context');
+      var file = block.querySelector('.code-file');
+      var copy = block.querySelector('.copy-btn');
+      var isShell = block.dataset.tipo === 'terminal' || (code && SHELL_LANG.test(code.className));
+      if (isShell && block.dataset.tipo !== 'prompt') {
+        block.dataset.tipo = 'terminal';
+        if (context) context.textContent = 'Terminal';
+        if (file && /^[^\s]*[.\\/][^\s]*$/.test(plainText(file))) file.remove();
+        if (copy && /archivo/i.test(copy.textContent)) copy.textContent = 'Copiar';
+        return;
+      }
+      if (context && /^c[oó]digo$/i.test(plainText(context))) {
+        var archivo = block.closest('.archivo');
+        var accion = archivo && plainText(archivo.querySelector('.archivo-accion'));
+        context.textContent = accion || 'Archivo';
+      }
+    });
+  }
+
+  /* 4 · Subsecciones numeradas que quedaron dentro de un archivo */
+  function isSubHeading(node) {
+    return node && node.nodeType === 1 && node.tagName === 'H3' &&
+      (node.classList.contains('sub-t') || (!node.className && SUB_RE.test(plainText(node))));
+  }
+  function hoistSubHeadings() {
+    eachNode('.archivo > h3', document, function (heading) {
+      if (!isSubHeading(heading) || !heading.parentElement.classList.contains('archivo')) return;
+      var archivo = heading.parentElement;
+      var anchor = archivo;
+      var node = heading;
+      while (node) {
+        var next = node.nextSibling;
+        anchor.parentNode.insertBefore(node, anchor.nextSibling);
+        anchor = node;
+        node = next;
+      }
+    });
+  }
+
+  /* 5 · Portada con imagen */
+  function ensureHeroVisual() {
+    var heroBlock = document.querySelector('.hero');
+    var inner = heroBlock && heroBlock.querySelector('.hero-inner');
+    if (!inner || inner.querySelector('.hero-visual') || heroBlock.dataset.variant === 'stat') return;
+    var source = document.querySelector('.section .figura[data-portada] img') ||
+                 document.querySelector('.section .figura img');
+    if (!source) return;
+    var origin = source.closest('.figura');
+    var visual = document.createElement('figure');
+    visual.className = 'hero-visual';
+    visual.appendChild(source);
+    var caption = origin.querySelector('figcaption');
+    if (caption) {
+      var note = document.createElement('figcaption');
+      note.className = 'hero-note';
+      var credit = caption.querySelector('.figura-credito');
+      if (credit) credit.remove();
+      note.textContent = plainText(caption);
+      if (note.textContent) visual.appendChild(note);
+    }
+    if (!inner.querySelector('.hero-copy')) {
+      var copyBox = document.createElement('div');
+      copyBox.className = 'hero-copy';
+      while (inner.firstChild) copyBox.appendChild(inner.firstChild);
+      inner.appendChild(copyBox);
+    }
+    inner.appendChild(visual);
+    origin.remove();
+  }
+
+  /* 6 · Ilustración que quedó al final de la escena */
+  function liftTrailingFigures() {
+    eachNode('.section .body', document, function (body) {
+      var last = body.lastElementChild;
+      if (!last || !last.classList.contains('figura') || body.children.length < 4) return;
+      /* Si la escena abre con una frase de contexto (párrafo o callout), la imagen va justo después */
+      var first = body.firstElementChild;
+      var opensWithContext = first && (first.tagName === 'P' || first.tagName === 'BLOCKQUOTE' || first.classList.contains('callout'));
+      last.dataset.lugar = 'inicio';
+      body.insertBefore(last, opensWithContext ? first.nextSibling : first);
+    });
+  }
+
+  /* 7 · Partes plegables con índice */
+  var subCounter = 0;
+  function buildSubsections() {
+    eachNode('.section .body', document, function (body) {
+      var headings = Array.prototype.filter.call(body.children, isSubHeading);
+      if (headings.length < 2) return;
+      var section = body.closest('.section');
+      var parts = [];
+
+      headings.forEach(function (heading, index) {
+        subCounter += 1;
+        var id = (section.id || 'escena') + '-parte-' + (index + 1);
+        var bodyId = 'sub-cuerpo-' + subCounter;
+        var number = (plainText(heading).match(SUB_RE) || [])[1] || String(index + 1);
+
+        var lead = heading.firstChild;
+        if (lead && lead.nodeType === 3) lead.textContent = lead.textContent.replace(SUB_RE, '');
+        var titleHtml = heading.innerHTML.trim();
+
+        var wrapper = document.createElement('section');
+        wrapper.className = 'sub';
+        wrapper.id = id;
+        var title = document.createElement('h3');
+        title.className = 'sub-t';
+        title.innerHTML = '<button class="sub-toggle" type="button" aria-expanded="false" aria-controls="' + bodyId + '">' +
+          '<span class="sub-num">' + number + '</span><span class="sub-titulo"></span><span class="sub-chev" aria-hidden="true"></span></button>';
+        title.querySelector('.sub-titulo').innerHTML = titleHtml;
+        var content = document.createElement('div');
+        content.className = 'sub-cuerpo';
+        content.id = bodyId;
+        content.hidden = true;
+
+        var node = heading.nextSibling;
+        while (node && !(node.nodeType === 1 && headings.indexOf(node) !== -1)) {
+          var next = node.nextSibling;
+          content.appendChild(node);
+          node = next;
+        }
+        body.insertBefore(wrapper, heading);
+        heading.remove();
+        wrapper.appendChild(title);
+        wrapper.appendChild(content);
+        parts.push({ wrapper: wrapper, button: title.querySelector('button'), content: content, number: number, title: plainText(title.querySelector('.sub-titulo')) });
+      });
+
+      parts.forEach(function (part, index) {
+        var next = parts[index + 1];
+        if (!next) return;
+        var advance = document.createElement('button');
+        advance.className = 'sub-siguiente';
+        advance.type = 'button';
+        advance.innerHTML = '<span>Siguiente parte</span><b></b><span aria-hidden="true">→</span>';
+        advance.querySelector('b').textContent = next.number + ' · ' + next.title;
+        advance.addEventListener('click', function () {
+          setPart(part, false);
+          setPart(next, true);
+          revealPart(next);
+        });
+        part.content.appendChild(advance);
+      });
+
+      var index = document.createElement('nav');
+      index.className = 'sub-indice';
+      index.setAttribute('aria-label', 'Partes de esta escena');
+      index.innerHTML = '<div class="sub-indice-head"><span>En esta escena · ' + parts.length + ' partes</span>' +
+        '<button class="sub-todo" type="button">Abrir todo</button></div><ol></ol>';
+      var list = index.querySelector('ol');
+      parts.forEach(function (part) {
+        var item = document.createElement('li');
+        var chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'sub-chip';
+        chip.innerHTML = '<span class="sub-chip-num"></span><span class="sub-chip-titulo"></span>';
+        chip.querySelector('.sub-chip-num').textContent = part.number;
+        chip.querySelector('.sub-chip-titulo').textContent = part.title;
+        chip.addEventListener('click', function () {
+          setPart(part, true);
+          revealPart(part);
+        });
+        part.chip = chip;
+        item.appendChild(chip);
+        list.appendChild(item);
+      });
+      var allButton = index.querySelector('.sub-todo');
+      allButton.addEventListener('click', function () {
+        var openAll = parts.some(function (part) { return part.content.hidden; });
+        parts.forEach(function (part) { setPart(part, openAll); });
+      });
+      body.insertBefore(index, parts[0].wrapper);
+
+      function syncAll() {
+        allButton.textContent = parts.some(function (part) { return part.content.hidden; }) ? 'Abrir todo' : 'Cerrar todo';
+      }
+      function setPart(part, open) {
+        part.content.hidden = !open;
+        part.wrapper.classList.toggle('is-open', open);
+        part.button.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (part.chip) part.chip.classList.toggle('is-open', open);
+        syncAll();
+        if (open) window.requestAnimationFrame(function () { wakePart(part.content); });
+      }
+      function revealPart(part) {
+        window.requestAnimationFrame(function () {
+          part.wrapper.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' });
+          part.button.focus({ preventScroll: true });
+        });
+      }
+      parts.forEach(function (part) {
+        part.button.addEventListener('click', function () { setPart(part, part.content.hidden); });
+      });
+      setPart(parts[0], true);
+    });
+  }
+
+  /* Lo que estaba oculto necesita recalcularse al abrirse */
+  function wakePart(scope) {
+    if (typeof window.Prism !== 'undefined' && window.Prism.highlightAllUnder) window.Prism.highlightAllUnder(scope);
+    if (scope.querySelector('.mermaid')) renderMermaid(scope);
+    animateChartsIn(scope);
+    if (typeof refreshReadings === 'function') refreshReadings(scope.closest('.view') || scope);
+  }
+
+  try {
+    repairNotes();
+    repairCodeReveals();
+    repairCodeHeads();
+    hoistSubHeadings();
+    ensureHeroVisual();
+    liftTrailingFigures();
+    buildSubsections();
+  } catch (error) {
+    try { console.warn('Orden v12.5:', error); } catch (ignored) {}
   }
 
   /* -----------------------------------------------------------------
@@ -782,6 +1097,6 @@
   var accent = getComputedStyle(root).getPropertyValue('--scene-accent').trim() || '#2fd4cb';
   try {
     console.log('%c© 2026 Ana Alvarado', 'color:' + accent + ';font-weight:800;font-size:16px');
-    console.log('Ana Learning Experience System v12.3 "Pizarra" · Material de autoría exclusiva.');
+    console.log('Ana Learning Experience System v12.5 "Pizarra" · Material de autoría exclusiva.');
   } catch (error) {}
 })();

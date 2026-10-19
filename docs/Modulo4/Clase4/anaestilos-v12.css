@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ANA LEARNING EXPERIENCE SYSTEM · v12 "PIZARRA"
+   ANA LEARNING EXPERIENCE SYSTEM · v12.5 "PIZARRA"
    © 2026 Ana Alvarado · Educadora Tech & Desarrolladora Full Stack
 
    Reemplazo directo de anaestilos-v11.css. Usa las MISMAS clases y el MISMO
@@ -1337,3 +1337,177 @@ p code, li code, td code, h3 code, .micro-task-q code, .socratica-q code {
   .code-block, .consola { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .lectura[data-fijo] .lectura-cuerpo > .code-block { position: static !important; box-shadow: none; }
 }
+
+/* ==========================================================================
+   27 · v12.5 · ORDEN, PARTES PLEGABLES Y MARCADO LIBRE (aditivo · octubre de 2026)
+   Acompaña al bloque "ORDEN" de anaclase-v12.js:
+   - Índice "En esta escena" + partes plegables (h3 numerados "3.1 · …").
+   - Botón "Siguiente parte" para avanzar en orden al proyectar.
+   - Prosa suelta (h3, h4, listas) con jerarquía propia.
+   - Ilustraciones compactas que acompañan, no tapan.
+   - Archivo completo y notas tolerantes a cualquier marcado.
+   - La ruta se dice una vez: en la ficha del archivo.
+   ========================================================================== */
+
+/* ---- 27.1 · Índice "En esta escena" ---- */
+.sub-indice {
+  padding: 14px 16px 16px;
+  border-radius: var(--r-lg);
+  background: var(--frame);
+  border: 1px solid var(--line);
+}
+.sub-indice-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.sub-indice-head > span { font-size: var(--step-label, .9rem); font-weight: 650; color: var(--ink-soft); }
+.sub-todo {
+  padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-str);
+  background: transparent; color: var(--ink-soft); font-size: .84rem; font-weight: 600;
+}
+.sub-todo:hover { color: var(--ink); border-color: var(--a1); }
+.sub-indice ol { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 8px; }
+.sub-chip {
+  width: 100%; min-height: 48px;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center;
+  padding: 8px 12px 8px 8px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  background: var(--surf-1);
+  color: var(--ink-soft);
+  text-align: left;
+  font-size: .92rem; line-height: 1.3;
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+.sub-chip:hover { border-color: var(--line-str); color: var(--ink); }
+.sub-chip-num {
+  min-width: 42px; padding: 4px 8px; border-radius: 8px;
+  background: var(--surf-2); color: var(--a1-text);
+  font-family: var(--font-mono); font-size: .82rem; font-weight: 600; text-align: center;
+}
+.sub-chip-titulo { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.sub-chip.is-open { border-color: color-mix(in srgb, var(--a1) 55%, var(--line)); background: color-mix(in srgb, var(--a1) 9%, var(--surf-1)); color: var(--ink); }
+.sub-chip.is-open .sub-chip-num { background: var(--a1); color: var(--bg); }
+:root[data-tema="claro"] .sub-chip.is-open .sub-chip-num { background: var(--a1-ink); color: #fff; }
+
+/* ---- 27.2 · Parte plegable ---- */
+.sub { border-radius: var(--r-lg); border: 1px solid var(--line); background: color-mix(in srgb, var(--surf-1) 55%, transparent); scroll-margin-top: 16px; }
+.sub.is-open { border-color: color-mix(in srgb, var(--a1) 35%, var(--line)); background: transparent; }
+.sub-t { margin: 0; }
+.sub-toggle {
+  width: 100%;
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center;
+  padding: 16px 18px;
+  border: 0; border-radius: var(--r-lg);
+  background: transparent; color: var(--ink); text-align: left;
+  font-family: var(--font-display); font-size: var(--step-2); font-weight: 600; line-height: 1.2; letter-spacing: -.012em;
+}
+.sub-toggle:hover .sub-chev { border-color: var(--a1); color: var(--a1-text); }
+.sub-num {
+  padding: 5px 10px; border-radius: 10px;
+  background: color-mix(in srgb, var(--a1) 16%, var(--surf-2)); color: var(--a1-text);
+  font-family: var(--font-mono); font-size: .9rem; font-weight: 600; letter-spacing: 0;
+}
+.sub.is-open .sub-num { background: var(--a1); color: var(--bg); }
+:root[data-tema="claro"] .sub.is-open .sub-num { background: var(--a1-ink); color: #fff; }
+.sub-titulo code { font-size: .82em; font-weight: 500; }
+.sub-chev {
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border-radius: 50%; border: 1px solid var(--line-str); color: var(--ink-mute);
+  transition: transform var(--transition), border-color var(--transition), color var(--transition);
+}
+.sub-chev::before { content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+.sub.is-open .sub-chev { transform: rotate(180deg); color: var(--a1-text); border-color: var(--a1); }
+.sub-cuerpo { display: flex; flex-direction: column; gap: clamp(20px, 2.4vw, 30px); padding: 4px clamp(12px, 1.4vw, 16px) 22px; }
+.sub-cuerpo[hidden] { display: none !important; }
+.sub-cuerpo > p { max-width: 74ch; }
+
+/* Siguiente parte: el orden de la clase en un botón */
+.sub-siguiente {
+  align-self: center;
+  max-width: 100%;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--a1) 50%, var(--line));
+  background: color-mix(in srgb, var(--a1) 10%, var(--surf-1));
+  color: var(--ink);
+  font-size: .95rem;
+  text-align: left;
+}
+.sub-siguiente > span:first-child { color: var(--ink-mute); font-weight: 600; white-space: nowrap; }
+.sub-siguiente b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 650; }
+.sub-siguiente:hover { border-color: var(--a1); }
+
+/* ---- 27.3 · Prosa suelta con jerarquía ---- */
+.body > h3:not([class]), .sub-cuerpo > h3:not([class]) {
+  font-family: var(--font-display); font-size: var(--step-2); font-weight: 600; line-height: 1.2; letter-spacing: -.012em;
+}
+.body > h4, .sub-cuerpo > h4 {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: -10px;
+  color: var(--a1-text);
+  font-family: var(--font-body); font-size: var(--step-label, .95rem); font-weight: 650;
+}
+.body > h4::before, .sub-cuerpo > h4::before { content: ""; width: 18px; height: 2px; border-radius: 2px; background: currentColor; }
+.body > ol:not([class]), .body > ul:not([class]),
+.sub-cuerpo > ol:not([class]), .sub-cuerpo > ul:not([class]) {
+  max-width: 74ch; display: grid; gap: 8px; padding-left: 1.4em;
+}
+.body > ol:not([class]) > li::marker, .sub-cuerpo > ol:not([class]) > li::marker { color: var(--a1-text); font-family: var(--font-mono); font-weight: 600; }
+.body > ul:not([class]) > li::marker, .sub-cuerpo > ul:not([class]) > li::marker { color: var(--a1-text); }
+.body > p > strong:only-child, .sub-cuerpo > p > strong:first-child { color: var(--ink); }
+
+/* ---- 27.4 · Ilustraciones que acompañan ---- */
+.figura .figura-stage > img { max-height: min(52vh, 460px); width: auto; max-width: 100%; object-fit: contain; }
+@media (min-width: 1100px) {
+  .figura:has(.figura-stage > img) {
+    display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(220px, .9fr); align-items: center;
+  }
+  .figura:has(.figura-stage > img) figcaption {
+    border-top: 0; border-left: 1px solid var(--paper-line);
+    padding: 20px 24px; font-size: .98rem; line-height: 1.55; align-self: stretch; display: flex; flex-direction: column; justify-content: center;
+  }
+}
+.hero-visual > img { max-height: min(56vh, 520px); object-fit: cover; }
+
+/* ---- 27.5 · Archivo completo: resumen tolerante a cualquier marcado ---- */
+.code-reveal > summary { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; }
+.code-reveal > summary::before { flex: 0 0 36px; }
+.code-reveal > summary > span:first-of-type { flex: 1 1 260px; min-width: 0; }
+.code-reveal > summary::after { flex: 0 0 auto; margin-left: auto; }
+.code-reveal-title code { font-size: .92em; padding: .05em .35em; border-radius: 5px; background: color-mix(in srgb, var(--ink) 9%, transparent); }
+
+/* ---- 27.6 · La ruta se dice una vez ----
+   Dentro de un .archivo, la ficha ya nombra el archivo y su ruta:
+   los fragmentos solo muestran las líneas. */
+.archivo .lectura .code-block[data-role="fragment"] .code-file,
+.archivo .lectura .code-block[data-role="fragment"] .code-context::after { display: none; }
+.archivo-ficha {
+  padding: 12px 16px; border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--marca) 10%, var(--surf-1));
+  border: 1px solid color-mix(in srgb, var(--marca-texto) 30%, var(--line));
+}
+.code-block[data-tipo="terminal"] .code-context { color: var(--success); }
+.code-block[data-tipo="terminal"] .code-context::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 8px; border-radius: 50%; background: currentColor; vertical-align: 1px; }
+
+/* ---- 27.7 · Notas limpias ---- */
+.nota-cabeza { align-items: center; }
+.nota .nota-codigo code { padding: 0; background: none; font-size: inherit; }
+
+/* ---- 27.8 · Responsive e impresión ---- */
+@media (max-width: 640px) {
+  .sub-toggle { gap: 10px; padding: 14px; font-size: var(--step-1); }
+  .sub-cuerpo { padding: 2px 12px 16px; }
+  .sub-siguiente { align-self: stretch; }
+}
+@media print {
+  .sub-indice, .sub-siguiente, .sub-chev { display: none !important; }
+  .sub-cuerpo[hidden] { display: flex !important; }
+  .sub { border: 0; }
+}
+
+/* Lectura dentro de una parte: lado a lado desde 940 px de contenedor */
+@container (min-width: 940px) {
+  .lectura-cuerpo { grid-template-columns: minmax(0, max-content) minmax(300px, 1fr); gap: 22px; }
+  .lectura-cuerpo > .code-block { position: sticky; top: 18px; }
+}
+/* Sin nombre de archivo, el contexto no lleva separador */
+.code-head .code-context:last-child::after { display: none; }
