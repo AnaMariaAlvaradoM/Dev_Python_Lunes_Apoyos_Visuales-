@@ -1,5 +1,5 @@
 /*
-  PLANTILLA UNIVERSAL DE PORTALES · ANA ALVARADO · v2
+  PLANTILLA UNIVERSAL DE PORTALES · ANA ALVARADO · v3
   Un solo archivo para dos usos:
   1. En index.html: biblioteca (búsqueda, módulos, tema) + VISOR de guías.
      Cada guía se abre dentro del portal con una barra fija:
@@ -85,8 +85,121 @@
     if (moduleCount) moduleCount.textContent = modules.length;
     if (resourceCount) resourceCount.textContent = availableResources;
 
+    /* ---------- v3 · identidad visual de la biblioteca ---------- */
+    var storeKey = 'ana-portal:' + window.location.pathname.replace(/index\.html$/, '');
+    function readStore(key, fallback) {
+      try { var value = JSON.parse(localStorage.getItem(storeKey + ':' + key)); return value == null ? fallback : value; } catch (error) { return fallback; }
+    }
+    function writeStore(key, value) {
+      try { localStorage.setItem(storeKey + ':' + key, JSON.stringify(value)); } catch (error) {}
+    }
+    function textOf(scope, selector) {
+      var node = scope && scope.querySelector(selector);
+      return node ? node.textContent.replace(/\s+/g, ' ').trim() : '';
+    }
+
+    var guideLinks = Array.prototype.filter.call(document.querySelectorAll('a.clase[href]'), isGuideLink);
+    var seen = readStore('vistas', []);
+    if (!Array.isArray(seen)) seen = [];
+
+    function markSeen(link) {
+      if (link) link.classList.add('is-vista');
+    }
+    guideLinks.forEach(function (link) {
+      if (seen.indexOf(link.getAttribute('href')) !== -1) markSeen(link);
+    });
+
+    /* La clase más reciente: la última guía publicada en un módulo que no es "próximo" */
+    var published = guideLinks.filter(function (link) {
+      var module = link.closest('.modulo');
+      return !module || !module.classList.contains('proximo');
+    });
+    var latest = published[published.length - 1] || null;
+    if (latest) {
+      latest.dataset.ultima = '';
+      var chip = document.createElement('span');
+      chip.className = 'clase-chip clase-chip--nueva';
+      chip.textContent = 'Más reciente';
+      latest.appendChild(chip);
+    }
+
+    /* Número de cada módulo y cuántas guías tiene */
+    modules.forEach(function (module) {
+      var dot = module.querySelector('.mod-punto');
+      var match = textOf(module, '.mod-titulo').match(/\d+/);
+      if (dot && match && !dot.textContent.trim()) dot.textContent = match[0];
+      var summary = module.querySelector('summary');
+      var total = Array.prototype.filter.call(module.querySelectorAll('a.clase[href]'), isGuideLink).length;
+      if (summary && total && !summary.querySelector('.mod-count')) {
+        var count = document.createElement('span');
+        count.className = 'mod-count';
+        count.innerHTML = '<b>' + total + '</b> ' + (total === 1 ? 'guía' : 'guías');
+        var anchor = summary.querySelector('.mod-badge') || summary.querySelector('.mod-chevron');
+        summary.insertBefore(count, anchor);
+      }
+    });
+
+    /* Portada: texto + estadísticas + tarjeta para seguir */
+    (function buildHero() {
+      var wrap = document.querySelector('.wrap');
+      var title = wrap && wrap.querySelector(':scope > h1');
+      if (!title || wrap.querySelector('.portal-hero')) return;
+      var hero = document.createElement('header');
+      hero.className = 'portal-hero';
+      var copy = document.createElement('div');
+      copy.className = 'hero-copy';
+      wrap.insertBefore(hero, wrap.querySelector(':scope > .eyebrow') || title);
+      hero.appendChild(copy);
+      ['.eyebrow', 'h1', '.lead'].forEach(function (selector) {
+        var node = wrap.querySelector(':scope > ' + selector);
+        if (node) copy.appendChild(node);
+      });
+
+      var stats = document.createElement('div');
+      stats.className = 'hero-stats';
+      var activeModules = modules.filter(function (module) { return !module.classList.contains('proximo'); }).length;
+      stats.innerHTML =
+        '<span class="hero-stat"><b>' + activeModules + '</b> ' + (activeModules === 1 ? 'módulo' : 'módulos') + '</span>' +
+        '<span class="hero-stat"><b>' + guideLinks.length + '</b> ' + (guideLinks.length === 1 ? 'guía' : 'guías') + '</span>' +
+        (seen.length ? '<span class="hero-stat"><b>' + Math.min(seen.length, guideLinks.length) + '</b> abiertas por ti</span>' : '');
+      copy.appendChild(stats);
+
+      var lastHref = readStore('ultima', null);
+      var resume = guideLinks.filter(function (link) { return link.getAttribute('href') === lastHref; })[0];
+      var target = resume || latest;
+      if (!target) return;
+      var module = target.closest('.modulo');
+      var moduleText = [textOf(module, '.mod-titulo'), textOf(module, '.mod-meta')].filter(Boolean).join(' · ');
+      var card = document.createElement('aside');
+      card.className = 'hero-continuar';
+      card.setAttribute('aria-label', resume ? 'Continúa donde quedaste' : 'Clase más reciente');
+      card.innerHTML =
+        '<span class="hc-label">' + (resume ? 'Continúa donde quedaste' : 'Clase más reciente') + '</span>' +
+        '<p class="hc-modulo"></p><p class="hc-clase"></p>' +
+        '<a class="hc-boton" href="">Abrir guía <span aria-hidden="true">→</span></a>';
+      card.querySelector('.hc-modulo').textContent = moduleText;
+      card.querySelector('.hc-clase').textContent = [textOf(target, '.clase-titulo'), textOf(target, '.clase-temas')].filter(Boolean).join(' · ');
+      var button = card.querySelector('.hc-boton');
+      button.href = target.getAttribute('href');
+      button.addEventListener('click', function (event) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        target.click();
+      });
+      hero.appendChild(card);
+    })();
+
+    function rememberGuide(link) {
+      var href = link.getAttribute('href');
+      if (seen.indexOf(href) === -1) { seen.push(href); writeStore('vistas', seen); }
+      writeStore('ultima', href);
+      markSeen(link);
+    }
+
+    var openIndex = latest ? Math.max(0, modules.indexOf(latest.closest('.modulo'))) : 0;
+
     modules.forEach(function (module, index) {
-      module.open = index === 0;
+      module.open = index === openIndex;
       module.addEventListener('toggle', function () {
         if (!module.open || allowMultipleModules || normalize(searchInput && searchInput.value)) return;
         modules.forEach(function (other) {
@@ -184,13 +297,13 @@
 
     updateStatus('');
     updateExpandLabel();
-    initViewer(modules);
+    initViewer(modules, rememberGuide);
   }
 
   /* ==================================================================
      VISOR · la guía se abre dentro del portal, bajo la barra fija
      ================================================================== */
-  function initViewer(modules) {
+  function initViewer(modules, onOpen) {
     var viewer = document.getElementById('visor');
     var frame = document.getElementById('visorFrame');
     var nav = document.getElementById('visorNav');
@@ -293,6 +406,7 @@
         frame.src = guide.href;
       }
       if (!options.fromHistory) remember(guide, options.replace);
+      if (onOpen) onOpen(guide.link);
       window.scrollTo(0, 0);
     }
 
